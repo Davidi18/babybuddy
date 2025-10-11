@@ -4,9 +4,9 @@
 msgid "Dashboard"
 msgstr "לוח בקרה"
 
-# Tummy Time
+# Tummy Time - הביטוי הנכון והחמוד!
 msgid "Tummy Time"
-msgstr "זמן על הבטן"
+msgstr "זמן בטן"
 
 # Diaper Changes  
 msgid "Diaper Changes"
