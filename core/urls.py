@@ -79,9 +79,11 @@ urlpatterns = [
     path("timers/", views.TimerList.as_view(), name="timer-list"),
     path("timers/add/", views.TimerAdd.as_view(), name="timer-add"),
     path("timers/add/quick/", views.TimerAddQuick.as_view(), name="timer-add-quick"),
+    path("timers/quick/<str:timer_type>/", views.TimerQuickStart.as_view(), name="timer-quick-start"),
     path("timers/<int:pk>/", views.TimerDetail.as_view(), name="timer-detail"),
     path("timers/<int:pk>/edit/", views.TimerUpdate.as_view(), name="timer-update"),
     path("timers/<int:pk>/delete/", views.TimerDelete.as_view(), name="timer-delete"),
+    path("timers/<int:pk>/stop/", views.TimerStop.as_view(), name="timer-stop"),
     path(
         "timers/<int:pk>/restart/", views.TimerRestart.as_view(), name="timer-restart"
     ),

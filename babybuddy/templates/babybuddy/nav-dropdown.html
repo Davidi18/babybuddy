@@ -53,10 +53,6 @@
             <i class="icon-feeding" aria-hidden="true"></i>
             {% trans "Feeding" %}
         </a>
-        <a class="dropdown-item p-2" href="{% url 'core:bottle-feeding-add' %}">
-            <i class="icon-feeding" aria-hidden="true"></i>
-            {% trans "Bottle Feeding" %}
-        </a>
     {% endif %}
     {% if perms.core.add_pumping %}
         <a class="dropdown-item p-2" href="{% url 'core:pumping-add' %}">
@@ -109,28 +105,15 @@
             </a>
         </li>
         <li class="nav-item dropdown">
-        <a id="nav-children-menu-link"
+        <a id="nav-notes-menu-link"
            class="nav-link dropdown-toggle"
            href="#"
            data-bs-toggle="dropdown"
            aria-haspopup="true"
-           aria-expanded="false"><i class="icon-child" aria-hidden="true"></i>
-        {% trans "Children" %}
+           aria-expanded="false"><i class="icon-note" aria-hidden="true"></i>
+        {% trans "Notes" %}
     </a>
-    <div class="dropdown-menu" aria-labelledby="nav-children-menu-link">
-        {% if perms.core.view_child %}
-            <a class="dropdown-item{% if request.path == '/children/' %} active{% endif %}"
-               href="{% url 'core:child-list' %}">
-                <i class="icon-child" aria-hidden="true"></i>
-                {% trans "Children" %}
-            </a>
-        {% endif %}
-        {% if perms.core.add_child %}
-        <a class="dropdown-item ps-5{% if request.path == '/children/add/' %} active{% endif %}"
-           href="{% url 'core:child-add' %}"><i class="icon-add" aria-hidden="true"></i>
-        {% trans "Child" %}
-    </a>
-{% endif %}
+    <div class="dropdown-menu" aria-labelledby="nav-notes-menu-link">
 {% if perms.core.view_note %}
     <a class="dropdown-item{% if request.path == '/notes/' %} active{% endif %}"
        href="{% url 'core:note-list' %}">
@@ -257,12 +240,6 @@
 {% trans "Feeding" %}
 </a>
 {% endif %}
-{% if perms.core.add_feeding %}
-<a class="dropdown-item ps-5{% if request.path == '/feedings/bottle/add/' %} active{% endif %}"
-   href="{% url 'core:bottle-feeding-add' %}"><i class="icon-add" aria-hidden="true"></i>
-{% trans "Bottle Feeding" %}
-</a>
-{% endif %}
 {% if perms.core.view_pumping %}
     <a class="dropdown-item{% if request.path == '/pumping/' %} active{% endif %}"
        href="{% url 'core:pumping-list' %}">
@@ -331,6 +308,9 @@
                 <h6 class="dropdown-header">{% trans "Site" %}</h6>
                 <a href="{% url 'api:api-root' %}" class="dropdown-item">{% trans "API Browser" %}</a>
                 {% if request.user.is_staff %}
+                    <a href="{% url 'core:child-list' %}" class="dropdown-item">
+                        <i class="icon-child" aria-hidden="true"></i> {% trans "Children" %}
+                    </a>
                     <a href="{% url 'babybuddy:site_settings' %}" class="dropdown-item">{% trans "Settings" %}</a>
                     <a href="{% url 'core:tag-list' %}" class="dropdown-item">{% trans "Tags" %}</a>
                     <a href="{% url 'babybuddy:user-list' %}" class="dropdown-item">{% trans "Users" %}</a>

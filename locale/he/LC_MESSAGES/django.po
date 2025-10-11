@@ -26,7 +26,7 @@ msgstr "הגדרות"
 #: dashboard/templates/dashboard/dashboard.html:4
 #: dashboard/templates/dashboard/dashboard.html:7
 msgid "Dashboard"
-msgstr "לוח מחוונים"
+msgstr "דשבורד"
 
 #: babybuddy/forms.py:15 babybuddy/templates/babybuddy/user_list.html:20
 msgid "Read only"
@@ -44,7 +44,7 @@ msgstr "זמן רענון"
 msgid ""
 "If supported by browser, the dashboard will only refresh when visible, and "
 "also when receiving focus."
-msgstr "אם נתמך על ידי הדפדפן, לוח הניהול יתעדכן כשזמין , וכשמקבל פוקוס."
+msgstr "אם נתמך על ידי הדפדפן, הדשבורד יתעדכן רק כשהוא גלוי וכשמקבל פוקוס."
 
 #: babybuddy/models.py:28
 msgid "disabled"
@@ -53,11 +53,11 @@ msgstr "לא מאופשר"
 #: babybuddy/models.py:31 babybuddy/models.py:36 babybuddy/models.py:41
 #: babybuddy/models.py:46 babybuddy/models.py:51 babybuddy/models.py:56
 #: babybuddy/models.py:61 babybuddy/models.py:66
-#, fuzzy, python-format
+#, python-format
 msgid "%(minutes)d minute"
 msgid_plural "%(minutes)d minutes"
 msgstr[0] "דקה אחת"
-msgstr[1] "%(minutes)s דקות"
+msgstr[1] "%(minutes)d דקות"
 
 #: babybuddy/models.py:72
 msgid "Hide Empty Dashboard Cards"
@@ -76,18 +76,18 @@ msgid "show all data"
 msgstr "הצג את כל המידע"
 
 #: babybuddy/models.py:86 babybuddy/models.py:90 babybuddy/models.py:94
-#, fuzzy, python-format
+#, python-format
 msgid "%(days)d day"
 msgid_plural "%(days)d days"
-msgstr[0] "לפני %(days_ago)s ימים"
-msgstr[1] "לפני %(days_ago)s ימים"
+msgstr[0] "יום אחד"
+msgstr[1] "%(days)d ימים"
 
 #: babybuddy/models.py:98 babybuddy/models.py:102
 #, python-format
 msgid "%(weeks)d week"
 msgid_plural "%(weeks)d weeks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "שבוע אחד"
+msgstr[1] "%(weeks)d שבועות"
 
 #: babybuddy/models.py:110
 msgid "Language"
@@ -99,17 +99,17 @@ msgstr "איזור זמן"
 
 #: babybuddy/models.py:122 babybuddy/models.py:123 babybuddy/models.py:124
 #: babybuddy/models.py:125 babybuddy/models.py:126
-#, fuzzy, python-format
+#, python-format
 msgid "%(count)d Per Page"
-msgstr "טיימר אחד"
+msgstr "%(count)d לעמוד"
 
 #: babybuddy/models.py:127
 msgid "Show All"
-msgstr ""
+msgstr "הצג הכל"
 
 #: babybuddy/models.py:130
 msgid "Items Per Page"
-msgstr ""
+msgstr "פריטים לעמוד"
 
 #: babybuddy/models.py:134
 #, python-brace-format
@@ -117,9 +117,8 @@ msgid "{user}'s Settings"
 msgstr "הגדרות של {user}"
 
 #: babybuddy/settings/base.py:193
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "פורטוגזית"
+msgstr "פורטוגזית ברזילאית"
 
 #: babybuddy/settings/base.py:194
 msgid "Catalan"
@@ -127,7 +126,7 @@ msgstr "קטלאנית"
 
 #: babybuddy/settings/base.py:195
 msgid "Croatian"
-msgstr ""
+msgstr "קרואטית"
 
 #: babybuddy/settings/base.py:196
 msgid "Czech"
@@ -167,7 +166,7 @@ msgstr "גרמנית"
 
 #: babybuddy/settings/base.py:205
 msgid "Hebrew"
-msgstr ""
+msgstr "עברית"
 
 #: babybuddy/settings/base.py:206
 msgid "Hungarian"
@@ -179,7 +178,7 @@ msgstr "איטלקית"
 
 #: babybuddy/settings/base.py:208
 msgid "Japanese"
-msgstr ""
+msgstr "יפנית"
 
 #: babybuddy/settings/base.py:209
 msgid "Norwegian Bokmål"
@@ -199,7 +198,7 @@ msgstr "רוסית"
 
 #: babybuddy/settings/base.py:213
 msgid "Serbian"
-msgstr ""
+msgstr "סרבית"
 
 #: babybuddy/settings/base.py:214
 msgid "Spanish"
@@ -215,7 +214,7 @@ msgstr "טורקית"
 
 #: babybuddy/settings/base.py:217
 msgid "Ukrainian"
-msgstr ""
+msgstr "אוקראינית"
 
 #: babybuddy/site_settings.py:23
 msgid "Default minimum nap start time"
@@ -272,15 +271,13 @@ msgstr "שלח"
 #: babybuddy/templates/babybuddy/messages.html:24
 #: babybuddy/templates/babybuddy/user_settings_form.html:18
 #: babybuddy/templates/babybuddy/user_settings_form.html:23
-#, fuzzy
 msgid "Error"
 msgstr "שגיאה"
 
 #: babybuddy/templates/babybuddy/messages.html:25
 #: babybuddy/templates/babybuddy/user_settings_form.html:23
-#, fuzzy
 msgid "Some fields have errors. See below for details."
-msgstr "<strong>שגיאה:</strong> יש בעיה עם מספר שדות. ראה הערות מטה."
+msgstr "חלק מהשדות מכילים שגיאות. ראה פרטים למטה."
 
 #: babybuddy/templates/babybuddy/nav-dropdown.html:44 core/models.py:263
 #: core/models.py:267
@@ -295,9 +292,8 @@ msgstr "האכלה"
 
 #: babybuddy/templates/babybuddy/nav-dropdown.html:54
 #: babybuddy/templates/babybuddy/nav-dropdown.html:259
-#, fuzzy
 msgid "Bottle Feeding"
-msgstr "סך הכל האכלה"
+msgstr "האכלה בבקבוק"
 
 #: babybuddy/templates/babybuddy/nav-dropdown.html:60
 #: babybuddy/templates/babybuddy/nav-dropdown.html:266 core/models.py:498
@@ -599,9 +595,8 @@ msgid "Chat / Support"
 msgstr "צ'אט \\ תמיכה"
 
 #: babybuddy/templates/babybuddy/paginator.html:11
-#, fuzzy
 msgid "First"
-msgstr "שם פרטי"
+msgstr "ראשון"
 
 #: babybuddy/templates/babybuddy/paginator.html:18
 #: core/templates/core/diaperchange_list.html:32
@@ -633,9 +628,8 @@ msgid "Next"
 msgstr "הבא"
 
 #: babybuddy/templates/babybuddy/paginator.html:43
-#, fuzzy
 msgid "Last"
-msgstr "שם משפחה"
+msgstr "אחרון"
 
 #: babybuddy/templates/babybuddy/user_add_device.html:13
 msgid "Authentication Methods"
@@ -898,22 +892,21 @@ msgid "How to Fix"
 msgstr "אין לפתור"
 
 #: babybuddy/templates/error/403_csrf_bad_origin.html:11
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Add %(value)s to the %(variable)s environment variable. If multiple origins "
 "are required separate with commas."
 msgstr ""
-"הוסף את  <samp>%(origin)s</samp> אל <code>CSRF_TRUSTED_ORIGINS</code> משתנה "
-"סביבה.אם יש יותר מאחד אנא הפרד אותם עם פסיק."
+"הוסף את %(value)s למשתנה הסביבה %(variable)s. אם יש צורך במספר מקורות, הפרד אותם בפסיקים."
 
 #: babybuddy/templates/error/404.html:4 babybuddy/templates/error/404.html:7
 msgid "Page Not Found"
 msgstr "העמוד לא נמצא"
 
 #: babybuddy/templates/error/404.html:9
-#, fuzzy, python-format
+#, python-format
 msgid "The path %(path)s does not exist."
-msgstr "הכתובת <code>%(request_path)s</code> לא קיימת."
+msgstr "הנתיב %(path)s אינו קיים."
 
 #: babybuddy/templates/error/500.html:4 babybuddy/templates/error/500.html:7
 msgid "Server Error"
@@ -1026,14 +1019,14 @@ msgstr ""
 "הסיסמה שלך."
 
 #: babybuddy/templatetags/babybuddy.py:94
-#, fuzzy, python-format
+#, python-format
 msgid "Are you sure you want to delete %(name)s?"
-msgstr "האם אתה בטוח שאתה רוצה למחוק טיימר לא פעיל?"
+msgstr "האם אתה בטוח שברצונך למחוק את %(name)s?"
 
 #: babybuddy/templatetags/babybuddy.py:104
-#, fuzzy, python-format
+#, python-format
 msgid "Are you sure you want to unlock %(name)s?"
-msgstr "האם אתה בטוח שאתה רוצה למחוק טיימר לא פעיל?"
+msgstr "האם אתה בטוח שברצונך לבטל את הנעילה של %(name)s?"
 
 #: babybuddy/views.py:55
 msgid "Forbidden"
@@ -1429,9 +1422,9 @@ msgstr "תוכן"
 #: dashboard/templates/cards/pumping_last.html:9
 #: dashboard/templates/cards/sleep_last.html:9
 #: dashboard/templates/cards/tummytime_last.html:9
-#, fuzzy, python-format
+#, python-format
 msgid "%(time_ago)s ago"
-msgstr "לפני %(time)s"
+msgstr "לפני %(time_ago)s"
 
 #: core/templates/core/diaperchange_list.html:93
 msgid "No diaper changes found."
@@ -1447,9 +1440,8 @@ msgstr "עדכן האכלה"
 
 #: core/templates/core/feeding_form.html:7
 #: core/templates/core/feeding_form.html:28
-#, fuzzy
 msgid "Add a Bottle Feeding"
-msgstr "הוסף האכלה"
+msgstr "הוסף האכלה בבקבוק"
 
 #: core/templates/core/feeding_form.html:9
 #: core/templates/core/feeding_form.html:30
@@ -1461,9 +1453,8 @@ msgid "Add Feeding"
 msgstr "הוספת האכלה"
 
 #: core/templates/core/feeding_list.html:18
-#, fuzzy
 msgid "Add Bottle Feeding"
-msgstr "הוסף האכלה"
+msgstr "הוסף האכלה בבקבוק"
 
 #: core/templates/core/feeding_list.html:36
 msgid "Amt."
@@ -1591,42 +1582,37 @@ msgid "No sleep entries found."
 msgstr "לא נמצאו שינות."
 
 #: core/templates/core/tag_confirm_delete.html:4
-#, fuzzy
 msgid "Delete a Tag"
-msgstr "מחק הערה"
+msgstr "מחק תג"
 
 #: core/templates/core/tag_confirm_delete.html:22
 #, python-format
 msgid "There is 1 item tagged with this tag."
 msgid_plural "There are %(count)s items tagged with this tag."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "יש פריט אחד עם תג זה."
+msgstr[1] "יש %(count)s פריטים עם תג זה."
 
 #: core/templates/core/tag_confirm_delete.html:29
 msgid ""
 "This action will remove the tag from all items it is currently applied to."
-msgstr ""
+msgstr "פעולה זו תסיר את התג מכל הפריטים שהוא מוחל עליהם כרגע."
 
 #: core/templates/core/tag_confirm_delete.html:35
-#, fuzzy
 msgid "Delete Tag"
-msgstr "מחק"
+msgstr "מחק תג"
 
 #: core/templates/core/tag_detail.html:5 core/templates/core/tag_form.html:5
-#, fuzzy
 msgid "Update a Tag"
-msgstr "עדכן הערה"
+msgstr "עדכן תג"
 
 #: core/templates/core/tag_detail.html:7 core/templates/core/tag_form.html:7
 #: core/templates/core/tag_form.html:29
-#, fuzzy
 msgid "Add a Tag"
-msgstr "הוסף החלפת חיתול"
+msgstr "הוסף תג"
 
 #: core/templates/core/tag_detail.html:28
-#, fuzzy
 msgid "Tag actions"
-msgstr "פעולות טיימרים"
+msgstr "פעולות תג"
 
 #: core/templates/core/tag_detail.html:32
 #: core/templates/timeline/_timeline.html:64
@@ -1635,73 +1621,60 @@ msgid "Edit"
 msgstr "עריכה"
 
 #: core/templates/core/tag_detail.html:46
-#, fuzzy
 msgid "Tagged Measurements"
-msgstr "מדידות"
+msgstr "מדידות מתוייגות"
 
 #: core/templates/core/tag_detail.html:50
-#, fuzzy
 msgid "BMI Measurements"
-msgstr "מדידות"
+msgstr "מדידות BMI"
 
 #: core/templates/core/tag_detail.html:55
-#, fuzzy
 msgid "Head Circumference Measurements"
-msgstr "רשומת היקף ראש"
+msgstr "מדידות היקף ראש"
 
 #: core/templates/core/tag_detail.html:60
-#, fuzzy
 msgid "Height Measurements"
-msgstr "מדידות"
+msgstr "מדידות גובה"
 
 #: core/templates/core/tag_detail.html:65
-#, fuzzy
 msgid "Temperature Measurements"
-msgstr "קריאת טמפרטורה"
+msgstr "מדידות טמפרטורה"
 
 #: core/templates/core/tag_detail.html:70
-#, fuzzy
 msgid "Weight Measurements"
-msgstr "מדידות"
+msgstr "מדידות משקל"
 
 #: core/templates/core/tag_detail.html:76
-#, fuzzy
 msgid "Tagged Activities"
-msgstr "פעילויות"
+msgstr "פעילויות מתוייגות"
 
 #: core/templates/core/tag_detail.html:90
-#, fuzzy
 msgid "Pumpings"
-msgstr "שאיבה"
+msgstr "שאיבות"
 
 #: core/templates/core/tag_detail.html:95
-#, fuzzy
 msgid "Sleeps"
-msgstr "שינה"
+msgstr "שינות"
 
 #: core/templates/core/tag_detail.html:100
-#, fuzzy
 msgid "Tummy Times"
-msgstr "זמן בטן"
+msgstr "זמני בטן"
 
 #: core/templates/core/tag_list.html:14
-#, fuzzy
 msgid "Add Tag"
-msgstr "הוסף החלפת חיתול"
+msgstr "הוסף תג"
 
 #: core/templates/core/tag_list.html:26
 msgid "Items Tagged"
-msgstr ""
+msgstr "פריטים מתוייגים"
 
 #: core/templates/core/tag_list.html:27
-#, fuzzy
 msgid "Last Used"
-msgstr "שומש לאחרונה"
+msgstr "שימוש אחרון"
 
 #: core/templates/core/tag_list.html:62
-#, fuzzy
 msgid "No tags found."
-msgstr "לא נמצאו הערות."
+msgstr "לא נמצאו תגיות."
 
 #: core/templates/core/temperature_confirm_delete.html:4
 msgid "Delete a Temperature Reading"
@@ -2804,3 +2777,37 @@ msgstr "אחוזי משקל של WHO לבנות בקילוגרם"
 
 #~ msgid "<b>Feeding intervals</b>"
 #~ msgstr "<b>מרווחי האכלה</b>"
+
+# Smart Timers - New translations
+msgid "Quick Start Timers"
+msgstr "טיימרים מהירים"
+
+msgid "Sleep Timer"
+msgstr "טיימר שינה"
+
+msgid "Tummy Time Timer"
+msgstr "טיימר זמן בטן"
+
+msgid "Pumping Timer"
+msgstr "טיימר שאיבה"
+
+msgid "Custom Timer"
+msgstr "טיימר מותאם"
+
+msgid "View All Timers"
+msgstr "צפה בכל הטיימרים"
+
+msgid "Stop & Save"
+msgstr "עצור ושמור"
+
+msgid "Or save directly to:"
+msgstr "או שמור ישירות ל:"
+
+msgid "Timer stopped: {duration}"
+msgstr "טיימר נעצר: {duration}"
+
+msgid "Timer stopped ({duration}). Complete the entry below."
+msgstr "טיימר נעצר ({duration}). השלם את הרשומה למטה."
+
+msgid "{timer_name} timer started!"
+msgstr "טיימר {timer_name} התחיל!"
