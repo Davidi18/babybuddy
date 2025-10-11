@@ -16,14 +16,15 @@ $gray-800: #343a40;
 $gray-900: #212529;
 $black: #000;
 
-$primary: #37abe9;
-$danger: #a72431;
+// 🎨 פלטת צבעים פסטל רכה ונעימה לעיניים
+$primary: #A8D8EA;    // תכלת פסטל רך
+$danger: #FFABAB;     // ורוד-אדום פסטל
 $error: $danger;
-$secondary: #ff8f00;
-$warning: #ffbe42;
-$success: #239556;
-$debug: #5abccc;
-$info: #44c4dd;
+$secondary: #FFDAB9;  // אפרסק פסטל
+$warning: #FFF4B8;    // צהוב פסטל עדין
+$success: #C7EFCF;    // ירוק מנטה פסטל
+$debug: #D4F1F4;      // תכלת בהיר מאוד
+$info: #B4E4FF;       // כחול תכלת פסטל
 $light: $gray-100;
 $dark: $gray-800;
 
