@@ -1,0 +1,128 @@
+# תרגומים מתוקנים - רק השורות שהכי צריך לתקן
+
+# Dashboard
+msgid "Dashboard"
+msgstr "לוח בקרה"
+
+# Tummy Time
+msgid "Tummy Time"
+msgstr "זמן על הבטן"
+
+# Diaper Changes  
+msgid "Diaper Changes"
+msgstr "החלפות חיתול"
+
+# Settings
+msgid "Settings"
+msgstr "הגדרות"
+
+# Children
+msgid "Children"
+msgstr "ילדים"
+
+# Notes
+msgid "Notes"
+msgstr "הערות"
+
+# Sleep
+msgid "Sleep"
+msgstr "שינה"
+
+# Feeding/Feedings
+msgid "Feeding"
+msgstr "האכלה"
+
+msgid "Feedings"
+msgstr "האכלות"
+
+# Activities
+msgid "Activities"
+msgstr "פעילויות"
+
+# Reports
+msgid "Reports"
+msgstr "דוחות"
+
+# Measurements
+msgid "Measurements"
+msgstr "מדידות"
+
+# User
+msgid "User"
+msgstr "משתמש"
+
+# Password
+msgid "Password"
+msgstr "סיסמה"
+
+# Login/Logout
+msgid "Login"
+msgstr "התחברות"
+
+msgid "Logout"
+msgstr "התנתקות"
+
+# Submit/Update/Delete/Cancel
+msgid "Submit"
+msgstr "שלח"
+
+msgid "Update"
+msgstr "עדכן"
+
+msgid "Delete"
+msgstr "מחק"
+
+msgid "Cancel"
+msgstr "ביטול"
+
+# Time related
+msgid "Start"
+msgstr "התחלה"
+
+msgid "End"
+msgstr "סיום"
+
+msgid "Duration"
+msgstr "משך"
+
+msgid "Time"
+msgstr "שעה"
+
+msgid "Date"
+msgstr "תאריך"
+
+# Common words
+msgid "Type"
+msgstr "סוג"
+
+msgid "Amount"
+msgstr "כמות"
+
+msgid "Color"
+msgstr "צבע"
+
+msgid "Name"
+msgstr "שם"
+
+msgid "Actions"
+msgstr "פעולות"
+
+# Child related
+msgid "First Name"
+msgstr "שם פרטי"
+
+msgid "Last Name"
+msgstr "שם משפחה"
+
+msgid "Birth Date"
+msgstr "תאריך לידה"
+
+msgid "Add a Child"
+msgstr "הוסף ילד"
+
+# Welcome messages
+msgid "Welcome!"
+msgstr "ברוכים הבאים!"
+
+msgid "Welcome to Baby Buddy!"
+msgstr "ברוכים הבאים לבייבי באדי!"
