@@ -76,37 +76,37 @@
                         
                         <!-- Weekly Stats Summary -->
                         <div id="weekly-stats" class="row g-3 mt-3 pt-3" style="display:none; border-top: 1px solid rgba(0,0,0,0.1);">
-                            <div class="col-12">
-                                <div class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                            <div class="col-12 mb-2">
+                                <h6 class="text-muted text-uppercase mb-0" style="font-size: 0.9rem; letter-spacing: 0.5px;">
                                     📈 {% trans "Weekly Averages" %}
+                                </h6>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="text-center py-2">
+                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Feedings/Day" %}</div>
+                                    <div class="fw-bold" id="avg-feedings" style="font-size: 2rem; color: #0d6efd;">-</div>
                                 </div>
                             </div>
                             <div class="col-6 col-md-3">
                                 <div class="text-center py-2">
-                                    <div class="text-muted" style="font-size: 0.875rem;">{% trans "Feedings/Day" %}</div>
-                                    <div class="fw-bold" id="avg-feedings" style="font-size: 1.5rem; color: #0d6efd;">-</div>
+                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Sleep/Day" %}</div>
+                                    <div class="fw-bold" id="avg-sleep" style="font-size: 2rem; color: #0d6efd;">-</div>
                                 </div>
                             </div>
                             <div class="col-6 col-md-3">
                                 <div class="text-center py-2">
-                                    <div class="text-muted" style="font-size: 0.875rem;">{% trans "Sleep/Day" %}</div>
-                                    <div class="fw-bold" id="avg-sleep" style="font-size: 1.5rem; color: #0d6efd;">-</div>
+                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Feeding Interval" %}</div>
+                                    <div class="fw-bold" id="avg-interval" style="font-size: 2rem; color: #0d6efd;">-</div>
                                 </div>
                             </div>
                             <div class="col-6 col-md-3">
                                 <div class="text-center py-2">
-                                    <div class="text-muted" style="font-size: 0.875rem;">{% trans "Feeding Interval" %}</div>
-                                    <div class="fw-bold" id="avg-interval" style="font-size: 1.5rem; color: #0d6efd;">-</div>
+                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Diapers/Day" %}</div>
+                                    <div class="fw-bold" id="avg-diapers" style="font-size: 2rem; color: #0d6efd;">-</div>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted" style="font-size: 0.875rem;">{% trans "Diapers/Day" %}</div>
-                                    <div class="fw-bold" id="avg-diapers" style="font-size: 1.5rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-12 text-center mt-2">
-                                <a href="{% url 'dashboard:analytics-child' object.slug %}" class="btn btn-outline-primary btn-sm">
+                            <div class="col-12 text-center mt-3">
+                                <a href="{% url 'dashboard:analytics-child' object.slug %}" class="btn btn-outline-primary">
                                     {% trans "View Full Analytics" %} →
                                 </a>
                             </div>
