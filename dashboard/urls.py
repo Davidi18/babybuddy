@@ -12,4 +12,9 @@ urlpatterns = [
         views.ChildDashboard.as_view(),
         name="dashboard-child",
     ),
+    path(
+        "children/<str:slug>/analytics/",
+        views.ChildAnalyticsDashboard.as_view(),
+        name="analytics-child",
+    ),
 ]

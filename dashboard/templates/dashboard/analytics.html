@@ -1,0 +1,310 @@
+{% extends 'babybuddy/page.html' %}
+{% load breadcrumb i18n %}
+
+{% block title %}
+    {% trans "Analytics" %} - {{ object }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'core:child-list' %}">{% trans "Children" %}</a>
+    </li>
+    <li class="breadcrumb-item fw-bold">{% child_quick_switch object 'dashboard:analytics-child' %}</li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans "Analytics" %}</li>
+{% endblock %}
+
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>📊 {% trans "Analytics Dashboard" %} - {{ object.name }}</h1>
+                <a href="{% url 'dashboard:dashboard-child' object.slug %}" class="btn btn-outline-primary">
+                    ← {% trans "Back to Dashboard" %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Cards -->
+    <div class="row mb-4">
+        <!-- Feeding Prediction -->
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 {% if current_status.next_feeding_prediction.status == 'overdue' %}border-danger{% elif current_status.next_feeding_prediction.status == 'soon' %}border-warning{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="prediction-icon me-3">🍼</div>
+                        <h4 class="mb-0">{% trans "Next Feeding Prediction" %}</h4>
+                    </div>
+                    {% if current_status.next_feeding_prediction %}
+                        <div class="prediction-content">
+                            <p class="lead {% if current_status.next_feeding_prediction.status == 'overdue' %}text-danger{% elif current_status.next_feeding_prediction.status == 'soon' %}text-warning{% else %}text-info{% endif %}">
+                                {{ current_status.next_feeding_prediction.message }}
+                            </p>
+                            {% if current_status.next_feeding_prediction.estimated_time %}
+                                <p class="mb-2">
+                                    <strong>{% trans "Estimated time:" %}</strong>
+                                    {{ current_status.next_feeding_prediction.estimated_time|date:"H:i" }}
+                                </p>
+                            {% endif %}
+                            {% if current_status.last_feeding %}
+                                <hr>
+                                <small class="text-muted">
+                                    {% trans "Last feeding:" %} {{ current_status.last_feeding.time_since_formatted }}
+                                    {% if current_status.last_feeding.type %}
+                                        ({{ current_status.last_feeding.type }})
+                                    {% endif %}
+                                </small>
+                            {% endif %}
+                        </div>
+                        {% if current_status.next_feeding_prediction.status == 'overdue' %}
+                            <div class="alert alert-danger mt-3 mb-0">
+                                ⚠️ {% trans "Baby might be hungry!" %}
+                            </div>
+                        {% elif current_status.next_feeding_prediction.status == 'soon' %}
+                            <div class="alert alert-warning mt-3 mb-0">
+                                ⏰ {% trans "Feeding time approaching!" %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">{% trans "Not enough data for prediction. Add more feedings to see predictions." %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleep Prediction -->
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 {% if current_status.next_sleep_prediction.status == 'overtired' %}border-danger{% elif current_status.next_sleep_prediction.status == 'getting_tired' %}border-warning{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="prediction-icon me-3">💤</div>
+                        <h4 class="mb-0">{% trans "Sleep Status" %}</h4>
+                    </div>
+                    {% if current_status.next_sleep_prediction %}
+                        <div class="prediction-content">
+                            <p class="lead {% if current_status.next_sleep_prediction.status == 'overtired' %}text-danger{% elif current_status.next_sleep_prediction.status == 'getting_tired' %}text-warning{% else %}text-info{% endif %}">
+                                {{ current_status.next_sleep_prediction.message }}
+                            </p>
+                            {% if current_status.last_sleep %}
+                                <p class="mb-2">
+                                    <strong>{% trans "Awake for:" %}</strong>
+                                    {{ current_status.last_sleep.time_since_formatted }}
+                                </p>
+                                {% if current_status.last_sleep.duration_minutes %}
+                                    <p class="mb-2">
+                                        <strong>{% trans "Last sleep duration:" %}</strong>
+                                        {{ current_status.last_sleep.duration_minutes|floatformat:0 }} {% trans "minutes" %}
+                                    </p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% if current_status.next_sleep_prediction.status == 'overtired' %}
+                            <div class="alert alert-danger mt-3 mb-0">
+                                ⚠️ {% trans "Baby is overtired!" %}
+                            </div>
+                        {% elif current_status.next_sleep_prediction.status == 'getting_tired' %}
+                            <div class="alert alert-warning mt-3 mb-0">
+                                ⏰ {% trans "Baby is getting tired!" %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">{% trans "Not enough data for prediction. Add more sleep entries to see predictions." %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <!-- Feeding Stats -->
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🍼 {% trans "Feeding Statistics" %} (7 {% trans "days" %})</h5>
+                    {% if feeding_stats.count > 0 %}
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <strong>{% trans "Total feedings:" %}</strong> {{ feeding_stats.count }}
+                            </li>
+                            <li class="mb-2">
+                                <strong>{% trans "Average interval:" %}</strong>
+                                {{ feeding_stats.average_interval_minutes|floatformat:0 }} {% trans "minutes" %}
+                                ({{ feeding_stats.average_interval_minutes|floatformat:0|divisibleby:60|yesno:"_,~" }}{{ feeding_stats.average_interval_minutes|floatformat:0|add:"0"|floatformat:0|divisibleby:60|yesno:",~" }}{% if feeding_stats.average_interval_minutes >= 60 %}{{ feeding_stats.average_interval_minutes|floatformat:0|add:"0"|floatformat:0|divisibleby:60|yesno:",~" }}{% endif %})
+                            </li>
+                            {% if feeding_stats.average_duration_minutes > 0 %}
+                                <li class="mb-2">
+                                    <strong>{% trans "Average duration:" %}</strong>
+                                    {{ feeding_stats.average_duration_minutes|floatformat:0 }} {% trans "minutes" %}
+                                </li>
+                            {% endif %}
+                            {% if feeding_stats.total_amount > 0 %}
+                                <li class="mb-2">
+                                    <strong>{% trans "Total amount:" %}</strong>
+                                    {{ feeding_stats.total_amount|floatformat:0 }} ml
+                                </li>
+                            {% endif %}
+                        </ul>
+                        {% if feeding_stats.by_type %}
+                            <hr>
+                            <h6>{% trans "By type:" %}</h6>
+                            <ul class="list-unstyled mb-0">
+                                {% for type, count in feeding_stats.by_type.items %}
+                                    <li><small>{{ type }}: {{ count }}</small></li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">{% trans "No feeding data available" %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleep Stats -->
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">💤 {% trans "Sleep Statistics" %} (7 {% trans "days" %})</h5>
+                    {% if sleep_stats.count > 0 %}
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <strong>{% trans "Total sleep sessions:" %}</strong> {{ sleep_stats.count }}
+                            </li>
+                            <li class="mb-2">
+                                <strong>{% trans "Total sleep time:" %}</strong>
+                                {{ sleep_stats.total_duration_hours|floatformat:1 }} {% trans "hours" %}
+                            </li>
+                            <li class="mb-2">
+                                <strong>{% trans "Average per day:" %}</strong>
+                                {{ sleep_stats.average_per_day_hours|floatformat:1 }} {% trans "hours" %}
+                            </li>
+                            <li class="mb-2">
+                                <strong>{% trans "Average duration:" %}</strong>
+                                {{ sleep_stats.average_duration_minutes|floatformat:0 }} {% trans "minutes" %}
+                            </li>
+                            {% if sleep_stats.longest_duration_minutes %}
+                                <li class="mb-2">
+                                    <strong>{% trans "Longest sleep:" %}</strong>
+                                    {{ sleep_stats.longest_duration_minutes|floatformat:0 }} {% trans "minutes" %}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">{% trans "No sleep data available" %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Diaper Stats -->
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🧷 {% trans "Diaper Statistics" %} (7 {% trans "days" %})</h5>
+                    {% if diaper_stats.count > 0 %}
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <strong>{% trans "Total changes:" %}</strong> {{ diaper_stats.count }}
+                            </li>
+                            <li class="mb-2">
+                                <strong>{% trans "Average per day:" %}</strong>
+                                {{ diaper_stats.average_per_day|floatformat:1 }}
+                            </li>
+                        </ul>
+                        {% if diaper_stats.by_type %}
+                            <hr>
+                            <h6>{% trans "By type:" %}</h6>
+                            <ul class="list-unstyled mb-0">
+                                {% for type, count in diaper_stats.by_type.items %}
+                                    <li><small>{{ type }}: {{ count }}</small></li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">{% trans "No diaper data available" %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">📅 {% trans "Today's Summary" %}</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>🍼 {% trans "Feedings" %}</h6>
+                            <p class="mb-1"><strong>{{ daily_summary.feedings.count }}</strong> {% trans "feedings today" %}</p>
+                            {% if daily_summary.feedings.total_amount %}
+                                <p class="mb-0"><small>{% trans "Total:" %} {{ daily_summary.feedings.total_amount|floatformat:0 }} ml</small></p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <h6>💤 {% trans "Sleep" %}</h6>
+                            <p class="mb-1"><strong>{{ daily_summary.sleep.count }}</strong> {% trans "sleep sessions" %}</p>
+                            {% if daily_summary.sleep.total_duration_hours %}
+                                <p class="mb-0"><small>{% trans "Total:" %} {{ daily_summary.sleep.total_duration_hours|floatformat:1 }} {% trans "hours" %}</small></p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <h6>🧷 {% trans "Diapers" %}</h6>
+                            <p class="mb-0"><strong>{{ daily_summary.diapers.count }}</strong> {% trans "changes today" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-refresh notice -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <small>
+                    ℹ️ {% trans "This page auto-refreshes every 5 minutes to show the latest predictions and statistics." %}
+                </small>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="application/javascript">
+        // Auto-refresh page every 5 minutes
+        setTimeout(function() {
+            location.reload();
+        }, 5 * 60 * 1000);
+    </script>
+
+    <style>
+        .prediction-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .prediction-content {
+            margin-top: 1rem;
+        }
+
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .border-danger {
+            border-width: 2px !important;
+        }
+
+        .border-warning {
+            border-width: 2px !important;
+        }
+    </style>
+{% endblock %}

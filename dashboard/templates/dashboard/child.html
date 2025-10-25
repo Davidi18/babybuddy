@@ -11,6 +11,79 @@
     <li class="breadcrumb-item active" aria-current="page">{% trans "Dashboard" %}</li>
 {% endblock %}
 {% block content %}
+    <!-- Analytics Quick Link -->
+    <div class="row mb-2">
+        <div class="col-12">
+            <a href="{% url 'dashboard:analytics-child' object.slug %}" class="btn btn-outline-primary btn-sm float-end">
+                📊 {% trans "View Full Analytics" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Analytics Status Widget -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card analytics-status-widget">
+                <div class="card-body">
+                    <div id="analytics-loading" class="text-center">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">{% trans "Loading..." %}</span>
+                        </div>
+                        <span class="ms-2">{% trans "Loading status..." %}</span>
+                    </div>
+                    <div id="analytics-content" style="display:none;">
+                        <div class="row g-3">
+                            <!-- Last Feeding -->
+                            <div class="col-md-3">
+                                <div class="status-item">
+                                    <div class="status-icon">🍼</div>
+                                    <div class="status-details">
+                                        <small class="text-muted">{% trans "Last Feeding" %}</small>
+                                        <div id="last-feeding-time" class="fw-bold"></div>
+                                        <small id="last-feeding-type" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Next Feeding Prediction -->
+                            <div class="col-md-3">
+                                <div class="status-item">
+                                    <div class="status-icon">⏰</div>
+                                    <div class="status-details">
+                                        <small class="text-muted">{% trans "Next Feeding" %}</small>
+                                        <div id="next-feeding-prediction" class="fw-bold"></div>
+                                        <small id="next-feeding-time" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Sleep Status -->
+                            <div class="col-md-3">
+                                <div class="status-item">
+                                    <div class="status-icon">💤</div>
+                                    <div class="status-details">
+                                        <small class="text-muted">{% trans "Sleep Status" %}</small>
+                                        <div id="sleep-status" class="fw-bold"></div>
+                                        <small id="sleep-prediction" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Alerts -->
+                            <div class="col-md-3">
+                                <div class="status-item">
+                                    <div class="status-icon" id="alert-icon">ℹ️</div>
+                                    <div class="status-details">
+                                        <small class="text-muted">{% trans "Status" %}</small>
+                                        <div id="alert-message" class="fw-bold text-success">{% trans "All good" %}</div>
+                                        <small id="alert-time" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="dashboard-child"
          class="row"
          data-masonry='{"percentPosition": true }'>
@@ -37,4 +110,327 @@
     {% else %}
         <script type="application/javascript">BabyBuddy.Dashboard.watch('dashboard-child', false);</script>
     {% endif %}
+
+    <!-- Analytics Status Widget Script -->
+    <script type="application/javascript">
+    (function() {
+        'use strict';
+
+        const childSlug = '{{ object.slug }}';
+        const apiUrl = `/api/webhooks/status/?child=${childSlug}`;
+
+        function formatTimeAgo(minutes) {
+            if (!minutes && minutes !== 0) return 'N/A';
+            
+            const hours = Math.floor(minutes / 60);
+            const mins = Math.round(minutes % 60);
+            
+            if (hours > 0) {
+                return `{% trans "ago" %} ${hours}:${mins.toString().padStart(2, '0')}`;
+            }
+            return `{% trans "ago" %} ${mins} {% trans "min" %}`;
+        }
+
+        function formatTimeUntil(minutes) {
+            if (!minutes && minutes !== 0) return '';
+            
+            if (minutes < 0) {
+                return `{% trans "overdue" %} ${Math.abs(Math.round(minutes))} {% trans "min" %}`;
+            }
+            
+            const hours = Math.floor(minutes / 60);
+            const mins = Math.round(minutes % 60);
+            
+            if (hours > 0) {
+                return `{% trans "in" %} ${hours}:${mins.toString().padStart(2, '0')}`;
+            }
+            return `{% trans "in" %} ${mins} {% trans "min" %}`;
+        }
+
+        function getStatusClass(status) {
+            const statusMap = {
+                'overdue': 'text-danger',
+                'overtired': 'text-danger',
+                'soon': 'text-warning',
+                'getting_tired': 'text-warning',
+                'upcoming': 'text-info',
+                'later': 'text-success',
+                'awake': 'text-success'
+            };
+            return statusMap[status] || 'text-muted';
+        }
+
+        function updateAnalyticsWidget(data) {
+            // Hide loading, show content
+            document.getElementById('analytics-loading').style.display = 'none';
+            document.getElementById('analytics-content').style.display = 'block';
+
+            // Last Feeding
+            if (data.last_feeding_minutes_ago !== null) {
+                document.getElementById('last-feeding-time').textContent = 
+                    formatTimeAgo(data.last_feeding_minutes_ago);
+                document.getElementById('last-feeding-type').textContent = 
+                    data.last_feeding_type || '';
+            } else {
+                document.getElementById('last-feeding-time').textContent = 'N/A';
+            }
+
+            // Next Feeding Prediction
+            if (data.next_feeding_prediction) {
+                const pred = data.next_feeding_prediction;
+                const predEl = document.getElementById('next-feeding-prediction');
+                predEl.textContent = pred.message || '{% trans "Unknown" %}';
+                predEl.className = 'fw-bold ' + getStatusClass(pred.status);
+                
+                if (pred.minutes_until !== null) {
+                    document.getElementById('next-feeding-time').textContent = 
+                        formatTimeUntil(pred.minutes_until);
+                }
+            } else {
+                document.getElementById('next-feeding-prediction').textContent = 
+                    '{% trans "Not enough data" %}';
+            }
+
+            // Sleep Status
+            if (data.awake_minutes !== null) {
+                document.getElementById('sleep-status').textContent = 
+                    formatTimeAgo(data.awake_minutes);
+            } else {
+                document.getElementById('sleep-status').textContent = 'N/A';
+            }
+
+            if (data.next_sleep_prediction) {
+                const sleepPred = data.next_sleep_prediction;
+                const sleepEl = document.getElementById('sleep-prediction');
+                sleepEl.textContent = sleepPred.message || '';
+                sleepEl.className = 'text-muted ' + getStatusClass(sleepPred.status);
+            }
+
+            // Alerts
+            if (data.alerts && data.alerts.length > 0) {
+                const alert = data.alerts[0];
+                document.getElementById('alert-icon').textContent = '⚠️';
+                const alertEl = document.getElementById('alert-message');
+                alertEl.textContent = alert.message;
+                alertEl.className = 'fw-bold ' + getStatusClass(alert.type);
+                document.getElementById('alert-time').textContent = alert.time || '';
+            } else {
+                document.getElementById('alert-icon').textContent = '✅';
+                document.getElementById('alert-message').textContent = '{% trans "All good" %}';
+                document.getElementById('alert-message').className = 'fw-bold text-success';
+            }
+        }
+
+        function loadAnalyticsStatus() {
+            fetch(apiUrl, {
+                headers: {
+                    'Authorization': 'Token {{ request.user.auth_token.key }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch analytics status');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    updateAnalyticsWidget(data);
+                } else {
+                    console.error('Analytics API returned error:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading analytics:', error);
+                document.getElementById('analytics-loading').innerHTML = 
+                    '<span class="text-danger">{% trans "Failed to load status" %}</span>';
+            });
+        }
+
+        // Load on page load
+        loadAnalyticsStatus();
+
+        // Auto-refresh every 5 minutes
+        setInterval(loadAnalyticsStatus, 5 * 60 * 1000);
+    })();
+    </script>
+
+    <!-- Real-time Alerts System -->
+    <script type="application/javascript">
+    (function() {
+        'use strict';
+
+        const childSlug = '{{ object.slug }}';
+        const alertsUrl = `/api/webhooks/alerts/?child=${childSlug}`;
+        let lastAlertCheck = Date.now();
+        let shownAlerts = new Set();
+
+        function showToastAlert(alert) {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.style.cssText = 'position: fixed; top: 70px; right: 20px; z-index: 9999;';
+                document.body.appendChild(toastContainer);
+            }
+
+            // Create toast element
+            const toast = document.createElement('div');
+            const alertId = `alert-${Date.now()}-${Math.random()}`;
+            toast.id = alertId;
+            
+            let bgClass = 'bg-info';
+            if (alert.type === 'overdue' || alert.type === 'overtired') {
+                bgClass = 'bg-danger';
+            } else if (alert.type === 'soon' || alert.type === 'getting_tired') {
+                bgClass = 'bg-warning';
+            }
+
+            toast.className = `toast ${bgClass} text-white mb-2`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="toast-header ${bgClass} text-white">
+                    <strong class="me-auto">${alert.icon || '⚠️'} {% trans "Alert" %}</strong>
+                    <small>${alert.time || ''}</small>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${alert.message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Initialize Bootstrap toast
+            const bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: 10000 // 10 seconds
+            });
+            bsToast.show();
+
+            // Remove from DOM after hidden
+            toast.addEventListener('hidden.bs.toast', function() {
+                toast.remove();
+            });
+
+            // Mark as shown
+            shownAlerts.add(alert.message);
+        }
+
+        function checkForAlerts() {
+            fetch(alertsUrl, {
+                headers: {
+                    'Authorization': 'Token {{ request.user.auth_token.key }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.has_alerts && data.alerts) {
+                    data.alerts.forEach(alert => {
+                        // Only show new alerts (not shown in last 30 minutes)
+                        if (!shownAlerts.has(alert.message)) {
+                            showToastAlert(alert);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error checking alerts:', error);
+            });
+        }
+
+        // Check for alerts on page load
+        setTimeout(checkForAlerts, 2000);
+
+        // Check for alerts every 5 minutes
+        setInterval(checkForAlerts, 5 * 60 * 1000);
+
+        // Clear shown alerts cache every 30 minutes
+        setInterval(() => {
+            shownAlerts.clear();
+        }, 30 * 60 * 1000);
+    })();
+    </script>
+
+    <!-- Analytics Widget Styles -->
+    <style>
+    .analytics-status-widget {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .analytics-status-widget .card-body {
+        padding: 1.5rem;
+    }
+    
+    .status-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .status-icon {
+        font-size: 2rem;
+        line-height: 1;
+    }
+    
+    .status-details {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .status-details small {
+        display: block;
+        opacity: 0.9;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-details .fw-bold {
+        font-size: 1rem;
+        margin: 0.25rem 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .analytics-status-widget .text-muted {
+        color: rgba(255,255,255,0.8) !important;
+    }
+    
+    .analytics-status-widget .text-danger {
+        color: #ff6b6b !important;
+    }
+    
+    .analytics-status-widget .text-warning {
+        color: #ffd93d !important;
+    }
+    
+    .analytics-status-widget .text-info {
+        color: #6bcbff !important;
+    }
+    
+    .analytics-status-widget .text-success {
+        color: #51cf66 !important;
+    }
+    
+    @media (max-width: 768px) {
+        .status-item {
+            margin-bottom: 1rem;
+        }
+        
+        .status-icon {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
 {% endblock %}
