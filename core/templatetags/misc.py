@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import template
+from core.models import Child
 
 
 register = template.Library()
@@ -29,3 +30,16 @@ def prev(some_list, current_index):
     if not some_list or current_index <= 0:
         return ""
     return some_list[current_index - 1]
+
+
+@register.simple_tag
+def get_children_for_pumping():
+    """
+    Returns True if any child is not in bottle_only feeding mode
+    Used to determine if pumping option should be shown in quick add menu
+    :returns: True if pumping should be shown, False otherwise
+    """
+    children = Child.objects.all()
+    if not children.exists():
+        return True  # Show pumping by default if no children
+    return any(child.feeding_mode != 'bottle_only' for child in children)

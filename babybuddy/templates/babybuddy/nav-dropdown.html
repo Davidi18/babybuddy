@@ -57,10 +57,14 @@
         </a>
     {% endif %}
     {% if perms.core.add_pumping %}
-        <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:pumping-add' %}">
-            <i class="icon-pumping" aria-hidden="true"></i>
-            {% trans "Pumping" %}
-        </a>
+        {% load misc %}
+        {% get_children_for_pumping as show_pumping %}
+        {% if show_pumping %}
+            <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:pumping-add' %}">
+                <i class="icon-pumping" aria-hidden="true"></i>
+                {% trans "Pumping" %}
+            </a>
+        {% endif %}
     {% endif %}
     {% if perms.core.add_note %}
         <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:note-add' %}">
