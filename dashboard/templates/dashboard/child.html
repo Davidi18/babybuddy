@@ -23,18 +23,22 @@
     <!-- Analytics Status Widget -->
     <div class="row mb-3">
         <div class="col-12">
-            <div class="card analytics-status-widget">
+            <div class="card card-dashboard">
+                <div class="card-header">
+                    <i class="icon-graph pull-left" aria-hidden="true"></i>
+                    {% trans "Quick Status" %}
+                </div>
                 <div class="card-body">
-                    <div id="analytics-loading" class="text-center">
+                    <div id="analytics-loading" class="text-center py-3">
                         <div class="spinner-border spinner-border-sm text-primary" role="status">
                             <span class="visually-hidden">{% trans "Loading..." %}</span>
                         </div>
                         <span class="ms-2">{% trans "Loading status..." %}</span>
                     </div>
                     <div id="analytics-content" style="display:none;">
-                        <div class="row g-3">
+                        <div class="row g-2">
                             <!-- Last Feeding -->
-                            <div class="col-md-3">
+                            <div class="col-6 col-md-3">
                                 <div class="status-item">
                                     <div class="status-icon">🍼</div>
                                     <div class="status-details">
@@ -45,7 +49,7 @@
                                 </div>
                             </div>
                             <!-- Next Feeding Prediction -->
-                            <div class="col-md-3">
+                            <div class="col-6 col-md-3">
                                 <div class="status-item">
                                     <div class="status-icon">⏰</div>
                                     <div class="status-details">
@@ -56,7 +60,7 @@
                                 </div>
                             </div>
                             <!-- Sleep Status -->
-                            <div class="col-md-3">
+                            <div class="col-6 col-md-3">
                                 <div class="status-item">
                                     <div class="status-icon">💤</div>
                                     <div class="status-details">
@@ -67,7 +71,7 @@
                                 </div>
                             </div>
                             <!-- Alerts -->
-                            <div class="col-md-3">
+                            <div class="col-6 col-md-3">
                                 <div class="status-item">
                                     <div class="status-icon" id="alert-icon">ℹ️</div>
                                     <div class="status-details">
@@ -360,26 +364,23 @@
 
     <!-- Analytics Widget Styles -->
     <style>
-    .analytics-status-widget {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    
-    .analytics-status-widget .card-body {
-        padding: 1.5rem;
-    }
-    
     .status-item {
         display: flex;
-        align-items: center;
-        gap: 0.75rem;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        transition: background-color 0.2s;
+    }
+    
+    .status-item:hover {
+        background-color: rgba(0,0,0,0.02);
     }
     
     .status-icon {
-        font-size: 2rem;
+        font-size: 1.75rem;
         line-height: 1;
+        flex-shrink: 0;
     }
     
     .status-details {
@@ -389,47 +390,29 @@
     
     .status-details small {
         display: block;
-        opacity: 0.9;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
+        margin-bottom: 0.15rem;
     }
     
     .status-details .fw-bold {
-        font-size: 1rem;
-        margin: 0.25rem 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .analytics-status-widget .text-muted {
-        color: rgba(255,255,255,0.8) !important;
-    }
-    
-    .analytics-status-widget .text-danger {
-        color: #ff6b6b !important;
-    }
-    
-    .analytics-status-widget .text-warning {
-        color: #ffd93d !important;
-    }
-    
-    .analytics-status-widget .text-info {
-        color: #6bcbff !important;
-    }
-    
-    .analytics-status-widget .text-success {
-        color: #51cf66 !important;
+        font-size: 0.95rem;
+        margin: 0.15rem 0;
+        line-height: 1.3;
     }
     
     @media (max-width: 768px) {
         .status-item {
-            margin-bottom: 1rem;
+            padding: 0.75rem 0.5rem;
         }
         
         .status-icon {
             font-size: 1.5rem;
+        }
+        
+        .status-details .fw-bold {
+            font-size: 0.85rem;
         }
     }
     </style>

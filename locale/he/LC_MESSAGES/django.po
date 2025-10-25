@@ -2811,3 +2811,23 @@ msgstr "טיימר נעצר ({duration}). השלם את הרשומה למטה."
 
 msgid "{timer_name} timer started!"
 msgstr "טיימר {timer_name} התחיל!"
+
+
+# Analytics UI translations - New
+msgid "Quick Status"
+msgstr "מצב מהיר"
+
+msgid "View Full Analytics"
+msgstr "צפה באנליטיקה מלאה"
+
+msgid "Next Feeding"
+msgstr "האכלה הבאה"
+
+msgid "Sleep Status"
+msgstr "מצב שינה"
+
+msgid "All good"
+msgstr "הכל בסדר"
+
+msgid "Loading status..."
+msgstr "טוען מצב..."
