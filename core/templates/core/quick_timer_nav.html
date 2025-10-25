@@ -17,16 +17,16 @@
     </a>
     <div class="dropdown-menu dropdown-menu-end bg-dark shadow"
          aria-labelledby="quick-timer-menu-toggle"
-         style="border: 1px solid rgba(255,255,255,0.1); min-width: 200px; max-width: 280px;">
+         style="border: 1px solid rgba(255,255,255,0.1); min-width: 200px; max-width: 280px; width: 280px;">
         <h6 class="dropdown-header text-muted">{% trans "Quick Start Timer For…" %}</h6>
         {% for child in children %}
             <button class="dropdown-item d-flex align-items-center py-2 px-3"
                     type="submit"
                     name="child"
                     value="{{ child.pk }}"
-                    style="color: rgba(255, 255, 255, 0.85); white-space: normal !important;">
+                    style="color: rgba(255, 255, 255, 0.85); white-space: normal !important; width: 100%; box-sizing: border-box;">
                 {% include "core/child_thumbnail.html" %}
-                <span class="ms-2" style="word-break: break-word;">{{ child }}</span>
+                <span class="ms-2 flex-grow-1" style="word-break: break-word; overflow: hidden; text-overflow: ellipsis; display: block;">{{ child }}</span>
             </button>
         {% endfor %}
     </div>
@@ -42,17 +42,21 @@
 <style>
 /* Timer dropdown styling */
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark {
+    width: 280px !important;
     max-width: 280px !important;
-    white-space: normal !important;
-    overflow: visible !important;
+    min-width: 280px !important;
+    box-sizing: border-box !important;
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item {
     transition: background-color 0.15s ease-in-out;
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-    text-overflow: clip !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item:hover {
@@ -61,17 +65,22 @@
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item img {
-    max-width: 30px !important;
-    max-height: 30px !important;
+    width: 30px !important;
+    height: 30px !important;
     min-width: 30px !important;
     min-height: 30px !important;
+    max-width: 30px !important;
+    max-height: 30px !important;
     object-fit: cover !important;
     flex-shrink: 0 !important;
+    margin-right: 0.5rem !important;
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item span {
-    word-break: break-word !important;
-    overflow-wrap: break-word !important;
-    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    flex: 1 !important;
+    min-width: 0 !important;
 }
 </style>
