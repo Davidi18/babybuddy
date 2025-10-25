@@ -9,6 +9,7 @@ from rest_framework.schemas import get_schema_view
 
 from . import views
 from . import analytics_views
+from . import webhook_views
 
 
 class ExtraPath(NamedTuple):
@@ -109,5 +110,21 @@ urlpatterns = [
         "api/analytics/all-children/",
         analytics_views.AllChildrenStatusView.as_view(),
         name="all-children-status",
+    ),
+    # Webhook endpoints for automation (n8n, Zapier, Make, etc.)
+    path(
+        "api/webhooks/daily-summary/",
+        webhook_views.daily_summary_webhook,
+        name="webhook-daily-summary",
+    ),
+    path(
+        "api/webhooks/status/",
+        webhook_views.status_webhook,
+        name="webhook-status",
+    ),
+    path(
+        "api/webhooks/alerts/",
+        webhook_views.alerts_webhook,
+        name="webhook-alerts",
     ),
 ]
