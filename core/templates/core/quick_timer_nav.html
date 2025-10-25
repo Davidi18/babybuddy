@@ -41,12 +41,25 @@
 
 <style>
 /* Timer dropdown styling */
+#quick-timer-menu-toggle + .dropdown-menu.bg-dark {
+    max-width: 300px;
+    white-space: normal;
+}
+
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item {
     transition: background-color 0.15s ease-in-out;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 1);
+}
+
+#quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item img {
+    max-width: 30px;
+    max-height: 30px;
+    object-fit: cover;
 }
 </style>
