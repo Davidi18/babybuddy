@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Buddy - בקרת התראות</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .control-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .control-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .control-description {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .status-on {
+            background-color: #4CAF50;
+            box-shadow: 0 0 8px #4CAF50;
+        }
+
+        .status-off {
+            background-color: #ccc;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .last-sync {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .emoji {
+            font-size: 24px;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👶 בקרת התראות</h1>
+        <p class="subtitle">Baby Buddy - תינוקת שלנו</p>
+
+        <!-- סיכום יומי -->
+        <div class="control-section">
+            <div class="control-header">
+                <div>
+                    <span class="control-title">סיכום בוקר</span>
+                    <span class="emoji">📊</span>
+                    <span class="status-indicator" id="status-daily"></span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-daily" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p class="control-description">
+                כל בוקר ב-8:00 - סיכום של אתמול + תחזית להיום
+            </p>
+        </div>
+
+        <!-- התראות -->
+        <div class="control-section">
+            <div class="control-header">
+                <div>
+                    <span class="control-title">התראות חכמות</span>
+                    <span class="emoji">⚠️</span>
+                    <span class="status-indicator" id="status-alerts"></span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-alerts" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p class="control-description">
+                כל 15 דקות - התראה רק אם התינוקת רעבה/עייפה
+            </p>
+        </div>
+
+        <!-- עדכון שעתי -->
+        <div class="control-section">
+            <div class="control-header">
+                <div>
+                    <span class="control-title">עדכון שעתי</span>
+                    <span class="emoji">🕐</span>
+                    <span class="status-indicator" id="status-hourly"></span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-hourly">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p class="control-description">
+                כל שעה - מצב נוכחי (הודעה שקטה)
+            </p>
+        </div>
+
+        <!-- כפתורי פעולה -->
+        <button class="btn btn-primary" onclick="syncNow()">
+            🔄 סנכרן עכשיו
+        </button>
+
+        <button class="btn btn-secondary" onclick="testMessage()">
+            ✉️ שלח הודעת בדיקה
+        </button>
+
+        <button class="btn btn-danger" onclick="stopAll()">
+            🛑 עצור הכל (חירום)
+        </button>
+
+        <div class="last-sync" id="last-sync">
+            סנכרון אחרון: טוען...
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // הגדרות
+        const N8N_WEBHOOK_URL = 'https://your-n8n.com/webhook/baby-control';
+        const API_TOKEN = 'YOUR_N8N_TOKEN'; // אופציונלי
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('babyBuddySettings') || '{}');
+
+            document.getElementById('toggle-daily').checked = settings.daily !== false;
+            document.getElementById('toggle-alerts').checked = settings.alerts !== false;
+            document.getElementById('toggle-hourly').checked = settings.hourly === true;
+
+            updateStatusIndicators();
+            updateLastSync();
+        }
+
+        // Update status indicators
+        function updateStatusIndicators() {
+            const daily = document.getElementById('toggle-daily').checked;
+            const alerts = document.getElementById('toggle-alerts').checked;
+            const hourly = document.getElementById('toggle-hourly').checked;
+
+            document.getElementById('status-daily').className =
+                'status-indicator ' + (daily ? 'status-on' : 'status-off');
+            document.getElementById('status-alerts').className =
+                'status-indicator ' + (alerts ? 'status-on' : 'status-off');
+            document.getElementById('status-hourly').className =
+                'status-indicator ' + (hourly ? 'status-on' : 'status-off');
+        }
+
+        // Save settings
+        function saveSettings() {
+            const settings = {
+                daily: document.getElementById('toggle-daily').checked,
+                alerts: document.getElementById('toggle-alerts').checked,
+                hourly: document.getElementById('toggle-hourly').checked,
+                lastSync: new Date().toISOString()
+            };
+
+            localStorage.setItem('babyBuddySettings', JSON.stringify(settings));
+            updateStatusIndicators();
+            updateLastSync();
+
+            // שלח ל-n8n
+            sendToN8N('update_settings', settings);
+        }
+
+        // Send to n8n
+        async function sendToN8N(action, data) {
+            try {
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        data: data,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    showNotification('✅ העדכון בוצע בהצלחה!', 'success');
+                } else {
+                    showNotification('❌ שגיאה בעדכון', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('❌ שגיאה בחיבור', 'error');
+            }
+        }
+
+        // Sync now
+        async function syncNow() {
+            showNotification('🔄 מסנכרן...', 'info');
+            await sendToN8N('sync_now', {});
+
+            // עדכן זמן סנכרון
+            const settings = JSON.parse(localStorage.getItem('babyBuddySettings') || '{}');
+            settings.lastSync = new Date().toISOString();
+            localStorage.setItem('babyBuddySettings', JSON.stringify(settings));
+            updateLastSync();
+        }
+
+        // Test message
+        async function testMessage() {
+            showNotification('✉️ שולח הודעת בדיקה...', 'info');
+            await sendToN8N('test_message', {});
+        }
+
+        // Stop all
+        async function stopAll() {
+            if (confirm('האם את/ה בטוח/ה שברצונך לעצור את כל ההתראות?')) {
+                document.getElementById('toggle-daily').checked = false;
+                document.getElementById('toggle-alerts').checked = false;
+                document.getElementById('toggle-hourly').checked = false;
+                saveSettings();
+                showNotification('🛑 כל ההתראות הופסקו', 'warning');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification show';
+
+            setTimeout(() => {
+                notification.className = 'notification';
+            }, 3000);
+        }
+
+        // Update last sync
+        function updateLastSync() {
+            const settings = JSON.parse(localStorage.getItem('babyBuddySettings') || '{}');
+            if (settings.lastSync) {
+                const date = new Date(settings.lastSync);
+                document.getElementById('last-sync').textContent =
+                    `סנכרון אחרון: ${date.toLocaleDateString('he-IL')} ${date.toLocaleTimeString('he-IL')}`;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('toggle-daily').addEventListener('change', saveSettings);
+        document.getElementById('toggle-alerts').addEventListener('change', saveSettings);
+        document.getElementById('toggle-hourly').addEventListener('change', saveSettings);
+
+        // Load on start
+        loadSettings();
+    </script>
+</body>
+</html>
