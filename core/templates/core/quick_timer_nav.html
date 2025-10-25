@@ -15,14 +15,16 @@
            aria-haspopup="true"
            aria-expanded="false"><i class="icon-2x icon-timer" aria-hidden="true"></i>
     </a>
-    <div class="dropdown-menu dropdown-menu-end"
-         aria-labelledby="quick-timer-menu-toggle">
-        <h6 class="dropdown-header">{% trans "Quick Start Timer For…" %}</h6>
+    <div class="dropdown-menu dropdown-menu-end bg-dark shadow"
+         aria-labelledby="quick-timer-menu-toggle"
+         style="border: 1px solid rgba(255,255,255,0.1); min-width: 200px;">
+        <h6 class="dropdown-header text-muted">{% trans "Quick Start Timer For…" %}</h6>
         {% for child in children %}
-            <button class="dropdown-item d-flex align-items-center"
+            <button class="dropdown-item d-flex align-items-center py-2 px-3"
                     type="submit"
                     name="child"
-                    value="{{ child.pk }}">
+                    value="{{ child.pk }}"
+                    style="color: rgba(255, 255, 255, 0.85);">
                 {% include "core/child_thumbnail.html" %}
                 <span class="text-wrap ms-2">{{ child }}</span>
             </button>
@@ -36,3 +38,15 @@
 </button>
 {% endif %}
 </form>
+
+<style>
+/* Timer dropdown styling */
+#quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item {
+    transition: background-color 0.15s ease-in-out;
+}
+
+#quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 1);
+}
+</style>
