@@ -8,6 +8,7 @@ from rest_framework import routers
 from rest_framework.schemas import get_schema_view
 
 from . import views
+from . import analytics_views
 
 
 class ExtraPath(NamedTuple):
@@ -78,4 +79,35 @@ app_name = "api"
 urlpatterns = [
     path("api/", include(router.urls)),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
+    # Analytics endpoints
+    path(
+        "api/analytics/child/<slug:child_slug>/",
+        analytics_views.ChildAnalyticsView.as_view(),
+        name="child-analytics",
+    ),
+    path(
+        "api/analytics/child/<slug:child_slug>/status/",
+        analytics_views.ChildCurrentStatusView.as_view(),
+        name="child-status",
+    ),
+    path(
+        "api/analytics/child/<slug:child_slug>/daily/",
+        analytics_views.ChildDailySummaryView.as_view(),
+        name="child-daily-summary",
+    ),
+    path(
+        "api/analytics/child/<slug:child_slug>/predict-feeding/",
+        analytics_views.ChildFeedingPredictionView.as_view(),
+        name="child-predict-feeding",
+    ),
+    path(
+        "api/analytics/child/<slug:child_slug>/predict-sleep/",
+        analytics_views.ChildSleepPredictionView.as_view(),
+        name="child-predict-sleep",
+    ),
+    path(
+        "api/analytics/all-children/",
+        analytics_views.AllChildrenStatusView.as_view(),
+        name="all-children-status",
+    ),
 ]
