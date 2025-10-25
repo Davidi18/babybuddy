@@ -7,7 +7,7 @@
 1. **התחבר ל-Coolify** שלך
 2. **New Project** → **Git Repository**
 3. **בחר את ה-Repository:** `Davidi18/babybuddy`
-4. **Branch:** `claude/prepare-deployment-011CUTeJ2Wd5zQhzFfgsdigk` (או main לאחר merge)
+4. **Branch:** `master`
 
 ---
 
