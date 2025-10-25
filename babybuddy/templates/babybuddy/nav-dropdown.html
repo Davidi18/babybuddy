@@ -45,37 +45,37 @@
      aria-labelledby="nav-quick-add-link"
      style="border: 1px solid rgba(255,255,255,0.1);">
     {% if perms.core.add_diaperchange %}
-        <a class="dropdown-item p-2" href="{% url 'core:diaperchange-add' %}">
+        <a class="dropdown-item py-2 px-3" href="{% url 'core:diaperchange-add' %}">
             <i class="icon-diaperchange" aria-hidden="true"></i>
             {% trans "Diaper Change" %}
         </a>
     {% endif %}
     {% if perms.core.add_feeding %}
-        <a class="dropdown-item p-2" href="{% url 'core:feeding-add' %}">
+        <a class="dropdown-item py-2 px-3" href="{% url 'core:feeding-add' %}">
             <i class="icon-feeding" aria-hidden="true"></i>
             {% trans "Feeding" %}
         </a>
     {% endif %}
     {% if perms.core.add_pumping %}
-        <a class="dropdown-item p-2" href="{% url 'core:pumping-add' %}">
+        <a class="dropdown-item py-2 px-3" href="{% url 'core:pumping-add' %}">
             <i class="icon-pumping" aria-hidden="true"></i>
             {% trans "Pumping" %}
         </a>
     {% endif %}
     {% if perms.core.add_note %}
-        <a class="dropdown-item p-2" href="{% url 'core:note-add' %}">
+        <a class="dropdown-item py-2 px-3" href="{% url 'core:note-add' %}">
             <i class="icon-note" aria-hidden="true"></i>
             {% trans "Note" %}
         </a>
     {% endif %}
     {% if perms.core.add_sleep %}
-        <a class="dropdown-item p-2" href="{% url 'core:sleep-add' %}">
+        <a class="dropdown-item py-2 px-3" href="{% url 'core:sleep-add' %}">
             <i class="icon-sleep" aria-hidden="true"></i>
             {% trans "Sleep" %}
         </a>
     {% endif %}
     {% if  perms.core.add_tummytime %}
-        <a class="dropdown-item p-2" href="{% url 'core:tummytime-add' %}">
+        <a class="dropdown-item py-2 px-3" href="{% url 'core:tummytime-add' %}">
             <i class="icon-tummytime" aria-hidden="true"></i>
             {% trans "Tummy Time" %}
         </a>
