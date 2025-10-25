@@ -265,7 +265,7 @@ msgstr "מסננים"
 #: babybuddy/templates/babybuddy/form.html:19
 #: babybuddy/templates/babybuddy/user_settings_form.html:93
 msgid "Submit"
-msgstr "שלח"
+msgstr "שמור"
 
 #: babybuddy/templates/babybuddy/messages.html:19
 #: babybuddy/templates/babybuddy/messages.html:24

@@ -94,16 +94,22 @@
         <div class="col-sm-6 col-lg-4">{% card_timer_list object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_last object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_diaperchange_last object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_pumping_last object %}</div>
+        {% if object.feeding_mode != 'bottle_only' %}
+            <div class="col-sm-6 col-lg-4">{% card_pumping_last object %}</div>
+        {% endif %}
         <div class="col-sm-6 col-lg-4">{% card_sleep_last object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_feeding_last_method object %}</div>
+        {% if object.feeding_mode != 'bottle_only' %}
+            <div class="col-sm-6 col-lg-4">{% card_feeding_last_method object %}</div>
+        {% endif %}
         <div class="col-sm-6 col-lg-4">{% card_feeding_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_statistics object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_sleep_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_sleep_naps_day object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_tummytime_day object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_diaperchange_types object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_breastfeeding object %}</div>
+        {% if object.feeding_mode != 'bottle_only' %}
+            <div class="col-sm-6 col-lg-4">{% card_breastfeeding object %}</div>
+        {% endif %}
     </div>
 {% endblock %}
 {% block javascript %}
