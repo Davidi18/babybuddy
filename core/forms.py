@@ -193,7 +193,7 @@ class BottleFeedingForm(CoreModelForm, TaggableModelForm):
 class ChildForm(forms.ModelForm):
     class Meta:
         model = models.Child
-        fields = ["first_name", "last_name", "birth_date", "birth_time"]
+        fields = ["first_name", "last_name", "birth_date", "birth_time", "feeding_mode"]
         if settings.BABY_BUDDY["ALLOW_UPLOADS"]:
             fields.append("picture")
         widgets = {
@@ -264,6 +264,36 @@ class FeedingForm(CoreModelForm, TaggableModelForm):
             "method": PillRadioSelect(),
             "notes": forms.Textarea(attrs={"rows": 5}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Get child from instance or initial data
+        child = None
+        if self.instance and self.instance.pk:
+            child = self.instance.child
+        elif 'child' in self.initial:
+            try:
+                child = models.Child.objects.get(pk=self.initial['child'])
+            except models.Child.DoesNotExist:
+                pass
+        
+        # Adjust form based on feeding mode
+        if child and child.feeding_mode == 'bottle_only':
+            # Remove breastfeeding method field
+            if 'method' in self.fields:
+                del self.fields['method']
+            # Update fieldsets to remove method
+            self.fieldsets = [
+                {"fields": ["child", "start", "end", "type"], "layout": "required"},
+                {"fields": ["amount"]},
+                {"fields": ["notes", "tags"], "layout": "advanced"},
+            ]
+            # Make amount required for bottle feeding
+            self.fields['amount'].required = True
+        elif child and child.feeding_mode == 'breast_only':
+            # For breastfeeding only, keep method but make amount optional
+            pass
 
 
 class HeadCircumferenceForm(CoreModelForm, TaggableModelForm):

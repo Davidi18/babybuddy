@@ -184,6 +184,17 @@ class Child(models.Model):
     picture = models.ImageField(
         blank=True, null=True, upload_to="child/picture/", verbose_name=_("Picture")
     )
+    feeding_mode = models.CharField(
+        max_length=20,
+        choices=[
+            ('both', _('Breastfeeding & Bottle')),
+            ('bottle_only', _('Bottle Only')),
+            ('breast_only', _('Breastfeeding Only'))
+        ],
+        default='both',
+        verbose_name=_('Feeding mode'),
+        help_text=_('Select how this child is fed to customize the interface')
+    )
 
     objects = models.Manager()
 
