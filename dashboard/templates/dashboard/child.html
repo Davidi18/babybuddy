@@ -17,7 +17,7 @@
             <div class="card card-dashboard">
                 <div class="card-header">
                     <i class="icon-graph pull-left" aria-hidden="true"></i>
-                    {% trans "Quick Status" %}
+                    {% trans "Overview" %}
                 </div>
                 <div class="card-body">
                     <div id="analytics-loading" class="text-center py-3">
@@ -27,15 +27,15 @@
                         <span class="ms-2">{% trans "Loading status..." %}</span>
                     </div>
                     <div id="analytics-content" style="display:none;">
-                        <div class="row g-2">
+                        <div class="row g-3">
                             <!-- Last Feeding -->
                             <div class="col-6 col-md-3">
                                 <div class="status-item">
                                     <div class="status-icon">🍼</div>
                                     <div class="status-details">
-                                        <small class="text-muted">{% trans "Last Feeding" %}</small>
-                                        <div id="last-feeding-time" class="fw-bold"></div>
-                                        <small id="last-feeding-type" class="text-muted"></small>
+                                        <div class="text-muted mb-1">{% trans "Last Feeding" %}</div>
+                                        <div id="last-feeding-time" class="fw-bold fs-5"></div>
+                                        <div id="last-feeding-type" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
@@ -44,9 +44,9 @@
                                 <div class="status-item">
                                     <div class="status-icon">⏰</div>
                                     <div class="status-details">
-                                        <small class="text-muted">{% trans "Next Feeding" %}</small>
-                                        <div id="next-feeding-prediction" class="fw-bold"></div>
-                                        <small id="next-feeding-time" class="text-muted"></small>
+                                        <div class="text-muted mb-1">{% trans "Next Feeding" %}</div>
+                                        <div id="next-feeding-prediction" class="fw-bold fs-5"></div>
+                                        <div id="next-feeding-time" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
@@ -55,9 +55,9 @@
                                 <div class="status-item">
                                     <div class="status-icon">💤</div>
                                     <div class="status-details">
-                                        <small class="text-muted">{% trans "Sleep Status" %}</small>
-                                        <div id="sleep-status" class="fw-bold"></div>
-                                        <small id="sleep-prediction" class="text-muted"></small>
+                                        <div class="text-muted mb-1">{% trans "Sleep Status" %}</div>
+                                        <div id="sleep-status" class="fw-bold fs-5"></div>
+                                        <div id="sleep-prediction" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
@@ -66,9 +66,9 @@
                                 <div class="status-item">
                                     <div class="status-icon" id="alert-icon">ℹ️</div>
                                     <div class="status-details">
-                                        <small class="text-muted">{% trans "Status" %}</small>
-                                        <div id="alert-message" class="fw-bold text-success">{% trans "All good" %}</div>
-                                        <small id="alert-time" class="text-muted"></small>
+                                        <div class="text-muted mb-1">{% trans "Status" %}</div>
+                                        <div id="alert-message" class="fw-bold text-success fs-5">{% trans "All good" %}</div>
+                                        <div id="alert-time" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
@@ -434,8 +434,8 @@
     .status-item {
         display: flex;
         align-items: flex-start;
-        gap: 0.5rem;
-        padding: 0.5rem;
+        gap: 0.75rem;
+        padding: 1rem;
         border-radius: 0.25rem;
         transition: background-color 0.2s;
     }
@@ -450,7 +450,7 @@
     }
     
     .status-icon {
-        font-size: 1.75rem;
+        font-size: 2.5rem;
         line-height: 1;
         flex-shrink: 0;
         animation: none !important;
@@ -467,31 +467,23 @@
         min-width: 0;
     }
     
-    .status-details small {
-        display: block;
-        font-size: 0.7rem;
+    .status-details .text-muted {
+        font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.3px;
-        margin-bottom: 0.15rem;
     }
     
     .status-details .fw-bold {
-        font-size: 0.95rem;
-        margin: 0.15rem 0;
         line-height: 1.3;
     }
     
     @media (max-width: 768px) {
         .status-item {
-            padding: 0.75rem 0.5rem;
+            padding: 0.75rem;
         }
         
         .status-icon {
-            font-size: 1.5rem;
-        }
-        
-        .status-details .fw-bold {
-            font-size: 0.85rem;
+            font-size: 2rem;
         }
     }
     </style>

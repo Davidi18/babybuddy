@@ -2815,7 +2815,10 @@ msgstr "טיימר {timer_name} התחיל!"
 
 # Analytics UI translations - New
 msgid "Quick Status"
-msgstr "מצב מהיר"
+msgstr "מבט על"
+
+msgid "Overview"
+msgstr "מבט על"
 
 msgid "View Full Analytics"
 msgstr "צפה באנליטיקה מלאה"
@@ -2831,3 +2834,22 @@ msgstr "הכל בסדר"
 
 msgid "Loading status..."
 msgstr "טוען מצב..."
+
+# Analytics Widget
+msgid "More Details"
+msgstr "פרטים נוספים"
+
+msgid "Weekly Averages"
+msgstr "ממוצעים שבועיים"
+
+msgid "Feedings/Day"
+msgstr "האכלות ליום"
+
+msgid "Sleep/Day"
+msgstr "שינה ליום"
+
+msgid "Feeding Interval"
+msgstr "מרווח האכלות"
+
+msgid "Diapers/Day"
+msgstr "חיתולים ליום"
