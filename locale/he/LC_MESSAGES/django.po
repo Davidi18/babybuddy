@@ -2853,3 +2853,7 @@ msgstr "מרווח האכלות"
 
 msgid "Diapers/Day"
 msgstr "חיתולים ליום"
+
+msgid "Status"
+msgstr "סטטוס"
+

@@ -173,15 +173,11 @@
 // ===== אייקונים =====
 .icon-2x {
     font-size: 1.75em;
-    transition: all 0.3s ease;
 }
 
 .text-body-secondary {
-    transition: all 0.3s ease;
-    
     &:hover {
         color: var(--bs-primary) !important;
-        transform: scale(1.1);
     }
 }
 
