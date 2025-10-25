@@ -8,7 +8,7 @@
    aria-expanded="false"><i class="icon-timer" aria-hidden="true"></i>
 {% trans "Timers" %}
 </a>
-<div class="dropdown-menu" aria-labelledby="nav-timer-menu-link">
+<div class="dropdown-menu" aria-labelledby="nav-timer-menu-link" style="left: 0; right: auto;">
     {% if perms.core.add_timer %}
         <h6 class="dropdown-header">{% trans "Quick Start Timers" %}</h6>
         <a class="dropdown-item" href="{% url 'core:timer-quick-start' 'sleep' %}">

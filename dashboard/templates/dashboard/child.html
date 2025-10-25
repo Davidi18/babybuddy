@@ -438,23 +438,39 @@
         padding: 1rem;
         border-radius: 0.25rem;
     }
-    
+
     /* No hover effects on status items */
     .status-item:hover {
         background-color: transparent;
     }
-    
+
     .status-icon {
         font-size: 2.5rem;
         line-height: 1;
         flex-shrink: 0;
         animation: none !important;
         transition: none !important;
+        transform: none !important;
+        will-change: auto !important;
     }
-    
+
+    .status-icon:hover {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+
     #alert-icon {
         animation: none !important;
         transition: none !important;
+        transform: none !important;
+        will-change: auto !important;
+    }
+
+    #alert-icon:hover {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
     }
     
     .status-details {
