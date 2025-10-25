@@ -43,7 +43,7 @@
 </a>
 <div class="dropdown-menu dropdown-menu-end bg-dark shadow"
      aria-labelledby="nav-quick-add-link"
-     style="border: 1px solid rgba(255,255,255,0.1);">
+     style="border: 1px solid rgba(255,255,255,0.1); min-width: 200px;">
     {% if perms.core.add_diaperchange %}
         <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:diaperchange-add' %}">
             <i class="icon-diaperchange" aria-hidden="true"></i>
