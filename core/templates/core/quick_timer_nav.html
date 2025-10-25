@@ -17,16 +17,16 @@
     </a>
     <div class="dropdown-menu dropdown-menu-end bg-dark shadow"
          aria-labelledby="quick-timer-menu-toggle"
-         style="border: 1px solid rgba(255,255,255,0.1); min-width: 200px;">
+         style="border: 1px solid rgba(255,255,255,0.1); min-width: 200px; max-width: 280px;">
         <h6 class="dropdown-header text-muted">{% trans "Quick Start Timer For…" %}</h6>
         {% for child in children %}
             <button class="dropdown-item d-flex align-items-center py-2 px-3"
                     type="submit"
                     name="child"
                     value="{{ child.pk }}"
-                    style="color: rgba(255, 255, 255, 0.85);">
+                    style="color: rgba(255, 255, 255, 0.85); white-space: normal !important;">
                 {% include "core/child_thumbnail.html" %}
-                <span class="text-wrap ms-2">{{ child }}</span>
+                <span class="ms-2" style="word-break: break-word;">{{ child }}</span>
             </button>
         {% endfor %}
     </div>
@@ -42,24 +42,36 @@
 <style>
 /* Timer dropdown styling */
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark {
-    max-width: 300px;
-    white-space: normal;
+    max-width: 280px !important;
+    white-space: normal !important;
+    overflow: visible !important;
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item {
     transition: background-color 0.15s ease-in-out;
-    white-space: normal;
-    word-wrap: break-word;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    text-overflow: clip !important;
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 1) !important;
 }
 
 #quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item img {
-    max-width: 30px;
-    max-height: 30px;
-    object-fit: cover;
+    max-width: 30px !important;
+    max-height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+}
+
+#quick-timer-menu-toggle + .dropdown-menu.bg-dark .dropdown-item span {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
 }
 </style>
