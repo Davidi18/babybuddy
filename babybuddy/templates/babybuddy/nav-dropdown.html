@@ -3,13 +3,14 @@
 {% block nav %}
     <nav class="navbar navbar-expand-md navbar bg-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand me-2" href={% url "babybuddy:root-router" %}>
+            <a class="navbar-brand me-2 d-flex align-items-center" href={% url "babybuddy:root-router" %}>
                 <img src="{% static "babybuddy/logo/icon-brand.png" %}"
-                     width="30"
-                     height="30"
-                     class="d-inline-block align-top"
-                     alt="">
-                <span class="d-none d-lg-inline-block">
+                     width="40"
+                     height="40"
+                     class="d-inline-block"
+                     alt=""
+                     style="margin-top: -2px;">
+                <span class="d-none d-lg-inline-block ms-2">
                     <span class="text-primary">Baby</span> Buddy
                 </span>
             </a>
@@ -293,35 +294,41 @@
                aria-haspopup="true"
                aria-expanded="false">
                 <i class="icon-user" aria-hidden="true"></i>
-                {% firstof user.get_full_name user.get_username %}
+                {% if LANGUAGE_CODE == 'he' %}
+                    ניהול
+                {% else %}
+                    {% trans "Settings" %}
+                {% endif %}
             </a>
             <div class="dropdown-menu dropdown-menu-end"
                  aria-labelledby="nav-user-menu-link">
-                <h6 class="dropdown-header">{% trans "User" %}</h6>
-                <a href="{% url 'babybuddy:user-settings' %}" class="dropdown-item">{% trans "Settings" %}</a>
-                <a href="{% url 'babybuddy:user-password' %}" class="dropdown-item">{% trans "Password" %}</a>
-                <a href="{% url 'babybuddy:user-add-device' %}" class="dropdown-item">{% trans "Add a device" %}</a>
-                <form action="{% url 'babybuddy:logout' %}" role="form" method="post">
-                    {% csrf_token %}
-                    <button class="dropdown-item">{% trans "Logout" %}</button>
-                </form>
-                <h6 class="dropdown-header">{% trans "Site" %}</h6>
-                <a href="{% url 'api:api-root' %}" class="dropdown-item">{% trans "API Browser" %}</a>
+                <h6 class="dropdown-header">{% trans "Settings" %}</h6>
                 {% if request.user.is_staff %}
-                    <a href="{% url 'core:child-list' %}" class="dropdown-item">
-                        <i class="icon-child" aria-hidden="true"></i> {% trans "Children" %}
+                    <a href="{% url 'core:child-add' %}" class="dropdown-item">
+                        {% trans "Add Child" %}
                     </a>
-                    <a href="{% url 'babybuddy:site_settings' %}" class="dropdown-item">{% trans "Settings" %}</a>
+                    <a href="{% url 'core:child-list' %}" class="dropdown-item">
+                        {% trans "Children" %}
+                    </a>
+                    <div class="dropdown-divider"></div>
+                {% endif %}
+                <a href="{% url 'babybuddy:user-settings' %}" class="dropdown-item">{% trans "User Settings" %}</a>
+                <a href="{% url 'babybuddy:user-password' %}" class="dropdown-item">{% trans "Change Password" %}</a>
+                <a href="{% url 'babybuddy:user-add-device' %}" class="dropdown-item">{% trans "Add a device" %}</a>
+                {% if request.user.is_staff %}
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'babybuddy:site_settings' %}" class="dropdown-item">{% trans "Site Settings" %}</a>
                     <a href="{% url 'core:tag-list' %}" class="dropdown-item">{% trans "Tags" %}</a>
                     <a href="{% url 'babybuddy:user-list' %}" class="dropdown-item">{% trans "Users" %}</a>
                     <a href="{% url 'admin:index' %}" class="dropdown-item">{% trans "Database Admin" %}</a>
                 {% endif %}
-                <h6 class="dropdown-header">{% trans "Support" %}</h6>
-                <a href="https://github.com/babybuddy/babybuddy" class="dropdown-item">
-                    <i class="icon-source" aria-hidden="true"></i> {% trans "Source Code" %}</a>
-                <a href="https://gitter.im/babybuddy/Lobby" class="dropdown-item">
-                    <i class="icon-chat" aria-hidden="true"></i> {% trans "Chat / Support" %}</a>
-                <h6 class="dropdown-header">v{% version_string %}</h6>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'api:api-root' %}" class="dropdown-item">{% trans "API Browser" %}</a>
+                <div class="dropdown-divider"></div>
+                <form action="{% url 'babybuddy:logout' %}" role="form" method="post">
+                    {% csrf_token %}
+                    <button class="dropdown-item">{% trans "Logout" %}</button>
+                </form>
             </div>
         </li>
     </ul>
