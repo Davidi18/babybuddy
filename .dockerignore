@@ -1,0 +1,104 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/static
+/staticfiles
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Documentation
+docs/_build/
+*.md
+!README.md
+SECURITY.md
+LICENSE
+
+# Other
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+.env.*
+!.env.example
+*.bak
+*.tmp
+.nvmrc
+.prettierrc
+.prettierignore
+.stylelintrc
+lefthook.yml
+gulpfile.js
+gulpfile.config.js
+package.json
+package-lock.json
+Pipfile
+Pipfile.lock
+mkdocs.yml
+
+# Terraform
+terraform/
+*.tfstate
+*.tfstate.*
+
+# Screenshots and images (not needed in container)
+screenshot.png
+screenshot_mobile.png
+
+# GitHub specific
+.github/
+.gitpod.yml
+.devcontainer.json
+
+# Build files
+.buildpacks
+nixpacks.toml

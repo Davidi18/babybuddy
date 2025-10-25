@@ -23,6 +23,9 @@
 # Django media root directory.
 /media
 
+# Data directory (SQLite database)
+/data
+
 # Pipfile.lock.
 # Committing this file makes it difficult to support multiple Python versions as
 # requirements can different between versions, but the Pipfile only supports

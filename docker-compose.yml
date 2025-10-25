@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: babybuddy
+    ports:
+      - "8000:8000"
+    volumes:
+      # נתיב לשמירת הנתונים (חשוב מאוד!)
+      - babybuddy-data:/data
+      # נתיבים נוספים (אופציונלי)
+      - babybuddy-media:/app/media
+    environment:
+      # Admin User
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=admin123
+      - ADMIN_EMAIL=admin@example.com
+
+      # Django Settings
+      - DJANGO_SETTINGS_MODULE=babybuddy.settings.base
+      - SECRET_KEY=django-insecure-local-dev-key-change-in-production
+      - DEBUG=False
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+
+      # Localization
+      - TIME_ZONE=Asia/Jerusalem
+      - LANGUAGE_CODE=he
+
+      # Database (SQLite)
+      - DB_ENGINE=django.db.backends.sqlite3
+      - DB_NAME=/data/db.sqlite3
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # אופציה: PostgreSQL במקום SQLite
+  # postgres:
+  #   image: postgres:16-alpine
+  #   container_name: babybuddy-postgres
+  #   environment:
+  #     - POSTGRES_DB=babybuddy
+  #     - POSTGRES_USER=babybuddy
+  #     - POSTGRES_PASSWORD=babybuddy_password
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+volumes:
+  babybuddy-data:
+    driver: local
+  babybuddy-media:
+    driver: local
+  # postgres-data:
+  #   driver: local
