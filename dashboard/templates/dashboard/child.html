@@ -437,15 +437,10 @@
         gap: 0.75rem;
         padding: 1rem;
         border-radius: 0.25rem;
-        transition: background-color 0.2s;
     }
     
+    /* No hover effects on status items */
     .status-item:hover {
-        background-color: rgba(0,0,0,0.02);
-    }
-    
-    /* Disable hover effect on alert status item */
-    .status-item:has(#alert-icon):hover {
         background-color: transparent;
     }
     
