@@ -28,9 +28,11 @@ echo "📥 Checking static files..."
 if [ ! -d "/app/babybuddy/static/babybuddy/css" ] || [ -z "$(ls -A /app/babybuddy/static/babybuddy/css 2>/dev/null)" ]; then
     echo "⚠️  Static files missing or empty, downloading from GitHub..."
     cd /app
+    mkdir -p /app/babybuddy/static
     rm -rf /app/babybuddy/static/babybuddy
     curl -sL https://github.com/Davidi18/babybuddy/archive/refs/heads/master.tar.gz | tar -xz
-    cp -r babybuddy-master/static/babybuddy /app/babybuddy/static/
+    # העתק מהמיקום הנכון - babybuddy-master/babybuddy/static/babybuddy
+    cp -r babybuddy-master/babybuddy/static/babybuddy /app/babybuddy/static/
     rm -rf babybuddy-master
     echo "✅ Static files downloaded to source location"
 else
