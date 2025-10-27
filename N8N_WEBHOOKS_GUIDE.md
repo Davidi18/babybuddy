@@ -1,4 +1,5 @@
 # 🔗 Baby Buddy Webhooks למערכות אוטומציה
+
 # Webhooks for n8n, Zapier, Make.com & More
 
 מדריך לשילוב Baby Buddy עם מערכות אוטומציה כמו n8n, Zapier, Make.com ועוד.
@@ -8,6 +9,7 @@
 ## 🎯 סקירה כללית
 
 הוספנו 3 webhook endpoints שמאפשרים לך:
+
 - ✅ לקבל סיכום יומי כל בוקר (WhatsApp / Telegram / Email)
 - ✅ לבדוק מצב נוכחי כל X דקות
 - ✅ לקבל התראות רק כשיש משהו דחוף
@@ -17,14 +19,17 @@
 ## 📍 Webhook Endpoints
 
 ### Base URL
+
 ```
 https://your-baby-buddy-domain.com/api/webhooks/
 ```
 
 ### Authentication
+
 כל ה-webhooks דורשים **API Token**.
 
 ליצירת token:
+
 ```bash
 python manage.py drf_create_token your_username
 ```
@@ -36,16 +41,19 @@ python manage.py drf_create_token your_username
 **שליחת סיכום יומי כל בוקר** - מתאים לשליחה בהודעה.
 
 ### Endpoint
+
 ```
 GET/POST /api/webhooks/daily-summary/
 ```
 
 ### Parameters
+
 - `child` (optional) - slug של הילד. אם לא מסופק, לוקח את הילד הראשון.
 
 ### Example Request
 
 **cURL:**
+
 ```bash
 curl -X GET \
   "https://baby.example.com/api/webhooks/daily-summary/?child=emma" \
@@ -53,6 +61,7 @@ curl -X GET \
 ```
 
 **n8n HTTP Request Node:**
+
 ```
 URL: https://baby.example.com/api/webhooks/daily-summary/
 Method: GET
@@ -109,6 +118,7 @@ Query Parameters:
 ```
 
 ### השדה `message`
+
 טקסט מעוצב מוכן לשליחה! פשוט העתק אותו להודעה.
 
 ---
@@ -118,11 +128,13 @@ Query Parameters:
 **בדיקת מצב נוכחי** - מתאים לבדיקות תכופות (כל 5-15 דקות).
 
 ### Endpoint
+
 ```
 GET/POST /api/webhooks/status/
 ```
 
 ### Parameters
+
 - `child` (optional)
 
 ### Example Request
@@ -160,6 +172,7 @@ curl -X GET \
 **התראות בלבד** - מחזיר תוצאה רק אם יש משהו דחוף!
 
 ### Endpoint
+
 ```
 GET/POST /api/webhooks/alerts/
 ```
@@ -226,11 +239,13 @@ curl -X GET \
 **Nodes:**
 
 1. **Schedule Trigger** (כל יום ב-8:00)
+
    - Mode: Every day
    - Hour: 8
    - Minute: 0
 
 2. **HTTP Request** - קרא ל-webhook
+
    - Method: GET
    - URL: `https://baby.example.com/api/webhooks/daily-summary/?child=emma`
    - Authentication: Header Auth
@@ -238,6 +253,7 @@ curl -X GET \
      - Value: `Token YOUR_API_TOKEN`
 
 3. **Set** - הכן את ההודעה
+
    - Keep Only Set: true
    - Values:
      - `message` = `{{ $json.message }}`
@@ -256,17 +272,21 @@ curl -X GET \
 **Nodes:**
 
 1. **Schedule Trigger**
+
    - Mode: Every 15 minutes
 
 2. **HTTP Request** - בדוק התראות
+
    - Method: GET
    - URL: `https://baby.example.com/api/webhooks/alerts/?child=emma`
    - Authentication: Header Auth
 
 3. **IF** - יש התראות?
+
    - Condition: `{{ $json.has_alerts }}` equals `true`
 
 4. **Switch** (מהענף True של IF) - לפי סוג התראה
+
    - Mode: Rules
    - Rules:
      - Rule 1: `{{ $json.alerts[0].type }}` equals `feeding_overdue` → Output 0
@@ -287,12 +307,15 @@ curl -X GET \
 **Nodes:**
 
 1. **Schedule Trigger**
+
    - Mode: Every hour
 
 2. **HTTP Request**
+
    - URL: `https://baby.example.com/api/webhooks/status/?child=emma`
 
 3. **Set** - עצב את ההודעה
+
    - `status_message` = `{{ $json.status_text }}`
 
 4. **Telegram / Slack** - שלח עדכון
@@ -307,9 +330,11 @@ curl -X GET \
 1. **Schedule Trigger** - כל 10 דקות
 
 2. **HTTP Request** - קבל מצב
+
    - URL: `https://baby.example.com/api/webhooks/status/?child=emma`
 
 3. **Home Assistant** - עדכן sensors
+
    - Entity: `sensor.baby_last_feeding`
    - State: `{{ $json.last_feeding_minutes_ago }}`
 
@@ -322,18 +347,21 @@ curl -X GET \
 ## 🔐 אבטחה
 
 ### 1. שמור על ה-Token בסוד!
+
 ```bash
 # ב-n8n, שמור ב-Credentials
 # אל תשתף את ה-token בפומבי
 ```
 
 ### 2. HTTPS חובה!
+
 ```bash
 # וודא ש-Coolify מגדיר HTTPS
 SECURE_SSL_REDIRECT=True
 ```
 
 ### 3. הגבל גישה
+
 אפשר להגביל גישה ל-IP ספציפי ב-Coolify.
 
 ---
@@ -363,6 +391,7 @@ curl -X GET \
 ## 💡 רעיונות נוספים
 
 ### 📲 שליחת קישורים
+
 ```json
 {
   "message": "🍼 זמן האכלה!\n\nהקלק כאן להוספה:\nhttps://baby.example.com/feedings/add/"
@@ -370,20 +399,23 @@ curl -X GET \
 ```
 
 ### 📊 שמירה ב-Google Sheets
+
 n8n → HTTP Request → Google Sheets (append row)
 
 ### 🔔 התראות מותאמות
+
 ```javascript
 // ב-n8n Function node
 if ($json.last_feeding_minutes_ago > 240) {
   return {
     alert: true,
-    message: "⚠️ עברו יותר מ-4 שעות מהאכלה!"
+    message: "⚠️ עברו יותר מ-4 שעות מהאכלה!",
   };
 }
 ```
 
 ### 🏡 אוטומציה של הבית
+
 - הדלק אור כשהתינוק ער יותר מ-90 דקות
 - שנה צבע נורה כשהגיע זמן האכלה
 - הפעל מוזיקה כשהתינוק עייף
@@ -405,26 +437,32 @@ if ($json.last_feeding_minutes_ago > 240) {
 ## 🐛 פתרון בעיות
 
 ### שגיאה: "Authentication credentials were not provided"
+
 ➡️ שכחת להוסיף את ה-Token ב-Header
 
 **תיקון:**
+
 ```
 Authorization: Token YOUR_API_TOKEN
 ```
 
 ### שגיאה: "Child not found"
+
 ➡️ ה-slug לא נכון
 
 **תיקון:**
+
 ```bash
 # בדוק מה ה-slug
 curl http://localhost:8000/api/children/ -H "Authorization: Token TOKEN"
 ```
 
 ### שגיאה: 404
+
 ➡️ ה-URL לא נכון
 
 **תיקון:**
+
 ```
 https://YOUR_DOMAIN/api/webhooks/daily-summary/
                    ^^^^ אל תשכח את api/

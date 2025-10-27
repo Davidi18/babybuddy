@@ -1,4 +1,5 @@
 # 📱 Baby Buddy + n8n + Green API - תרחישים מוכנים
+
 # WhatsApp Automation Setup Guide
 
 מדריך מלא עם תרחישים מוכנים לשילוב Baby Buddy עם WhatsApp דרך Green API ו-n8n.
@@ -8,6 +9,7 @@
 ## 🎯 מה נבנה
 
 3 תרחישי אוטומציה מוכנים:
+
 1. **סיכום יומי** - כל בוקר ב-8:00
 2. **התראות חכמות** - רק כשהתינוק רעב/עייף
 3. **מצב נוכחי לפי דרישה** - שלח "סטטוס" וקבל מצב
@@ -17,6 +19,7 @@
 ## 📋 דרישות מוקדמות
 
 ### 1. Baby Buddy API Token
+
 ```bash
 # התחבר לשרת Baby Buddy
 python manage.py drf_create_token admin
@@ -26,6 +29,7 @@ python manage.py drf_create_token admin
 ```
 
 ### 2. Green API Account
+
 1. הירשם ב-https://green-api.com/
 2. צור Instance חדש
 3. שמור:
@@ -33,6 +37,7 @@ python manage.py drf_create_token admin
    - **API Token**: `abc123def456...`
 
 ### 3. n8n
+
 - התקן n8n (cloud או self-hosted)
 - או השתמש ב-n8n.cloud
 
@@ -41,7 +46,9 @@ python manage.py drf_create_token admin
 ## 🚀 תרחיש 1: סיכום יומי בוואטסאפ
 
 ### מה זה עושה:
+
 כל בוקר ב-8:00 תקבל הודעת WhatsApp עם:
+
 - כמה האכלות אתמול
 - כמה שעות שינה
 - ממוצעים שבועיים
@@ -50,6 +57,7 @@ python manage.py drf_create_token admin
 ### Workflow Setup:
 
 #### Node 1: Schedule Trigger
+
 ```json
 {
   "rule": "0 8 * * *",
@@ -62,6 +70,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 2: HTTP Request - Baby Buddy
+
 ```json
 {
   "method": "GET",
@@ -85,6 +94,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 3: Green API - Send Message
+
 ```json
 {
   "resource": "message",
@@ -97,6 +107,7 @@ python manage.py drf_create_token admin
 ```
 
 **או עם HTTP Request ישירות:**
+
 ```json
 {
   "method": "POST",
@@ -117,6 +128,7 @@ python manage.py drf_create_token admin
 ```
 
 ### 📱 דוגמת הודעה שתתקבל:
+
 ```
 📊 סיכום יומי - Emma
 📅 25/10/2025
@@ -148,14 +160,17 @@ python manage.py drf_create_token admin
 ## ⚠️ תרחיש 2: התראות חכמות (רק כשדחוף!)
 
 ### מה זה עושה:
+
 בודק כל 15 דקות אם יש התראה דחופה.
 **שולח הודעה רק אם:**
+
 - התינוק רעב (עבר זמן האכלה)
 - התינוק עייף מדי (ער יותר מדי זמן)
 
 ### Workflow Setup:
 
 #### Node 1: Schedule Trigger
+
 ```json
 {
   "rule": "*/15 * * * *",
@@ -168,6 +183,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 2: HTTP Request - Check Alerts
+
 ```json
 {
   "method": "GET",
@@ -189,6 +205,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 3: IF - יש התראות?
+
 ```json
 {
   "conditions": {
@@ -203,6 +220,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 4: Switch - סוג ההתראה (מענף True)
+
 ```json
 {
   "mode": "rules",
@@ -240,6 +258,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 5a: Green API - התראת רעב (Output 0)
+
 ```json
 {
   "method": "POST",
@@ -252,6 +271,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 5b: Green API - התראת עייפות (Output 1)
+
 ```json
 {
   "method": "POST",
@@ -264,6 +284,7 @@ python manage.py drf_create_token admin
 ```
 
 ### 📱 דוגמאות הודעות:
+
 ```
 🍼 התראה!
 
@@ -287,11 +308,13 @@ python manage.py drf_create_token admin
 ## 💬 תרחיש 3: מצב נוכחי לפי דרישה
 
 ### מה זה עושה:
+
 שלח "סטטוס" או "מצב" בWhatsApp → קבל מצב נוכחי מיידי
 
 ### Workflow Setup:
 
 #### Node 1: Webhook Trigger (Green API)
+
 ```json
 {
   "httpMethod": "POST",
@@ -301,11 +324,13 @@ python manage.py drf_create_token admin
 ```
 
 **או Green API Webhook Node:**
+
 - Event: `incomingMessageReceived`
 - Instance ID: `YOUR_INSTANCE_ID`
 - Token: `YOUR_TOKEN`
 
 #### Node 2: IF - בדוק אם זו הפקודה הנכונה
+
 ```json
 {
   "conditions": {
@@ -321,6 +346,7 @@ python manage.py drf_create_token admin
 ```
 
 או:
+
 ```json
 {
   "conditions": {
@@ -336,6 +362,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 3: HTTP Request - Baby Buddy (מענף True)
+
 ```json
 {
   "method": "GET",
@@ -357,6 +384,7 @@ python manage.py drf_create_token admin
 ```
 
 #### Node 4: Green API - Send Reply
+
 ```json
 {
   "method": "POST",
@@ -369,6 +397,7 @@ python manage.py drf_create_token admin
 ```
 
 ### 📱 דוגמת שיחה:
+
 ```
 אתה: סטטוס
 
@@ -386,6 +415,7 @@ Bot: 📊 מצב נוכחי:
 ## 🔧 הגדרות Green API
 
 ### 1. הגדר Webhook ב-Green API
+
 ```
 Settings → Webhooks
 Enable: incomingMessageReceived
@@ -393,6 +423,7 @@ Webhook URL: https://your-n8n.com/webhook/baby-status
 ```
 
 ### 2. פורמט מספר טלפון
+
 ```
 ישראל: 972501234567@c.us
 ארה"ב: 1234567890@c.us
@@ -400,6 +431,7 @@ Webhook URL: https://your-n8n.com/webhook/baby-status
 ```
 
 ### 3. בדיקה
+
 ```bash
 # שלח הודעת בדיקה
 curl -X POST \
@@ -418,6 +450,7 @@ curl -X POST \
 ### JSON Exports (להעתיק ל-n8n)
 
 **איך להשתמש:**
+
 1. העתק את ה-JSON המלא
 2. ב-n8n: לחץ על "+" → "Import from File/URL"
 3. הדבק את ה-JSON
@@ -427,6 +460,7 @@ curl -X POST \
 ---
 
 #### Workflow 1: Daily Summary
+
 ```json
 {
   "name": "Baby Buddy - Daily Summary",
@@ -482,10 +516,10 @@ curl -X POST \
   ],
   "connections": {
     "Schedule Trigger": {
-      "main": [[{"node": "Get Daily Summary", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Get Daily Summary", "type": "main", "index": 0 }]]
     },
     "Get Daily Summary": {
-      "main": [[{"node": "Send WhatsApp", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Send WhatsApp", "type": "main", "index": 0 }]]
     }
   }
 }
@@ -494,6 +528,7 @@ curl -X POST \
 ---
 
 #### Workflow 2: Smart Alerts (התראות חכמות)
+
 ```json
 {
   "name": "Baby Buddy - Smart Alerts",
@@ -633,21 +668,18 @@ curl -X POST \
   ],
   "connections": {
     "Every 15 Minutes": {
-      "main": [[{"node": "Check Alerts", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Check Alerts", "type": "main", "index": 0 }]]
     },
     "Check Alerts": {
-      "main": [[{"node": "Has Alerts?", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Has Alerts?", "type": "main", "index": 0 }]]
     },
     "Has Alerts?": {
-      "main": [
-        [{"node": "Alert Type", "type": "main", "index": 0}],
-        []
-      ]
+      "main": [[{ "node": "Alert Type", "type": "main", "index": 0 }], []]
     },
     "Alert Type": {
       "main": [
-        [{"node": "Send Feeding Alert", "type": "main", "index": 0}],
-        [{"node": "Send Sleep Alert", "type": "main", "index": 0}]
+        [{ "node": "Send Feeding Alert", "type": "main", "index": 0 }],
+        [{ "node": "Send Sleep Alert", "type": "main", "index": 0 }]
       ]
     }
   }
@@ -657,6 +689,7 @@ curl -X POST \
 ---
 
 #### Workflow 3: Status On Demand (מצב לפי דרישה)
+
 ```json
 {
   "name": "Baby Buddy - Status On Demand",
@@ -739,19 +772,16 @@ curl -X POST \
   ],
   "connections": {
     "Webhook": {
-      "main": [[{"node": "Is Status Command?", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Is Status Command?", "type": "main", "index": 0 }]]
     },
     "Is Status Command?": {
-      "main": [
-        [{"node": "Get Status", "type": "main", "index": 0}],
-        []
-      ]
+      "main": [[{ "node": "Get Status", "type": "main", "index": 0 }], []]
     },
     "Get Status": {
-      "main": [[{"node": "Send Status Reply", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Send Status Reply", "type": "main", "index": 0 }]]
     },
     "Send Status Reply": {
-      "main": [[{"node": "Respond to Webhook", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
     }
   },
   "settings": {
@@ -765,6 +795,7 @@ curl -X POST \
 ## 🎨 התאמה אישית
 
 ### שנה את זמני ההתראות
+
 ```javascript
 // בNode של Schedule Trigger
 // כל 10 דקות במקום 15:
@@ -778,24 +809,26 @@ curl -X POST \
 ```
 
 ### הוסף אמוג'י מותאם אישית
+
 ```javascript
 // בNode של Send Message
 const emoji = {
   feeding_overdue: "🍼❗",
   overtired: "😴💤",
-  diaper_overdue: "🧷⏰"
+  diaper_overdue: "🧷⏰",
 };
 
 const message = `${emoji[$json.alerts[0].type]} ${$json.alerts[0].message}`;
 ```
 
 ### שלח לכמה אנשים
+
 ```javascript
 // הוסף Node "Split In Batches"
 const recipients = [
-  "972501234567@c.us",  // אמא
-  "972509876543@c.us",  // אבא
-  "972501111111@c.us"   // סבתא
+  "972501234567@c.us", // אמא
+  "972509876543@c.us", // אבא
+  "972501111111@c.us", // סבתא
 ];
 
 // בלולאה שלח לכל אחד
@@ -806,13 +839,16 @@ const recipients = [
 ## 🐛 Troubleshooting
 
 ### הודעות לא מגיעות?
+
 1. **בדוק Token:**
+
    ```bash
    curl "https://your-baby-buddy.com/api/webhooks/status/" \
      -H "Authorization: Token YOUR_TOKEN"
    ```
 
 2. **בדוק Green API Instance:**
+
    ```bash
    curl "https://api.green-api.com/waInstance{{ID}}/getStateInstance/{{TOKEN}}"
    # צריך להחזיר: "authorized"
@@ -824,11 +860,13 @@ const recipients = [
    - ❌ `0501234567`
 
 ### n8n לא מריץ את ה-Workflow?
+
 1. וודא ש-Workflow מופעל (toggle בפינה)
 2. בדוק Executions → Errors
 3. Test Workflow ידנית
 
 ### Baby Buddy מחזיר שגיאה?
+
 ```json
 // שגיאה: "Authentication credentials were not provided"
 → בדוק שה-Header נכון: "Authorization: Token XXX"
@@ -845,6 +883,7 @@ const recipients = [
 ## 📊 סטטיסטיקות שימוש
 
 ### כמה API Calls?
+
 - **סיכום יומי:** 1 call ליום = ~30/חודש
 - **התראות:** 96 calls ליום (כל 15 דקות) = ~2,880/חודש
 - **מצב לפי דרישה:** תלוי בך
@@ -865,6 +904,7 @@ const recipients = [
 ## ✨ רעיונות נוספים
 
 ### 🏠 Home Assistant Integration
+
 ```yaml
 # configuration.yaml
 sensor:
@@ -877,13 +917,17 @@ sensor:
 ```
 
 ### 📈 Google Sheets Logging
+
 הוסף Node "Google Sheets" אחרי Baby Buddy:
+
 - שמור כל התראה בגיליון
 - צור גרפים אוטומטיים
 - נתח דפוסים
 
 ### 🔔 Telegram במקום WhatsApp
+
 החלף Green API ב-Telegram Bot:
+
 ```json
 {
   "name": "Telegram",

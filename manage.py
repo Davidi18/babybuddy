@@ -8,9 +8,9 @@ if __name__ == "__main__":
     # Environment variables
     # Check for and load environment variables from a .env file.
     load_dotenv(find_dotenv())
-    
+
     # Set default Django settings module
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'babybuddy.settings.base')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "babybuddy.settings.base")
 
     try:
         from django.core.management import execute_from_command_line

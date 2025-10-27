@@ -33,9 +33,9 @@ class BabyAnalytics:
         from core.models import Feeding
 
         cutoff = timezone.now() - timedelta(days=days)
-        feedings = Feeding.objects.filter(
-            child=self.child, start__gte=cutoff
-        ).order_by("start")
+        feedings = Feeding.objects.filter(child=self.child, start__gte=cutoff).order_by(
+            "start"
+        )
 
         if not feedings.exists():
             return {
@@ -86,9 +86,7 @@ class BabyAnalytics:
         """
         from core.models import Feeding
 
-        last_feeding = (
-            Feeding.objects.filter(child=self.child).order_by("-end").first()
-        )
+        last_feeding = Feeding.objects.filter(child=self.child).order_by("-end").first()
 
         if not last_feeding:
             return None
@@ -127,7 +125,9 @@ class BabyAnalytics:
             # עבר הזמן הממוצע - התינוק כנראה רעב!
             status = "overdue"
             minutes_until_next = abs(minutes_until_next)
-            message = f"עבר הזמן! התינוק כנראה רעב (איחור של {int(minutes_until_next)} דקות)"
+            message = (
+                f"עבר הזמן! התינוק כנראה רעב (איחור של {int(minutes_until_next)} דקות)"
+            )
         elif minutes_until_next < 30:
             status = "soon"
             message = f"בקרוב! בעוד ~{int(minutes_until_next)} דקות"
@@ -258,7 +258,9 @@ class BabyAnalytics:
 
         if minutes_until_tired < 0:
             status = "overtired"
-            message = f"התינוק כנראה עייף! עבר הזמן ב-{int(abs(minutes_until_tired))} דקות"
+            message = (
+                f"התינוק כנראה עייף! עבר הזמן ב-{int(abs(minutes_until_tired))} דקות"
+            )
         elif minutes_until_tired < 15:
             status = "getting_tired"
             message = f"התינוק מתחיל להתעייף - בעוד ~{int(minutes_until_tired)} דקות"

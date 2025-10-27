@@ -1,6 +1,7 @@
 # 🚀 Baby Buddy על Coolify - מדריך התקנה
 
 ## 📋 תוכן עניינים
+
 1. [Persistent Volume (חובה!)](#persistent-volume-חובה)
 2. [משתני סביבה נדרשים](#משתני-סביבה-נדרשים)
 3. [יצירת Superuser](#יצירת-superuser)
@@ -20,6 +21,7 @@
 אם אין Persistent Volume, הקובץ הזה נמחק בכל פעם שיש deployment חדש.
 
 **מה זה אומר?**
+
 - ❌ כל הילדים שהוספת - נמחקים
 - ❌ כל הפעילויות (האכלות, שינה, חיתולים) - נמחקות
 - ❌ משתמש ה-admin - נמחק
@@ -28,7 +30,9 @@
 ### 📁 איך להגדיר ב-Coolify
 
 #### שלב 1: פתח את הפרויקט ב-Coolify
+
 לאחר יצירת הפרויקט, לך ל:
+
 ```
 Project → Storage → Add Persistent Storage
 ```
@@ -38,17 +42,21 @@ Project → Storage → Add Persistent Storage
 מלא את הפרטים הבאים:
 
 **Name (שם):**
+
 ```
 babybuddy-data
 ```
 
 **Source Path (נתיב במחשב המארח):**
+
 ```
 /data/coolify/babybuddy/data
 ```
+
 או השאר ריק - Coolify יבחר אוטומטית.
 
 **Destination Path (נתיב בקונטיינר) - חשוב מאוד!:**
+
 ```
 /data
 ```
@@ -62,6 +70,7 @@ babybuddy-data
 ### 🔍 איך לוודא שזה עובד?
 
 אחרי ה-deployment:
+
 1. התחבר לאתר והוסף ילד
 2. עשה **Deploy** נוסף (או Restart)
 3. התחבר שוב - הילד צריך להיות שם!
@@ -75,6 +84,7 @@ babybuddy-data
 אם אתה רוצה פתרון יותר מקצועי, השתמש ב-PostgreSQL:
 
 **יתרונות:**
+
 - ✅ ביצועים טובים יותר
 - ✅ תמיכה במספר משתמשים במקביל
 - ✅ גיבויים קלים יותר
@@ -83,6 +93,7 @@ babybuddy-data
 **איך להגדיר:**
 
 1. **ב-Coolify, הוסף PostgreSQL Database:**
+
    ```
    Project → Add Resource → Database → PostgreSQL
    ```
@@ -90,6 +101,7 @@ babybuddy-data
 2. **העתק את פרטי החיבור** (Coolify נותן לך אותם אוטומטית)
 
 3. **הוסף משתני סביבה:**
+
    ```bash
    DB_ENGINE=django.db.backends.postgresql
    DB_NAME=babybuddy
@@ -102,6 +114,7 @@ babybuddy-data
 4. **Deploy** - Django יצור את הטבלאות אוטומטית!
 
 **עם PostgreSQL אתה עדיין צריך Volume ל:**
+
 - תמונות שמשתמשים מעלים
 - קבצים סטטיים (אם לא משתמש ב-CDN)
 
@@ -121,6 +134,7 @@ ADMIN_EMAIL=your_email@example.com
 ```
 
 **חשוב:**
+
 - ✅ שנה את הסיסמה לסיסמה חזקה!
 - ✅ השתמש באימייל אמיתי
 - ✅ שמור את הפרטים במקום בטוח
@@ -142,6 +156,7 @@ LANGUAGE_CODE=he
 ```
 
 **ליצירת SECRET_KEY:**
+
 ```python
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
@@ -177,6 +192,7 @@ DB_NAME=/data/db.sqlite3
 ### 🤔 מה זה Superuser?
 
 **Superuser** (או Admin) הוא המשתמש הראשי שיכול:
+
 - ✅ להתחבר לממשק הניהול (`/admin/`)
 - ✅ להוסיף ילדים
 - ✅ לנהל משתמשים אחרים
@@ -206,6 +222,7 @@ ADMIN_EMAIL=your@email.com
 ```
 
 **⚠️ חשוב:**
+
 - השתמש בסיסמה **חזקה** (לפחות 8 תווים, אותיות גדולות/קטנות, מספרים, תווים מיוחדים)
 - שמור את הפרטים במקום בטוח (מנהל סיסמאות)
 - אל תשתף את הסיסמה!
@@ -222,6 +239,7 @@ ADMIN_EMAIL=your@email.com
    - **Password:** מה שהגדרת ב-`ADMIN_PASSWORD`
 
 **הסקריפט:**
+
 - ✅ רץ אוטומטית בכל deployment
 - ✅ בודק אם המשתמש כבר קיים
 - ✅ יוצר superuser עם הפרטים מה-ENV
@@ -246,6 +264,7 @@ python manage.py createsuperuser \
 ```
 
 ואז הגדר סיסמה:
+
 ```bash
 python manage.py shell
 >>> from django.contrib.auth import get_user_model
@@ -370,11 +389,13 @@ CSRF_COOKIE_SECURE=True
 ## 🚀 התחברות ראשונה
 
 1. **פתח את האתר:**
+
    ```
    https://babybuddy.yourdomain.com/admin/
    ```
 
 2. **התחבר עם:**
+
    - Username: `admin` (או מה שהגדרת)
    - Password: הסיסמה שהגדרת ב-`ADMIN_PASSWORD`
 
@@ -418,11 +439,13 @@ print('✅ Admin updated!')
 ### בעיה: לא יכול להתחבר
 
 **פתרון 1: אפס סיסמה**
+
 ```bash
 python manage.py changepassword admin
 ```
 
 **פתרון 2: בדוק אם המשתמש קיים**
+
 ```bash
 python manage.py shell
 >>> from django.contrib.auth import get_user_model
@@ -434,6 +457,7 @@ True  # אם False, המשתמש לא קיים
 ```
 
 **פתרון 3: צור מחדש**
+
 ```bash
 python scripts/init_admin.py
 ```
@@ -443,6 +467,7 @@ python scripts/init_admin.py
 ### בעיה: "CSRF verification failed"
 
 הוסף ל-Environment Variables:
+
 ```bash
 CSRF_TRUSTED_ORIGINS=https://your-domain.com,https://www.your-domain.com
 ```
@@ -452,6 +477,7 @@ CSRF_TRUSTED_ORIGINS=https://your-domain.com,https://www.your-domain.com
 ### בעיה: "DisallowedHost"
 
 הוסף את הדומיין ל-ALLOWED_HOSTS:
+
 ```bash
 ALLOWED_HOSTS=your-domain.com,www.your-domain.com,localhost
 ```
@@ -461,13 +487,16 @@ ALLOWED_HOSTS=your-domain.com,www.your-domain.com,localhost
 ## 📝 טיפים חשובים
 
 ### 1. סיסמה חזקה
+
 ✅ לפחות 12 תווים
 ✅ אותיות גדולות וקטנות
 ✅ מספרים
-✅ תווים מיוחדים (!@#$%^&*)
+✅ תווים מיוחדים (!@#$%^&\*)
 
 ### 2. גיבוי
+
 💾 גבה את בסיס הנתונים באופן קבוע:
+
 ```bash
 # SQLite
 cp /data/db.sqlite3 /backups/db-$(date +%Y%m%d).sqlite3
@@ -477,6 +506,7 @@ pg_dump babybuddy > backup-$(date +%Y%m%d).sql
 ```
 
 ### 3. אבטחה
+
 🔒 השתמש ב-HTTPS תמיד
 🔒 הגדר `DEBUG=False` בפרודקשן
 🔒 שמור `SECRET_KEY` בסוד
@@ -489,6 +519,7 @@ pg_dump babybuddy > backup-$(date +%Y%m%d).sql
 ### ✅ צ'קליסט - עשה את זה לפני Deploy:
 
 #### 1. **הגדר Persistent Volume (חובה!)**
+
 ```
 Project → Storage → Add Persistent Storage
 Name: babybuddy-data
@@ -498,6 +529,7 @@ Destination Path: /data
 #### 2. **הגדר משתני סביבה:**
 
 **חובה:**
+
 ```bash
 # Admin User
 ADMIN_USERNAME=admin
@@ -514,24 +546,29 @@ CSRF_TRUSTED_ORIGINS=https://your-domain.com
 ```
 
 **מומלץ:**
+
 ```bash
 TIME_ZONE=Asia/Jerusalem
 LANGUAGE_CODE=he
 ```
 
 #### 3. **Deploy!**
+
 לחץ על **Deploy** - הכל יקרה אוטומטית:
+
 - ✅ Migrations
 - ✅ Collect Static Files
 - ✅ Create Admin User
 - ✅ Start Server
 
 #### 4. **התחבר:**
+
 - URL: `https://your-domain.com/admin/`
 - Username: מה שהגדרת ב-`ADMIN_USERNAME`
 - Password: מה שהגדרת ב-`ADMIN_PASSWORD`
 
 #### 5. **בדוק שה-Volume עובד:**
+
 - הוסף ילד
 - עשה Deploy מחדש
 - הילד צריך להישאר!
@@ -543,18 +580,22 @@ LANGUAGE_CODE=he
 ### 🆘 עזרה מהירה
 
 **לא מצליח להתחבר?**
+
 ```bash
 # התחבר לקונטיינר ב-Coolify ורוץ:
 python manage.py changepassword admin
 ```
 
 **המידע נמחק אחרי Deploy?**
+
 - בדוק שה-Persistent Volume מוגדר ל-`/data`
 
 **שגיאת CSRF?**
+
 - הוסף `CSRF_TRUSTED_ORIGINS=https://your-domain.com`
 
 **שגיאת DisallowedHost?**
+
 - הוסף את הדומיין ל-`ALLOWED_HOSTS`
 
 ---

@@ -8,6 +8,6 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 # Set default Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'babybuddy.settings.base')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "babybuddy.settings.base")
 
 application = get_wsgi_application()

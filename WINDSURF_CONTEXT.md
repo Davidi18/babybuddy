@@ -1,4 +1,5 @@
 # 🌊 Windsurf Context - Baby Buddy Analytics & Webhooks
+
 # הקשר עבור Windsurf - תכונות חדשות ב-Baby Buddy
 
 > מסמך זה מיועד לעורך Windsurf כדי להבין את השינויים והתוספות החדשות שנוספו לפרויקט Baby Buddy.
@@ -84,6 +85,7 @@ class BabyAnalytics:
 ### לוגיקת החיזוי:
 
 #### **Feeding Prediction:**
+
 ```python
 # לוגיקה פשוטה:
 # 1. חשב ממוצע מרווח בין האכלות (7 ימים)
@@ -98,6 +100,7 @@ class BabyAnalytics:
 ```
 
 #### **Sleep Prediction:**
+
 ```python
 # משתמש ב-"wake window" - זמן טיפוסי שתינוק יכול להיות ער
 # ברירת מחדל: 90 דקות (ניתן לשיפור לפי גיל)
@@ -141,10 +144,13 @@ status = analytics.get_current_status()
 3 פקודות Django שרצות מהטרמינל:
 
 ### 1. `child_status`
+
 ```bash
 python manage.py child_status [--child=emma]
 ```
+
 **מה זה עושה:**
+
 - מציג מצב נוכחי של התינוק
 - מה קרה לאחרונה (האכלה, שינה, חיתול)
 - מה צפוי בקרוב (חיזויים)
@@ -155,10 +161,13 @@ python manage.py child_status [--child=emma]
 ---
 
 ### 2. `daily_summary`
+
 ```bash
 python manage.py daily_summary [--child=emma] [--date=2025-01-15] [--days=1]
 ```
+
 **מה זה עושה:**
+
 - סיכום יומי של כל הפעילויות
 - האכלות, שינה, חיתולים
 - סטטיסטיקות שבועיות
@@ -169,10 +178,13 @@ python manage.py daily_summary [--child=emma] [--date=2025-01-15] [--days=1]
 ---
 
 ### 3. `backup_database`
+
 ```bash
 python manage.py backup_database [--output-dir=backups] [--format=json]
 ```
+
 **מה זה עושה:**
+
 - גיבוי מלא של כל בסיס הנתונים
 - יוצר קובץ JSON/XML עם כל המודלים
 - יוצר metadata file
@@ -185,6 +197,7 @@ python manage.py backup_database [--output-dir=backups] [--format=json]
 6 endpoints חדשים תחת `/api/analytics/`:
 
 ### Structure:
+
 ```python
 # כל ה-views הם Class-based או Function-based
 # כולם דורשים Authentication (IsAuthenticated)
@@ -246,11 +259,13 @@ def alerts_webhook(request)           # /api/webhooks/alerts/
 ### מה זה עושה:
 
 1. **daily_summary_webhook:**
+
    - מחזיר סיכום יומי **בפורמט טקסט מעוצב**
    - השדה `message` מוכן לשליחה בWhatsApp/Telegram!
    - כולל: נתוני היום, ממוצעים, חיזויים, התראות
 
 2. **status_webhook:**
+
    - מצב נוכחי קצר ותמציתי
    - `status_text` - משפט אחד עם הכל
    - מתאים לבדיקות תכופות (כל 5-15 דקות)
@@ -266,8 +281,12 @@ def alerts_webhook(request)           # /api/webhooks/alerts/
 {
   "success": true,
   "message": "📊 סיכום יומי - Emma\n📅 15/01/2025\n\n🍼 האכלות היום:\n  • 8 האכלות\n...",
-  "data": { /* JSON מובנה */ },
-  "alerts": [ /* array של התראות */ ]
+  "data": {
+    /* JSON מובנה */
+  },
+  "alerts": [
+    /* array של התראות */
+  ]
 }
 ```
 
@@ -314,6 +333,7 @@ urlpatterns = [
 מקום מומלץ: `dashboard/templates/dashboard/`
 
 דף חדש עם:
+
 - 📊 גרפים של סטטיסטיקות
 - 🔮 חיזויים בזמן אמת
 - ⏰ טיימליין של אירועים
@@ -479,22 +499,26 @@ def analytics_dashboard(request, slug):
 ### מה כדאי לבנות ב-UI:
 
 #### **1. סטטוס נוכחי בעמוד הבית** ⭐ Priority 1
+
 - קטע קטן עם "מה קרה לאחרונה + מה צפוי"
 - מקום: בראש דף הילד
 - API: `/api/webhooks/status/`
 
 #### **2. דף אנליטיקה מלא** ⭐ Priority 2
+
 - דף חדש עם כל הסטטיסטיקות
 - גרפים (Plotly/Chart.js כבר בפרויקט!)
 - טבלאות
 - API: `/api/analytics/child/<slug>/`
 
 #### **3. התראות בזמן אמת** ⭐ Priority 3
+
 - Toast notifications כשהתינוק רעב/עייף
 - Polling כל 5 דקות
 - API: `/api/webhooks/alerts/`
 
 #### **4. Timeline View** 💡 Nice to have
+
 - טיימליין חזותי של היום
 - "האכלה → שינה → חיתול → האכלה..."
 - חיזויים מסומנים בקו זמן
@@ -504,6 +528,7 @@ def analytics_dashboard(request, slug):
 ## 🚨 דברים חשובים לדעת
 
 ### **1. Authentication:**
+
 ```python
 # כל ה-API endpoints דורשים authentication
 # בתבניות Django:
@@ -520,6 +545,7 @@ fetch(url, {
 ```
 
 ### **2. Child Slug:**
+
 ```python
 # כל הendpoints משתמשים ב-slug, לא ב-id
 # טוב: /api/analytics/child/emma/
@@ -530,6 +556,7 @@ fetch(url, {
 ```
 
 ### **3. Date Formats:**
+
 ```python
 # API מחזיר ISO 8601:
 "estimated_time": "2025-01-15T14:40:00Z"
@@ -539,23 +566,25 @@ fetch(url, {
 ```
 
 ### **4. Hebrew Support:**
+
 ```django
 {% load i18n %}
 {% trans "Feeding" %}  <!-- יתורגם לעברית אם המערכת בעברית -->
 ```
 
 ### **5. Error Handling:**
+
 ```javascript
-fetch('/api/webhooks/status/')
-  .then(res => {
-    if (!res.ok) throw new Error('Failed to fetch');
+fetch("/api/webhooks/status/")
+  .then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
     return res.json();
   })
-  .then(data => {
+  .then((data) => {
     // עבד
   })
-  .catch(error => {
-    console.error('Error:', error);
+  .catch((error) => {
+    console.error("Error:", error);
     // הצג הודעת שגיאה למשתמש
   });
 ```
@@ -611,6 +640,7 @@ python manage.py shell
 ### עיצוב מומלץ:
 
 **כרטיסי חיזוי:**
+
 ```html
 <div class="prediction-card {{ prediction.status }}">
   <!-- status classes: overdue, soon, upcoming, later -->
@@ -624,6 +654,7 @@ python manage.py shell
 ```
 
 **CSS מומלץ:**
+
 ```css
 .prediction-card {
   border-left: 4px solid #ccc;
@@ -652,6 +683,7 @@ python manage.py shell
 ## 🔍 מה לחפש בקוד הקיים
 
 ### Models רלוונטיים:
+
 ```python
 # core/models.py
 class Child(models.Model)           # הילד
@@ -662,6 +694,7 @@ class Timer(models.Model)           # טיימרים
 ```
 
 ### Views קיימים:
+
 ```python
 # dashboard/views.py
 class ChildList(...)        # רשימת ילדים
@@ -669,6 +702,7 @@ class ChildDetail(...)      # פרטי ילד
 ```
 
 ### Templates קיימים:
+
 ```
 dashboard/templates/dashboard/
 ├── child.html              # דף הילד הראשי
@@ -724,6 +758,7 @@ dashboard/templates/dashboard/
 ## ❓ שאלות נפוצות
 
 ### **Q: איך להציג חיזוי בעברית בtemplate?**
+
 ```django
 {% if prediction %}
   <p>{{ prediction.message }}</p>  <!-- ההודעה כבר בעברית! -->
@@ -731,15 +766,20 @@ dashboard/templates/dashboard/
 ```
 
 ### **Q: איך לרענן נתונים בזמן אמת?**
+
 ```javascript
-setInterval(() => {
-  fetch('/api/webhooks/status/?child=' + childSlug)
-    .then(res => res.json())
-    .then(updateUI);
-}, 5 * 60 * 1000);  // כל 5 דקות
+setInterval(
+  () => {
+    fetch("/api/webhooks/status/?child=" + childSlug)
+      .then((res) => res.json())
+      .then(updateUI);
+  },
+  5 * 60 * 1000,
+); // כל 5 דקות
 ```
 
 ### **Q: איך לעשות גרף?**
+
 Baby Buddy כבר משתמש ב-Plotly! ראה `reports/graphs/` לדוגמאות.
 
 ```python
@@ -754,23 +794,27 @@ def feeding_prediction_graph(child):
 ## 🎉 סיכום ל-Windsurf
 
 **מה יש לנו:**
+
 - ✅ Backend מלא עם לוגיקת חיזוי
 - ✅ API מוכן לשימוש
 - ✅ Webhooks לאוטומציה חיצונית
 - ⭐ **אין UI עדיין** - זה המשימה שלך!
 
 **מה כדאי לבנות:**
+
 1. Status widget בעמוד הילד
 2. דף אנליטיקה מלא
 3. התראות בזמן אמת
 4. גרפים ווידג'טים
 
 **איפה להתחיל:**
+
 - `dashboard/templates/dashboard/child.html` - הוסף status bar
 - API endpoints מוכנים - פשוט קרא אליהם!
 - דוגמאות קוד למעלה - העתק והתאם
 
 **זכור:**
+
 - כל הAPI דורש authentication
 - השתמש ב-`child.slug` ולא ב-`child.id`
 - ה-`message` fields כבר בעברית!

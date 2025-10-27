@@ -1,4 +1,5 @@
 # 📊 Baby Buddy Analytics & Predictions
+
 # אנליטיקה וחיזויים ל-Baby Buddy
 
 תכונות אנליטיקה מתקדמות ופקודות ניהול שימושיות עבור Baby Buddy.
@@ -62,9 +63,11 @@ analytics = BabyAnalytics(child)
 מחזיר סטטיסטיקות על האכלות בימים האחרונים.
 
 **פרמטרים:**
+
 - `days` (int): מספר ימים לניתוח (ברירת מחדל: 7)
 
 **מחזיר:**
+
 ```python
 {
     "count": 42,  # מספר האכלות
@@ -80,6 +83,7 @@ analytics = BabyAnalytics(child)
 ```
 
 **דוגמה:**
+
 ```python
 stats = analytics.get_feeding_stats(days=7)
 print(f"ממוצע בין האכלות: {stats['average_interval_minutes']} דקות")
@@ -92,6 +96,7 @@ print(f"ממוצע בין האכלות: {stats['average_interval_minutes']} דק
 מחזיר מידע על האכלה אחרונה וכמה זמן עבר מאז.
 
 **מחזיר:**
+
 ```python
 {
     "feeding": Feeding object,
@@ -110,11 +115,13 @@ print(f"ממוצע בין האכלות: {stats['average_interval_minutes']} דק
 🔮 **מנבא מתי תהיה ההאכלה הבאה** בהתבסס על דפוסים היסטוריים.
 
 **לוגיקת החיזוי:**
+
 1. מחשב ממוצע מרווח בין האכלות (7 ימים אחרונים)
 2. בודק כמה זמן עבר מהאכלה אחרונה
 3. מחשב מתי צפויה האכלה הבאה
 
 **מחזיר:**
+
 ```python
 {
     "status": "soon",  # או: "overdue", "upcoming", "later"
@@ -127,12 +134,14 @@ print(f"ממוצע בין האכלות: {stats['average_interval_minutes']} דק
 ```
 
 **סטטוסים:**
+
 - `overdue` - עבר הזמן, התינוק כנראה רעב!
 - `soon` - בעוד פחות מ-30 דקות
 - `upcoming` - בעוד 30-60 דקות
 - `later` - בעוד יותר משעה
 
 **דוגמה:**
+
 ```python
 prediction = analytics.predict_next_feeding()
 if prediction:
@@ -150,6 +159,7 @@ if prediction:
 מחזיר סטטיסטיקות על שינה בימים האחרונים.
 
 **מחזיר:**
+
 ```python
 {
     "count": 35,
@@ -169,6 +179,7 @@ if prediction:
 מידע על שינה אחרונה.
 
 **מחזיר:**
+
 ```python
 {
     "sleep": Sleep object,
@@ -187,11 +198,13 @@ if prediction:
 🔮 **מנבא מתי התינוק יתעייף** בהתבסס על "חלון ערות" טיפוסי.
 
 **לוגיקת החיזוי:**
+
 - משתמש ב-"wake window" - זמן טיפוסי שתינוק יכול להיות ער
 - ברירת מחדל: 90 דקות (ניתן לשיפור לפי גיל)
 - מחשב כמה זמן עבר מאז השינה האחרונה
 
 **מחזיר:**
+
 ```python
 {
     "status": "awake",  # או: "overtired", "getting_tired", "soon"
@@ -240,9 +253,11 @@ if prediction:
 סיכום מלא של כל הפעילויות ביום מסוים.
 
 **פרמטרים:**
+
 - `date` (datetime.date, optional): התאריך לסיכום. ברירת מחדל: היום
 
 **מחזיר:**
+
 ```python
 {
     "date": "2025-01-15",
@@ -272,6 +287,7 @@ if prediction:
 **המצב הנוכחי המלא** - מה קרה לאחרונה, מה צפוי, וסטטיסטיקות שבועיות.
 
 **מחזיר:** מילון עם כל המידע:
+
 - `last_feeding` - האכלה אחרונה
 - `next_feeding_prediction` - חיזוי האכלה הבאה
 - `last_sleep` - שינה אחרונה
@@ -301,16 +317,19 @@ python manage.py backup_database --format xml
 ```
 
 **פרמטרים:**
+
 - `--output-dir` - תיקיית יעד (ברירת מחדל: `backups/`)
 - `--format` - פורמט הגיבוי: `json` או `xml` (ברירת מחדל: `json`)
 
 **מה זה עושה:**
+
 - ✅ יוצר קובץ גיבוי עם timestamp
 - ✅ גובה את כל המודלים (Children, Feedings, Sleep, וכו')
 - ✅ יוצר קובץ metadata עם פרטים
 - ✅ מציג סיכום של הגיבוי
 
 **דוגמת פלט:**
+
 ```
 מתחיל גיבוי... / Starting backup...
   ✓ Children: 2 רשומות
@@ -327,6 +346,7 @@ python manage.py backup_database --format xml
 ```
 
 **Cron Job לגיבוי יומי:**
+
 ```cron
 # כל יום ב-2 בלילה
 0 2 * * * cd /path/to/babybuddy && python manage.py backup_database
@@ -353,11 +373,13 @@ python manage.py daily_summary --days 3
 ```
 
 **פרמטרים:**
+
 - `--child` - slug או שם של הילד
 - `--date` - תאריך בפורמט YYYY-MM-DD
 - `--days` - מספר ימים לסיכום (ברירת מחדל: 1)
 
 **דוגמת פלט:**
+
 ```
 ============================================================
 📊 סיכום יומי עבור Emma | Daily Summary for Emma
@@ -412,6 +434,7 @@ python manage.py daily_summary --days 3
 ```
 
 **שימוש ב-Cron לדוח בוקר:**
+
 ```cron
 # כל יום ב-8 בבוקר - שלח דוא"ל עם סיכום
 0 8 * * * cd /path/to/babybuddy && python manage.py daily_summary | mail -s "Baby Summary" parent@example.com
@@ -432,6 +455,7 @@ python manage.py child_status --child emma
 ```
 
 **דוגמת פלט:**
+
 ```
 ======================================================================
 👶 מצב נוכחי של Emma | Current Status of Emma
@@ -488,6 +512,7 @@ python manage.py child_status --child emma
 ```
 
 **שימוש מהיר:**
+
 ```bash
 # בדוק מצב במהירות
 watch -n 300 'python manage.py child_status'  # רענן כל 5 דקות
@@ -514,15 +539,18 @@ watch -n 300 'python manage.py child_status'  # רענן כל 5 דקות
 סטטיסטיקות כלליות על ילד.
 
 **Query Parameters:**
+
 - `days` (optional): מספר ימים (ברירת מחדל: 7)
 
 **דוגמה:**
+
 ```bash
 curl -X GET "http://localhost:8000/api/analytics/child/emma/?days=7" \
      -H "Authorization: Token YOUR_TOKEN"
 ```
 
 **Response:**
+
 ```json
 {
   "child": {
@@ -569,6 +597,7 @@ curl -X GET "http://localhost:8000/api/analytics/child/emma/?days=7" \
 מצב נוכחי מלא - מה קרה לאחרונה ומה צפוי.
 
 **Response:**
+
 ```json
 {
   "child": {
@@ -616,9 +645,15 @@ curl -X GET "http://localhost:8000/api/analytics/child/emma/?days=7" \
     "time": "2025-01-14T12:40:00Z"
   },
   "stats_7_days": {
-    "feeding": { /* ... */ },
-    "sleep": { /* ... */ },
-    "diapers": { /* ... */ }
+    "feeding": {
+      /* ... */
+    },
+    "sleep": {
+      /* ... */
+    },
+    "diapers": {
+      /* ... */
+    }
   }
 }
 ```
@@ -632,14 +667,17 @@ curl -X GET "http://localhost:8000/api/analytics/child/emma/?days=7" \
 סיכום יומי של פעילויות.
 
 **Query Parameters:**
+
 - `date` (optional): תאריך בפורמט YYYY-MM-DD (ברירת מחדל: היום)
 
 **דוגמה:**
+
 ```bash
 curl -X GET "http://localhost:8000/api/analytics/child/emma/daily/?date=2025-01-14"
 ```
 
 **Response:**
+
 ```json
 {
   "child": {
@@ -677,6 +715,7 @@ curl -X GET "http://localhost:8000/api/analytics/child/emma/daily/?date=2025-01-
 חיזוי האכלה הבאה.
 
 **Response:**
+
 ```json
 {
   "child": {
@@ -703,6 +742,7 @@ curl -X GET "http://localhost:8000/api/analytics/child/emma/daily/?date=2025-01-
 חיזוי שינה הבאה.
 
 **Response:**
+
 ```json
 {
   "child": {
@@ -728,6 +768,7 @@ curl -X GET "http://localhost:8000/api/analytics/child/emma/daily/?date=2025-01-
 מצב של כל הילדים במערכת (שימושי לבתים עם כמה ילדים).
 
 **Response:**
+
 ```json
 {
   "children": [
@@ -789,18 +830,18 @@ if sleep_pred and sleep_pred['status'] == 'overtired':
 ### JavaScript / Node.js
 
 ```javascript
-const axios = require('axios');
+const axios = require("axios");
 
-const BASE_URL = 'http://localhost:8000';
-const TOKEN = 'your-api-token-here';
+const BASE_URL = "http://localhost:8000";
+const TOKEN = "your-api-token-here";
 
 async function checkBabyStatus(childSlug) {
   try {
     const response = await axios.get(
       `${BASE_URL}/api/analytics/child/${childSlug}/status/`,
       {
-        headers: { 'Authorization': `Token ${TOKEN}` }
-      }
+        headers: { Authorization: `Token ${TOKEN}` },
+      },
     );
 
     const status = response.data;
@@ -812,20 +853,20 @@ async function checkBabyStatus(childSlug) {
       const { status: feedStatus, message } = status.next_feeding_prediction;
       console.log(`🍼 ${message}`);
 
-      if (feedStatus === 'overdue') {
+      if (feedStatus === "overdue") {
         // שלח התראה
-        sendNotification('התינוק רעב!', message);
+        sendNotification("התינוק רעב!", message);
       }
     }
 
     return status;
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error("Error:", error.message);
   }
 }
 
 // בדוק כל 5 דקות
-setInterval(() => checkBabyStatus('emma'), 5 * 60 * 1000);
+setInterval(() => checkBabyStatus("emma"), 5 * 60 * 1000);
 ```
 
 ---
@@ -849,6 +890,7 @@ echo "Baby Buddy backup completed at $(date)" | mail -s "Backup Success" admin@e
 ```
 
 הוסף ל-crontab:
+
 ```cron
 0 2 * * * /path/to/backup_babybuddy.sh
 ```
@@ -868,6 +910,7 @@ echo "Baby Buddy backup completed at $(date)" | mail -s "Backup Success" admin@e
 כל הקבצים כבר בפרויקט! פשוט:
 
 1. **ודא שהקבצים קיימים:**
+
    ```bash
    ls core/analytics.py
    ls core/management/commands/
@@ -875,11 +918,13 @@ echo "Baby Buddy backup completed at $(date)" | mail -s "Backup Success" admin@e
    ```
 
 2. **הרץ migrations (אם צריך):**
+
    ```bash
    python manage.py migrate
    ```
 
 3. **נסה את הפקודות:**
+
    ```bash
    # מצב נוכחי
    python manage.py child_status
@@ -892,6 +937,7 @@ echo "Baby Buddy backup completed at $(date)" | mail -s "Backup Success" admin@e
    ```
 
 4. **נסה את ה-API:**
+
    ```bash
    # קבל token (אם אין לך)
    python manage.py drf_create_token your_username

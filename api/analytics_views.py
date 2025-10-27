@@ -24,6 +24,7 @@ class ChildAnalyticsView(views.APIView):
 
     GET /api/analytics/child/<child_slug>/
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, child_slug):
@@ -31,17 +32,17 @@ class ChildAnalyticsView(views.APIView):
         child = get_object_or_404(models.Child, slug=child_slug)
         analytics = BabyAnalytics(child)
 
-        days = int(request.query_params.get('days', 7))
+        days = int(request.query_params.get("days", 7))
 
         data = {
-            'child': {
-                'name': child.name(),
-                'slug': child.slug,
-                'birth_date': child.birth_date,
+            "child": {
+                "name": child.name(),
+                "slug": child.slug,
+                "birth_date": child.birth_date,
             },
-            'feeding_stats': analytics.get_feeding_stats(days=days),
-            'sleep_stats': analytics.get_sleep_stats(days=days),
-            'diaper_stats': analytics.get_diaper_stats(days=days),
+            "feeding_stats": analytics.get_feeding_stats(days=days),
+            "sleep_stats": analytics.get_sleep_stats(days=days),
+            "diaper_stats": analytics.get_diaper_stats(days=days),
         }
 
         return Response(data)
@@ -54,6 +55,7 @@ class ChildCurrentStatusView(views.APIView):
 
     GET /api/analytics/child/<child_slug>/status/
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, child_slug):
@@ -65,17 +67,17 @@ class ChildCurrentStatusView(views.APIView):
 
         # המרה לפורמט JSON-friendly
         response_data = {
-            'child': {
-                'name': child.name(),
-                'slug': child.slug,
+            "child": {
+                "name": child.name(),
+                "slug": child.slug,
             },
-            'timestamp': timezone.now().isoformat(),
-            'last_feeding': self._format_last_feeding(status_data['last_feeding']),
-            'next_feeding_prediction': status_data['next_feeding_prediction'],
-            'last_sleep': self._format_last_sleep(status_data['last_sleep']),
-            'next_sleep_prediction': status_data['next_sleep_prediction'],
-            'last_diaper': self._format_last_diaper(status_data['last_diaper']),
-            'stats_7_days': status_data['stats_7_days'],
+            "timestamp": timezone.now().isoformat(),
+            "last_feeding": self._format_last_feeding(status_data["last_feeding"]),
+            "next_feeding_prediction": status_data["next_feeding_prediction"],
+            "last_sleep": self._format_last_sleep(status_data["last_sleep"]),
+            "next_sleep_prediction": status_data["next_sleep_prediction"],
+            "last_diaper": self._format_last_diaper(status_data["last_diaper"]),
+            "stats_7_days": status_data["stats_7_days"],
         }
 
         return Response(response_data)
@@ -86,12 +88,12 @@ class ChildCurrentStatusView(views.APIView):
             return None
 
         return {
-            'time_since_minutes': feeding_info['time_since_minutes'],
-            'time_since_hours': feeding_info['time_since_hours'],
-            'time_since_formatted': feeding_info['time_since_formatted'],
-            'type': feeding_info['type'],
-            'amount': feeding_info['amount'],
-            'end_time': feeding_info['feeding'].end.isoformat(),
+            "time_since_minutes": feeding_info["time_since_minutes"],
+            "time_since_hours": feeding_info["time_since_hours"],
+            "time_since_formatted": feeding_info["time_since_formatted"],
+            "type": feeding_info["type"],
+            "amount": feeding_info["amount"],
+            "end_time": feeding_info["feeding"].end.isoformat(),
         }
 
     def _format_last_sleep(self, sleep_info):
@@ -100,12 +102,12 @@ class ChildCurrentStatusView(views.APIView):
             return None
 
         return {
-            'time_since_minutes': sleep_info['time_since_minutes'],
-            'time_since_hours': sleep_info['time_since_hours'],
-            'time_since_formatted': sleep_info['time_since_formatted'],
-            'was_nap': sleep_info['was_nap'],
-            'duration_minutes': sleep_info['duration_minutes'],
-            'end_time': sleep_info['sleep'].end.isoformat(),
+            "time_since_minutes": sleep_info["time_since_minutes"],
+            "time_since_hours": sleep_info["time_since_hours"],
+            "time_since_formatted": sleep_info["time_since_formatted"],
+            "was_nap": sleep_info["was_nap"],
+            "duration_minutes": sleep_info["duration_minutes"],
+            "end_time": sleep_info["sleep"].end.isoformat(),
         }
 
     def _format_last_diaper(self, diaper_info):
@@ -114,12 +116,12 @@ class ChildCurrentStatusView(views.APIView):
             return None
 
         return {
-            'time_since_minutes': diaper_info['time_since_minutes'],
-            'time_since_hours': diaper_info['time_since_hours'],
-            'time_since_formatted': diaper_info['time_since_formatted'],
-            'was_wet': diaper_info['was_wet'],
-            'was_solid': diaper_info['was_solid'],
-            'time': diaper_info['change'].time.isoformat(),
+            "time_since_minutes": diaper_info["time_since_minutes"],
+            "time_since_hours": diaper_info["time_since_hours"],
+            "time_since_formatted": diaper_info["time_since_formatted"],
+            "was_wet": diaper_info["was_wet"],
+            "was_solid": diaper_info["was_solid"],
+            "time": diaper_info["change"].time.isoformat(),
         }
 
 
@@ -131,6 +133,7 @@ class ChildDailySummaryView(views.APIView):
     GET /api/analytics/child/<child_slug>/daily/
     GET /api/analytics/child/<child_slug>/daily/?date=2025-01-15
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, child_slug):
@@ -139,13 +142,13 @@ class ChildDailySummaryView(views.APIView):
         analytics = BabyAnalytics(child)
 
         # פרסור תאריך
-        date_str = request.query_params.get('date')
+        date_str = request.query_params.get("date")
         if date_str:
             try:
-                date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                date = datetime.strptime(date_str, "%Y-%m-%d").date()
             except ValueError:
                 return Response(
-                    {'error': 'Invalid date format. Use YYYY-MM-DD'},
+                    {"error": "Invalid date format. Use YYYY-MM-DD"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
@@ -154,11 +157,11 @@ class ChildDailySummaryView(views.APIView):
         summary = analytics.get_daily_summary(date)
 
         response_data = {
-            'child': {
-                'name': child.name(),
-                'slug': child.slug,
+            "child": {
+                "name": child.name(),
+                "slug": child.slug,
             },
-            'summary': summary,
+            "summary": summary,
         }
 
         return Response(response_data)
@@ -171,6 +174,7 @@ class ChildFeedingPredictionView(views.APIView):
 
     GET /api/analytics/child/<child_slug>/predict-feeding/
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, child_slug):
@@ -183,21 +187,21 @@ class ChildFeedingPredictionView(views.APIView):
         if not prediction:
             return Response(
                 {
-                    'error': 'Not enough data to predict',
-                    'message': 'נדרשות לפחות 2 האכלות ב-7 ימים האחרונים',
+                    "error": "Not enough data to predict",
+                    "message": "נדרשות לפחות 2 האכלות ב-7 ימים האחרונים",
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
 
         # המרה לפורמט JSON-friendly
-        prediction['estimated_time'] = prediction['estimated_time'].isoformat()
+        prediction["estimated_time"] = prediction["estimated_time"].isoformat()
 
         response_data = {
-            'child': {
-                'name': child.name(),
-                'slug': child.slug,
+            "child": {
+                "name": child.name(),
+                "slug": child.slug,
             },
-            'prediction': prediction,
+            "prediction": prediction,
         }
 
         return Response(response_data)
@@ -210,6 +214,7 @@ class ChildSleepPredictionView(views.APIView):
 
     GET /api/analytics/child/<child_slug>/predict-sleep/
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, child_slug):
@@ -222,18 +227,18 @@ class ChildSleepPredictionView(views.APIView):
         if not prediction:
             return Response(
                 {
-                    'error': 'Not enough data to predict',
-                    'message': 'אין רישום שינה אחרון',
+                    "error": "Not enough data to predict",
+                    "message": "אין רישום שינה אחרון",
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
 
         response_data = {
-            'child': {
-                'name': child.name(),
-                'slug': child.slug,
+            "child": {
+                "name": child.name(),
+                "slug": child.slug,
             },
-            'prediction': prediction,
+            "prediction": prediction,
         }
 
         return Response(response_data)
@@ -246,6 +251,7 @@ class AllChildrenStatusView(views.APIView):
 
     GET /api/analytics/all-children/
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -262,21 +268,21 @@ class AllChildrenStatusView(views.APIView):
 
             children_data.append(
                 {
-                    'name': child.name(),
-                    'slug': child.slug,
-                    'last_feeding_minutes_ago': (
-                        last_feeding['time_since_minutes'] if last_feeding else None
+                    "name": child.name(),
+                    "slug": child.slug,
+                    "last_feeding_minutes_ago": (
+                        last_feeding["time_since_minutes"] if last_feeding else None
                     ),
-                    'last_sleep_minutes_ago': (
-                        last_sleep['time_since_minutes'] if last_sleep else None
+                    "last_sleep_minutes_ago": (
+                        last_sleep["time_since_minutes"] if last_sleep else None
                     ),
-                    'next_feeding_status': (
-                        next_feeding['status'] if next_feeding else None
+                    "next_feeding_status": (
+                        next_feeding["status"] if next_feeding else None
                     ),
-                    'next_feeding_message': (
-                        next_feeding['message'] if next_feeding else None
+                    "next_feeding_message": (
+                        next_feeding["message"] if next_feeding else None
                     ),
                 }
             )
 
-        return Response({'children': children_data, 'count': len(children_data)})
+        return Response({"children": children_data, "count": len(children_data)})

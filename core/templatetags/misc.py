@@ -42,4 +42,4 @@ def get_children_for_pumping():
     children = Child.objects.all()
     if not children.exists():
         return True  # Show pumping by default if no children
-    return any(child.feeding_mode != 'bottle_only' for child in children)
+    return any(child.feeding_mode != "bottle_only" for child in children)

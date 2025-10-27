@@ -13,6 +13,7 @@
 **מיקום:** `/children/<slug>/dashboard/`
 
 Widget מעוצב בראש הדף שמציג:
+
 - 🍼 **האכלה אחרונה** - כמה זמן עבר מהאכלה אחרונה
 - ⏰ **חיזוי האכלה הבאה** - מתי צפויה האכלה הבאה (עם צבעים לפי דחיפות)
 - 💤 **מצב שינה** - כמה זמן התינוק ער
@@ -31,7 +32,9 @@ Widget מעוצב בראש הדף שמציג:
 #### מה יש בדף:
 
 ##### 🔮 כרטיסי חיזוי (Prediction Cards)
+
 - **חיזוי האכלה הבאה**
+
   - הודעה ברורה: "בקרוב!", "עבר הזמן!", וכו'
   - זמן משוער
   - פרטי האכלה אחרונה
@@ -44,7 +47,9 @@ Widget מעוצב בראש הדף שמציג:
   - התראות אם עייף מדי
 
 ##### 📊 סטטיסטיקות (7 ימים)
+
 - **האכלות:**
+
   - סה"כ האכלות
   - מרווח ממוצע בין האכלות
   - משך ממוצע
@@ -52,6 +57,7 @@ Widget מעוצב בראש הדף שמציג:
   - פילוח לפי סוג
 
 - **שינה:**
+
   - סה"כ שעות שינה
   - ממוצע ליום
   - משך ממוצע
@@ -63,6 +69,7 @@ Widget מעוצב בראש הדף שמציג:
   - פילוח לפי סוג
 
 ##### 📅 סיכום היום
+
 - כמה האכלות היום
 - כמה שעות שינה
 - כמה החלפות חיתולים
@@ -76,6 +83,7 @@ Widget מעוצב בראש הדף שמציג:
 **מיקום:** בכל דף של הילד
 
 התראות מופיעות אוטומטית בפינה הימנית העליונה כאשר:
+
 - 🔴 **התינוק רעב** (עבר זמן האכלה)
 - 🟡 **האכלה מתקרבת** (בעוד פחות מ-30 דקות)
 - 🔴 **התינוק עייף מדי** (ער יותר מדי זמן)
@@ -90,17 +98,20 @@ Widget מעוצב בראש הדף שמציג:
 ## 🎨 עיצוב ותכונות UI
 
 ### צבעים לפי דחיפות:
+
 - 🔴 **אדום (Danger):** דחוף! צריך לטפל עכשיו
 - 🟡 **צהוב (Warning):** בקרוב, תתכוננו
 - 🔵 **כחול (Info):** מידע רגיל
 - 🟢 **ירוק (Success):** הכל בסדר
 
 ### Responsive Design:
+
 - **Desktop:** 4 עמודות בwidget, 3 עמודות בסטטיסטיקות
 - **Tablet:** 2 עמודות
 - **Mobile:** עמודה אחת
 
 ### אנימציות:
+
 - Hover effects על כרטיסים
 - Smooth transitions
 - Loading spinners
@@ -110,12 +121,14 @@ Widget מעוצב בראש הדף שמציג:
 ## 🔧 טכנולוגיות
 
 ### Frontend:
+
 - **Bootstrap 5** - עיצוב וגריד
 - **Vanilla JavaScript** - לוגיקה ו-API calls
 - **Fetch API** - קריאות ל-backend
 - **CSS3** - אנימציות וגרדיאנטים
 
 ### Backend:
+
 - **Django Views** - `ChildAnalyticsDashboard`
 - **REST API** - `/api/webhooks/status/`, `/api/webhooks/alerts/`
 - **BabyAnalytics Class** - לוגיקת חיזוי
@@ -127,15 +140,18 @@ Widget מעוצב בראש הדף שמציג:
 ### כמשתמש רגיל:
 
 1. **כנס לדף הילד**
+
    ```
    /children/<slug>/dashboard/
    ```
 
 2. **ראה את ה-Status Widget**
+
    - Widget מעוצב בראש הדף
    - מתעדכן אוטומטית כל 5 דקות
 
 3. **לחץ על "View Full Analytics"**
+
    - מעבר לדף אנליטיקה מלא
    - כל הסטטיסטיקות והחיזויים
 
@@ -158,7 +174,7 @@ fetch('/api/webhooks/status/?child={{ child.slug }}', {
 .then(res => res.json())
 .then(data => {
   // עדכן את הUI עם data
-  document.getElementById('my-analytics-widget').innerHTML = 
+  document.getElementById('my-analytics-widget').innerHTML =
     data.status_text;
 });
 </script>
@@ -172,7 +188,7 @@ from core.analytics import BabyAnalytics
 def my_view(request, slug):
     child = Child.objects.get(slug=slug)
     analytics = BabyAnalytics(child)
-    
+
     context = {
         'status': analytics.get_current_status(),
         'feeding_stats': analytics.get_feeding_stats(days=7),
@@ -187,11 +203,13 @@ def my_view(request, slug):
 ### Widget לא מציג נתונים?
 
 1. **בדוק שיש נתונים:**
+
    ```bash
    python manage.py child_status
    ```
 
 2. **בדוק את ה-API:**
+
    ```bash
    curl http://localhost:8000/api/webhooks/status/?child=SLUG \
         -H "Authorization: Token YOUR_TOKEN"
@@ -205,6 +223,7 @@ def my_view(request, slug):
 ### התראות לא מופיעות?
 
 1. **וודא שיש התראות:**
+
    ```bash
    curl http://localhost:8000/api/webhooks/alerts/?child=SLUG \
         -H "Authorization: Token YOUR_TOKEN"
@@ -217,6 +236,7 @@ def my_view(request, slug):
 ### דף Analytics לא נטען?
 
 1. **בדוק את ה-URL:**
+
    ```
    /children/<slug>/analytics/
    ```
@@ -230,11 +250,13 @@ def my_view(request, slug):
 ## 🔐 אבטחה
 
 ### Authentication:
+
 - כל ה-API endpoints דורשים authentication
 - משתמש ב-Token authentication
 - Token נשלח בheader: `Authorization: Token <key>`
 
 ### Permissions:
+
 - רק משתמשים מורשים יכולים לראות נתוני ילדים
 - בדיקת הרשאות ב-view level
 
@@ -255,16 +277,20 @@ def my_view(request, slug):
 ## 📚 קבצים רלוונטיים
 
 ### Templates:
+
 - `dashboard/templates/dashboard/child.html` - דף ראשי + widget
 - `dashboard/templates/dashboard/analytics.html` - דף אנליטיקה מלא
 
 ### Views:
+
 - `dashboard/views.py` - `ChildAnalyticsDashboard`
 
 ### URLs:
+
 - `dashboard/urls.py` - route ל-analytics
 
 ### Backend:
+
 - `core/analytics.py` - לוגיקת חיזוי
 - `api/webhook_views.py` - API endpoints
 - `api/analytics_views.py` - API endpoints מפורטים
@@ -274,14 +300,17 @@ def my_view(request, slug):
 ## 💡 טיפים
 
 1. **הוסף נתונים בשביל חיזויים טובים:**
+
    - לפחות 7 ימים של נתונים
    - רישום עקבי של האכלות ושינה
 
 2. **התאם את תדירות הרענון:**
+
    - ברירת מחדל: 5 דקות
    - ניתן לשנות ב-JavaScript
 
 3. **השתמש בדף Analytics למעקב:**
+
    - בדוק טרנדים
    - זהה דפוסים
    - התאם שגרה

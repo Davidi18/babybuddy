@@ -20,6 +20,7 @@ Project → Storage → Add Persistent Storage
 ```
 
 **הגדרות:**
+
 - **Name:** `babybuddy-data`
 - **Destination Path:** `/data`
 - **שמור**
@@ -60,6 +61,7 @@ DB_NAME=/data/db.sqlite3
 ```
 
 **ליצירת SECRET_KEY חדש:**
+
 ```bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
@@ -71,6 +73,7 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 לחץ על **Deploy** 🚀
 
 Coolify יבצע אוטומטית:
+
 - ✅ בניית Docker Image
 - ✅ התקנת תלויות
 - ✅ הרצת Migrations
@@ -135,6 +138,7 @@ python manage.py changepassword admin
 ### שגיאת CSRF?
 
 הוסף:
+
 ```bash
 CSRF_TRUSTED_ORIGINS=https://your-domain.com
 ```
@@ -142,6 +146,7 @@ CSRF_TRUSTED_ORIGINS=https://your-domain.com
 ### שגיאת DisallowedHost?
 
 הוסף את הדומיין ל:
+
 ```bash
 ALLOWED_HOSTS=your-domain.com,www.your-domain.com
 ```
@@ -163,7 +168,7 @@ ALLOWED_HOSTS=your-domain.com,www.your-domain.com
 
 - [ ] פרויקט נוצר ב-Coolify מ-Git Repository
 - [ ] Persistent Volume מוגדר ל-`/data`
-- [ ] משתני סביבה הוגדרו (ADMIN_*, SECRET_KEY, ALLOWED_HOSTS)
+- [ ] משתני סביבה הוגדרו (ADMIN\_\*, SECRET_KEY, ALLOWED_HOSTS)
 - [ ] Deploy הצליח ללא שגיאות
 - [ ] התחברות ל-`/admin/` עובדת
 - [ ] הוספת ילד ו-Deploy נוסף - הילד נשאר

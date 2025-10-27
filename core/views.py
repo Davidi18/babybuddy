@@ -531,40 +531,37 @@ class TimerAddQuick(PermissionRequiredMixin, RedirectView):
 
 class TimerQuickStart(PermissionRequiredMixin, RedirectView):
     """Quick start timer with predefined template (feeding, sleep, etc.)"""
+
     http_method_names = ["get", "post"]
     permission_required = ("core.add_timer",)
-    
+
     # Timer templates mapping
     TIMER_TEMPLATES = {
-        'sleep': _('Sleep'),
-        'tummy-time': _('Tummy Time'),
-        'pumping': _('Pumping'),
+        "sleep": _("Sleep"),
+        "tummy-time": _("Tummy Time"),
+        "pumping": _("Pumping"),
     }
 
     def get(self, request, *args, **kwargs):
-        timer_type = kwargs.get('timer_type', 'feeding')
-        
+        timer_type = kwargs.get("timer_type", "feeding")
+
         # Get timer name from template
-        timer_name = self.TIMER_TEMPLATES.get(timer_type, _('Timer'))
-        
+        timer_name = self.TIMER_TEMPLATES.get(timer_type, _("Timer"))
+
         # Get default child
         child = None
         if models.Child.count() == 1:
             child = models.Child.objects.first()
-        
+
         # Create timer
         instance = models.Timer.objects.create(
-            user=request.user,
-            name=str(timer_name),
-            child=child,
-            start=timezone.now()
+            user=request.user, name=str(timer_name), child=child, start=timezone.now()
         )
-        
+
         messages.success(
-            request, 
-            _("{timer_name} timer started!").format(timer_name=timer_name)
+            request, _("{timer_name} timer started!").format(timer_name=timer_name)
         )
-        
+
         self.url = reverse("core:timer-detail", args=[instance.id])
         return super().get(request, *args, **kwargs)
 
@@ -585,6 +582,7 @@ class TimerRestart(PermissionRequiredMixin, RedirectView):
 
 class TimerStop(PermissionRequiredMixin, RedirectView):
     """Stop timer and redirect to appropriate form based on timer type"""
+
     http_method_names = ["post"]
     permission_required = ("core.change_timer",)
 
@@ -592,42 +590,42 @@ class TimerStop(PermissionRequiredMixin, RedirectView):
         timer = models.Timer.objects.get(id=kwargs["pk"])
         timer.active = False
         timer.save()
-        
+
         # Store timer data in session for form pre-population
-        request.session['timer_data'] = {
-            'timer_id': timer.id,
-            'child_id': timer.child.id if timer.child else None,
-            'start': timer.start.isoformat(),
-            'end': timezone.now().isoformat(),
-            'name': timer.name,
+        request.session["timer_data"] = {
+            "timer_id": timer.id,
+            "child_id": timer.child.id if timer.child else None,
+            "start": timer.start.isoformat(),
+            "end": timezone.now().isoformat(),
+            "name": timer.name,
         }
-        
+
         # Determine redirect based on timer name
-        timer_name_lower = timer.name.lower() if timer.name else ''
-        
-        if 'feeding' in timer_name_lower or 'האכלה' in timer_name_lower:
+        timer_name_lower = timer.name.lower() if timer.name else ""
+
+        if "feeding" in timer_name_lower or "האכלה" in timer_name_lower:
             self.url = reverse("core:feeding-add") + "?from_timer=1"
-        elif 'sleep' in timer_name_lower or 'שינה' in timer_name_lower:
+        elif "sleep" in timer_name_lower or "שינה" in timer_name_lower:
             self.url = reverse("core:sleep-add") + "?from_timer=1"
-        elif 'tummy' in timer_name_lower or 'בטן' in timer_name_lower:
+        elif "tummy" in timer_name_lower or "בטן" in timer_name_lower:
             self.url = reverse("core:tummytime-add") + "?from_timer=1"
-        elif 'pump' in timer_name_lower or 'שאיבה' in timer_name_lower:
+        elif "pump" in timer_name_lower or "שאיבה" in timer_name_lower:
             self.url = reverse("core:pumping-add") + "?from_timer=1"
         else:
             # Generic timer - just show success and go to timer list
-            messages.success(request, _("Timer stopped: {duration}").format(
-                duration=timer.duration
-            ))
+            messages.success(
+                request, _("Timer stopped: {duration}").format(duration=timer.duration)
+            )
             self.url = reverse("core:timer-list")
             return super().get(request, *args, **kwargs)
-        
+
         messages.success(
             request,
             _("Timer stopped ({duration}). Complete the entry below.").format(
                 duration=timer.duration
-            )
+            ),
         )
-        
+
         return super().get(request, *args, **kwargs)
 
 
