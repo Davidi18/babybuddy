@@ -23,18 +23,18 @@ echo "✅ Database ready"
 echo "📦 Running migrations..."
 python manage.py migrate --noinput
 
-# 3. Download static files from GitHub if missing
+# 3. Download static files from GitHub if missing (to source location)
 echo "📥 Checking static files..."
-if [ ! -d "/app/static/babybuddy/css" ] || [ -z "$(ls -A /app/static/babybuddy/css 2>/dev/null)" ]; then
+if [ ! -d "/app/babybuddy/static/babybuddy/css" ] || [ -z "$(ls -A /app/babybuddy/static/babybuddy/css 2>/dev/null)" ]; then
     echo "⚠️  Static files missing or empty, downloading from GitHub..."
     cd /app
-    rm -rf /app/static/babybuddy
+    rm -rf /app/babybuddy/static/babybuddy
     curl -sL https://github.com/Davidi18/babybuddy/archive/refs/heads/master.tar.gz | tar -xz
-    mv babybuddy-master/static/babybuddy /app/static/
+    cp -r babybuddy-master/static/babybuddy /app/babybuddy/static/
     rm -rf babybuddy-master
-    echo "✅ Static files downloaded"
+    echo "✅ Static files downloaded to source location"
 else
-    echo "✅ Static files already exist"
+    echo "✅ Static files already exist in source"
 fi
 
 # 4. Collect static files
