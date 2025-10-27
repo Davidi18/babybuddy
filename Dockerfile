@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     gettext \
     libpq-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set work directory
@@ -24,7 +25,7 @@ COPY requirements.txt /app/
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r requirements.txt gunicorn
 
 # Copy project files
 COPY . /app/
@@ -33,11 +34,11 @@ COPY . /app/
 RUN mkdir -p /data /app/static /app/media && \
     chmod -R 755 /data /app/static /app/media
 
+# Make entrypoint executable
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Expose port 8000
 EXPOSE 8000
 
-# Make Procfile.sh executable
-RUN chmod +x /app/Procfile.sh
-
-# Run the application using Procfile.sh
-CMD ["bash", "/app/Procfile.sh"]
+# Run the application using docker-entrypoint.sh
+CMD ["/app/docker-entrypoint.sh"]
