@@ -25,10 +25,13 @@ python manage.py migrate --noinput
 
 # 3. Download static files from GitHub if missing
 echo "📥 Checking static files..."
-if [ ! -d "/app/static/babybuddy" ]; then
-    echo "⚠️  Static files missing, downloading from GitHub..."
+if [ ! -d "/app/static/babybuddy/css" ] || [ -z "$(ls -A /app/static/babybuddy/css 2>/dev/null)" ]; then
+    echo "⚠️  Static files missing or empty, downloading from GitHub..."
     cd /app
-    curl -sL https://github.com/Davidi18/babybuddy/archive/master.tar.gz | tar -xz --strip=1 babybuddy-master/static
+    rm -rf /app/static/babybuddy
+    curl -sL https://github.com/Davidi18/babybuddy/archive/refs/heads/master.tar.gz | tar -xz
+    mv babybuddy-master/static/babybuddy /app/static/
+    rm -rf babybuddy-master
     echo "✅ Static files downloaded"
 else
     echo "✅ Static files already exist"
