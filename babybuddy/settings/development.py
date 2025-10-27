@@ -8,7 +8,7 @@ DEBUG = bool(strtobool(os.environ.get("DEBUG") or "True"))
 
 # CSRF Settings - ביטול CSRF ב-development mode
 # הסרת CSRF middleware מהרשימה
-MIDDLEWARE = [m for m in MIDDLEWARE if 'CsrfViewMiddleware' not in m]
+MIDDLEWARE = [m for m in MIDDLEWARE if "CsrfViewMiddleware" not in m]
 
 
 # Static files (CSS, JavaScript, Images)

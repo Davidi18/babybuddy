@@ -43,6 +43,7 @@ TIME_ZONE=Asia/Jerusalem
 **פשוט תלחץ על Deploy ב-Coolify וזהו!** 🎉
 
 הדיפלוי יבצע אוטומטית:
+
 - ✅ Migrations
 - ✅ Static files collection
 - ✅ Cache setup
@@ -82,6 +83,7 @@ docker logs baby
 ## ❌ אין יותר צורך ב:
 
 ### לא צריך יותר להריץ ידנית:
+
 - ~~`docker exec baby python manage.py migrate`~~
 - ~~`docker exec baby python manage.py collectstatic`~~
 - ~~`docker exec baby sed -i ... (CSRF fix)`~~
@@ -114,6 +116,7 @@ docker restart baby
 ### אם יש CSRF errors:
 
 זה לא אמור לקרות יותר! אבל אם כן:
+
 1. ודא ש-`DJANGO_SETTINGS_MODULE=babybuddy.settings.development` ב-ENV
 2. ודא ש-`DEBUG=True` ב-ENV
 
@@ -122,6 +125,7 @@ docker restart baby
 ## 📊 השוואה: לפני ואחרי
 
 ### לפני (6 פקודות ידניות):
+
 ```bash
 docker ps | grep baby
 docker exec baby python manage.py migrate --noinput
@@ -132,6 +136,7 @@ docker restart baby
 ```
 
 ### אחרי (זהו):
+
 ```
 לחץ "Deploy" ב-Coolify 🎉
 ```
