@@ -834,8 +834,8 @@ msgid ""
 "Learn about and predict baby's needs without (<em>as much</em>) guess work "
 "by using Baby Buddy to track &mdash;"
 msgstr ""
-"תלמד ותחזה את הצרכים של של התינוק מבלי (<em>כמעט</em>) לנחש עם תעזר בBaby "
-"Buddy &mdash;"
+"למד וחזה את צרכי התינוק שלך ללא (<em>כמעט</em>) ניחושים, בעזרת Baby Buddy "
+"למעקב אחרי &mdash;"
 
 #: babybuddy/templates/babybuddy/welcome.html:27 core/models.py:264
 #: core/templates/core/diaperchange_confirm_delete.html:8
@@ -856,11 +856,11 @@ msgid ""
 "dads with 2AM feedings and changings. To get started, just click the button "
 "below to add your first (or second, third, etc.) child!"
 msgstr ""
-"כשאר כמות המידע יגדל, Baby Buddy יעזור להורים ולמטפלים לזהות דפוסי התנהגות "
-"קטנים בתחביבים של התינוק בעזרת דשבורד וגרפים. Baby Buddy מתאימה לסמארטפון "
-"ידידותית ומשתמשת בעיצוב כהה בשביל לעזור לאמאות והאבות המודאגים שמאכילים או "
-"מחליפיפ 2 בלילה. בשביל להתחיל, רק תלחץ על הכפתור מתחת והכנס את הילד הראשון "
-"(או השני, השלישי וכו')!"
+"ככל שכמות הרישומים גדלה, Baby Buddy יעזור להורים ולמטפלים לזהות דפוסים קטנים "
+"בהרגלי התינוק בעזרת לוח הבקרה והגרפים. Baby Buddy ידידותי לסמארטפון ומשתמש "
+"בערכת נושא כהה כדי לעזור לאמהות ולאבות העייפים בהאכלות והחלפות השעה 2 בלילה. "
+"כדי להתחיל, פשוט לחץ על הכפתור למטה כדי להוסיף את הילד הראשון שלך (או השני, "
+"השלישי וכו')!"
 
 #: babybuddy/templates/babybuddy/welcome.html:76
 #: core/templates/core/child_form.html:7 core/templates/core/child_form.html:20
