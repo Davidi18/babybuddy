@@ -26,7 +26,7 @@ msgstr "הגדרות"
 #: dashboard/templates/dashboard/dashboard.html:4
 #: dashboard/templates/dashboard/dashboard.html:7
 msgid "Dashboard"
-msgstr "דשבורד"
+msgstr "לוח בקרה"
 
 #: babybuddy/forms.py:15 babybuddy/templates/babybuddy/user_list.html:20
 msgid "Read only"
@@ -44,7 +44,7 @@ msgstr "זמן רענון"
 msgid ""
 "If supported by browser, the dashboard will only refresh when visible, and "
 "also when receiving focus."
-msgstr "אם נתמך על ידי הדפדפן, הדשבורד יתעדכן רק כשהוא גלוי וכשמקבל פוקוס."
+msgstr "אם נתמך על ידי הדפדפן, הלוח בקרה יתעדכן רק כשהוא גלוי וכשמקבל פוקוס."
 
 #: babybuddy/models.py:28
 msgid "disabled"
@@ -69,7 +69,7 @@ msgstr "הסתר נתונים ישנים יותר מ"
 
 #: babybuddy/models.py:77
 msgid "This setting controls which data will be shown in the dashboard."
-msgstr "הגדרה זו שולטת אילו נתונים יוצגו בדשבורד."
+msgstr "הגדרה זו שולטת אילו נתונים יוצגו בלוח בקרה."
 
 #: babybuddy/models.py:83
 msgid "show all data"
@@ -218,15 +218,15 @@ msgstr "אוקראינית"
 
 #: babybuddy/site_settings.py:23
 msgid "Default minimum nap start time"
-msgstr "ערך ברירת המחדל מיניאלי להתחלת נמנום"
+msgstr "זמן התחלה מינימלי לתנומה (ברירת מחדל)"
 
 #: babybuddy/site_settings.py:25
 msgid ""
 "The minimum default time that a sleep entry is consider a nap. If set the "
 "nap property will be preselected if the start time is within the bounds."
 msgstr ""
-"ברירת מחדל לזמן מינימאלי להיחשב תנומה. אם הוגדר כמו שצריך מאפיין תנומה ייבחר "
-"מראש אם שעת ההתחלה היא בין הגבולות."
+"זמן המינימום המוגדר כברירת מחדל בשביל שרישום שינה ייחשב כתנומה. אם מוגדר, מאפיין "
+"התנומה יסומן מראש כאשר שעת ההתחלה נמצאת בטווח הזמנים המוגדר."
 
 #: babybuddy/site_settings.py:31
 msgid "Default maximum nap start time"
@@ -237,14 +237,14 @@ msgid ""
 "The maximum default time that a sleep entry is consider a nap. If set the "
 "nap property will be preselected if the start time is within the bounds."
 msgstr ""
-"ברירת מחדל לזמן מקסימאלי להיחשב תנומה. אם הוגדר כמו שצריך מאפיין תנומה ייבחר "
-"מראש אם שעת ההתחלה היא בין הגבולות."
+"זמן המקסימום המוגדר כברירת מחדל בשביל שרישום שינה ייחשב כתנומה. אם מוגדר, מאפיין "
+"התנומה יסומן מראש כאשר שעת ההתחלה נמצאת בטווח הזמנים המוגדר."
 
 #: babybuddy/templates/admin/base_site.html:4
 #: babybuddy/templates/admin/base_site.html:8
 #: babybuddy/templates/babybuddy/nav-dropdown.html:333
 msgid "Database Admin"
-msgstr "מנהל מכרז מידע"
+msgstr "מנהל בסיס נתונים"
 
 #: babybuddy/templates/babybuddy/base.html:37
 msgid "Home"
@@ -282,7 +282,7 @@ msgstr "חלק מהשדות מכילים שגיאות. ראה פרטים למט�
 #: babybuddy/templates/babybuddy/nav-dropdown.html:44 core/models.py:263
 #: core/models.py:267
 msgid "Diaper Change"
-msgstr "החלפת טיטול"
+msgstr "החלפת חיתול"
 
 #: babybuddy/templates/babybuddy/nav-dropdown.html:50
 #: babybuddy/templates/babybuddy/nav-dropdown.html:253 core/models.py:334
@@ -974,16 +974,16 @@ msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
-"שלחנו לך באימייל הוראות להגדרת הסיסמה שלך, אם קיים חשבון עם האימייל שהזנת. "
-"אתה אמור לקבל אותם בקרוב."
+"שלחנו אליך באימייל הוראות להגדרת הסיסמה, אם קיים חשבון עם האימייל שהוזן. "
+"ההוראות אמורות להתקבל בקרוב."
 
 #: babybuddy/templates/registration/password_reset_done.html:16
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
 msgstr ""
-"אם אינך מקבל אימייל, אנא ודא שהזנת את הכתובת איתה נרשמת, ובדוק בתיקיית הספאם "
-"שלך."
+"אם לא התקבל אימייל, יש לוודא שהכתובת שהוזנה היא הכתובת שנרשמה איתה, ולבדוק "
+"בתיקיית הספאם."
 
 #: babybuddy/templates/registration/password_reset_email.html:3
 #, python-format
@@ -1074,7 +1074,7 @@ msgid ""
 "%(min)s."
 msgstr ""
 "זמן התחלת תנומה מקסימאלי %(max)s חייב להיות גדול יותר מערך זמן התחלת תנומה "
-"מיניאלי %(min)s."
+"מינימלי %(min)s."
 
 #: core/fields.py:27
 #, python-format
@@ -1406,7 +1406,7 @@ msgstr "הוספה"
 
 #: core/templates/core/diaperchange_list.html:15
 msgid "Add Diaper Change"
-msgstr "הוספת החלפת טיטול"
+msgstr "הוספת החלפת חיתול"
 
 #: core/templates/core/diaperchange_list.html:29
 msgid "Contents"
@@ -1911,7 +1911,7 @@ msgstr "%(child)s התחיל לאכול."
 #: core/timeline.py:196
 #, python-format
 msgid "%(child)s had a %(type)s diaper change."
-msgstr "%(child)sהוחלף טיטול.%(type)s"
+msgstr "%(child)sהוחלף חיתול.%(type)s"
 
 #: core/timeline.py:239
 #, python-format
@@ -2166,11 +2166,11 @@ msgstr "שינוי BMI לפי שבוע"
 
 #: dashboard/templatetags/cards.py:533
 msgid "Diaper change frequency (past 3 days)"
-msgstr "תדירות החלפת טיטול (שלושה ימים אחרונים)"
+msgstr "תדירות החלפת חיתול (שלושה ימים אחרונים)"
 
 #: dashboard/templatetags/cards.py:537
 msgid "Diaper change frequency (past 2 weeks)"
-msgstr "תדירות החלפת טיטול (ימיים אחרונים)"
+msgstr "תדירות החלפת חיתול (ימיים אחרונים)"
 
 #: dashboard/templatetags/cards.py:541
 msgid "Diaper change frequency"
@@ -2190,12 +2190,12 @@ msgstr "תדירות האכלה"
 
 #: reports/graphs/diaperchange_amounts.py:27
 msgid "Diaper change amount"
-msgstr "כמות החלפת טיטולים"
+msgstr "כמות החלפת חיתולים"
 
 #: reports/graphs/diaperchange_amounts.py:36
 #: reports/templates/reports/report_list.html:18
 msgid "Diaper Change Amounts"
-msgstr "כמויות החלפת טיטולים"
+msgstr "כמויות החלפת חיתולים"
 
 #: reports/graphs/diaperchange_amounts.py:39
 msgid "Change amount"
@@ -2210,7 +2210,7 @@ msgstr "סך הכל"
 #: reports/templates/reports/diaperchange_intervals.html:4
 #: reports/templates/reports/diaperchange_intervals.html:9
 msgid "Diaper Change Intervals"
-msgstr "מרווחי החלפת טיטולים"
+msgstr "מרווחי החלפת חיתולים"
 
 #: reports/graphs/diaperchange_intervals.py:72
 msgid "Interval (hours)"
@@ -2367,7 +2367,7 @@ msgstr "משך כולל (דקות)"
 #: reports/templates/reports/diaperchange_amounts.html:4
 #: reports/templates/reports/diaperchange_amounts.html:9
 msgid "Diaper Amounts"
-msgstr "כמות טיטולים"
+msgstr "כמות חיתולים"
 
 #: reports/templates/reports/feeding_amounts.html:4
 #: reports/templates/reports/feeding_amounts.html:9
@@ -2391,7 +2391,7 @@ msgstr "מדד מסת גוף (BMI)"
 
 #: reports/templates/reports/report_list.html:22
 msgid "Diaper Intervals"
-msgstr "מרווחי טיטולים"
+msgstr "מרווחי חיתולים"
 
 #: reports/templates/reports/report_list.html:28
 msgid "Feeding Durations (Average)"
@@ -2575,7 +2575,7 @@ msgstr "אחוזי משקל של WHO לבנות בקילוגרם"
 #~ msgstr "טיימרים פעילים"
 
 #~ msgid "%(child)s had a diaper change."
-#~ msgstr "ל%(child)s הוחלף טיטול."
+#~ msgstr "ל%(child)s הוחלף חיתול."
 
 #~ msgid "%(timer)s stopped."
 #~ msgstr "%(timer)s נעצר."
@@ -2661,7 +2661,7 @@ msgstr "אחוזי משקל של WHO לבנות בקילוגרם"
 #~ msgstr "%(n)s האכלות%(plural)s קודם"
 
 #~ msgid "<b>Diaper Change Amounts</b>"
-#~ msgstr "<b>כמויות החלפת טיטולים</b>"
+#~ msgstr "<b>כמויות החלפת חיתולים</b>"
 
 #~ msgid "1 day"
 #~ msgstr "יום אחד"
@@ -2764,7 +2764,7 @@ msgstr "אחוזי משקל של WHO לבנות בקילוגרם"
 #~ "Nap start min. value %(min)s must be less than nap start min. value "
 #~ "%(max)s."
 #~ msgstr ""
-#~ "זמן התחלת תנומה מיניאלי %(min)s חייב להיות קטן יותר מערך זמן התחלת תנומה "
+#~ "זמן התחלת תנומה מינימלי %(min)s חייב להיות קטן יותר מערך זמן התחלת תנומה "
 #~ "מקסימאלי %(max)s."
 
 #~ msgid ""
@@ -2773,7 +2773,7 @@ msgstr "אחוזי משקל של WHO לבנות בקילוגרם"
 #~ "<div class=\"text-center small text-body-secondary\"> %(since)s </div>"
 
 #~ msgid "<b>Diaper Change Intervals</b>"
-#~ msgstr "<b>מרווחי החלפת טיטול</b>"
+#~ msgstr "<b>מרווחי החלפת חיתול</b>"
 
 #~ msgid "<b>Feeding intervals</b>"
 #~ msgstr "<b>מרווחי האכלה</b>"
