@@ -1,0 +1,497 @@
+{
+  "workflows": [
+    {
+      "name": "Baby Buddy - Daily Summary WhatsApp",
+      "description": "סיכום יומי כל בוקר ב-8:00 בוואטסאפ",
+      "nodes": [
+        {
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "cronExpression",
+                  "expression": "0 8 * * *"
+                }
+              ]
+            }
+          },
+          "name": "Schedule - Every Day 8 AM",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1,
+          "position": [250, 300],
+          "id": "schedule-daily"
+        },
+        {
+          "parameters": {
+            "method": "GET",
+            "url": "https://YOUR-BABY-BUDDY-DOMAIN.com/api/webhooks/daily-summary/",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "sendQuery": true,
+            "queryParameters": {
+              "parameters": [
+                {
+                  "name": "child",
+                  "value": "YOUR_CHILD_SLUG"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "name": "Get Daily Summary from Baby Buddy",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [450, 300],
+          "id": "get-summary",
+          "credentials": {
+            "httpHeaderAuth": {
+              "name": "Baby Buddy API Token",
+              "value": "Token YOUR_API_TOKEN_HERE"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "=https://api.green-api.com/waInstance{{$credentials.greenApiInstanceId}}/sendMessage/{{$credentials.greenApiToken}}",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"chatId\": \"{{$credentials.whatsappNumber}}\",\n  \"message\": \"{{$json.message}}\"\n}",
+            "options": {}
+          },
+          "name": "Send to WhatsApp",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [650, 300],
+          "id": "send-whatsapp"
+        }
+      ],
+      "connections": {
+        "Schedule - Every Day 8 AM": {
+          "main": [
+            [
+              {
+                "node": "Get Daily Summary from Baby Buddy",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Get Daily Summary from Baby Buddy": {
+          "main": [
+            [
+              {
+                "node": "Send to WhatsApp",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    {
+      "name": "Baby Buddy - Smart Alerts Every 15 Min",
+      "description": "התראות חכמות - שולח רק אם יש משהו דחוף",
+      "nodes": [
+        {
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "cronExpression",
+                  "expression": "*/15 * * * *"
+                }
+              ]
+            }
+          },
+          "name": "Every 15 Minutes",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1,
+          "position": [250, 300],
+          "id": "schedule-alerts"
+        },
+        {
+          "parameters": {
+            "method": "GET",
+            "url": "https://YOUR-BABY-BUDDY-DOMAIN.com/api/webhooks/alerts/",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "sendQuery": true,
+            "queryParameters": {
+              "parameters": [
+                {
+                  "name": "child",
+                  "value": "YOUR_CHILD_SLUG"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "name": "Check for Alerts",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [450, 300],
+          "id": "check-alerts",
+          "credentials": {
+            "httpHeaderAuth": {
+              "name": "Baby Buddy API Token"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "boolean": [
+                {
+                  "value1": "={{$json.has_alerts}}",
+                  "value2": true
+                }
+              ]
+            }
+          },
+          "name": "Has Alerts?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 1,
+          "position": [650, 300],
+          "id": "if-alerts"
+        },
+        {
+          "parameters": {
+            "mode": "rules",
+            "rules": {
+              "rules": [
+                {
+                  "name": "Feeding Overdue",
+                  "conditions": {
+                    "string": [
+                      {
+                        "value1": "={{$json.alerts[0].type}}",
+                        "operation": "equals",
+                        "value2": "feeding_overdue"
+                      }
+                    ]
+                  },
+                  "renameOutput": true,
+                  "outputKey": "feeding"
+                },
+                {
+                  "name": "Overtired",
+                  "conditions": {
+                    "string": [
+                      {
+                        "value1": "={{$json.alerts[0].type}}",
+                        "operation": "equals",
+                        "value2": "overtired"
+                      }
+                    ]
+                  },
+                  "renameOutput": true,
+                  "outputKey": "sleep"
+                },
+                {
+                  "name": "Diaper Overdue",
+                  "conditions": {
+                    "string": [
+                      {
+                        "value1": "={{$json.alerts[0].type}}",
+                        "operation": "equals",
+                        "value2": "diaper_overdue"
+                      }
+                    ]
+                  },
+                  "renameOutput": true,
+                  "outputKey": "diaper"
+                }
+              ]
+            }
+          },
+          "name": "Alert Type Switch",
+          "type": "n8n-nodes-base.switch",
+          "typeVersion": 1,
+          "position": [850, 200],
+          "id": "switch-type"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "=https://api.green-api.com/waInstance{{$credentials.greenApiInstanceId}}/sendMessage/{{$credentials.greenApiToken}}",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"chatId\": \"{{$credentials.whatsappNumber}}\",\n  \"message\": \"🍼 התראה!\\n\\n{{$json.alerts[0].title}}\\n\\n{{$json.alerts[0].message}}\\n\\nהתינוק כנראה רעב!\"\n}",
+            "options": {}
+          },
+          "name": "Send Feeding Alert",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [1050, 100],
+          "id": "alert-feeding"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "=https://api.green-api.com/waInstance{{$credentials.greenApiInstanceId}}/sendMessage/{{$credentials.greenApiToken}}",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"chatId\": \"{{$credentials.whatsappNumber}}\",\n  \"message\": \"😴 התראה!\\n\\n{{$json.alerts[0].title}}\\n\\n{{$json.alerts[0].message}}\\n\\nהתינוק עייף מדי!\"\n}",
+            "options": {}
+          },
+          "name": "Send Sleep Alert",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [1050, 200],
+          "id": "alert-sleep"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "=https://api.green-api.com/waInstance{{$credentials.greenApiInstanceId}}/sendMessage/{{$credentials.greenApiToken}}",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"chatId\": \"{{$credentials.whatsappNumber}}\",\n  \"message\": \"🧷 התראה!\\n\\n{{$json.alerts[0].title}}\\n\\n{{$json.alerts[0].message}}\"\n}",
+            "options": {}
+          },
+          "name": "Send Diaper Alert",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [1050, 300],
+          "id": "alert-diaper"
+        }
+      ],
+      "connections": {
+        "Every 15 Minutes": {
+          "main": [
+            [
+              {
+                "node": "Check for Alerts",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Check for Alerts": {
+          "main": [
+            [
+              {
+                "node": "Has Alerts?",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Has Alerts?": {
+          "main": [
+            [
+              {
+                "node": "Alert Type Switch",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            []
+          ]
+        },
+        "Alert Type Switch": {
+          "main": [
+            [
+              {
+                "node": "Send Feeding Alert",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Send Sleep Alert",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Send Diaper Alert",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    {
+      "name": "Baby Buddy - Status On Demand",
+      "description": "שלח 'סטטוס' בWhatsApp וקבל מצב נוכחי",
+      "nodes": [
+        {
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "baby-status",
+            "responseMode": "lastNode",
+            "options": {}
+          },
+          "name": "Webhook - Incoming Message",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 1,
+          "position": [250, 300],
+          "webhookId": "baby-status-webhook",
+          "id": "webhook-trigger"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "string": [
+                {
+                  "value1": "={{$json.body.messageData.textMessageData.textMessage.toLowerCase()}}",
+                  "operation": "regex",
+                  "value2": "(סטטוס|מצב|status)"
+                }
+              ]
+            }
+          },
+          "name": "Is Status Command?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 1,
+          "position": [450, 300],
+          "id": "if-status"
+        },
+        {
+          "parameters": {
+            "method": "GET",
+            "url": "https://YOUR-BABY-BUDDY-DOMAIN.com/api/webhooks/status/",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "sendQuery": true,
+            "queryParameters": {
+              "parameters": [
+                {
+                  "name": "child",
+                  "value": "YOUR_CHILD_SLUG"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "name": "Get Current Status",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [650, 200],
+          "id": "get-status",
+          "credentials": {
+            "httpHeaderAuth": {
+              "name": "Baby Buddy API Token"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "=https://api.green-api.com/waInstance{{$credentials.greenApiInstanceId}}/sendMessage/{{$credentials.greenApiToken}}",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"chatId\": \"{{$node[\"Webhook - Incoming Message\"].json.body.senderData.chatId}}\",\n  \"message\": \"📊 מצב נוכחי:\\n\\n{{$json.status_text}}\"\n}",
+            "options": {}
+          },
+          "name": "Send Status Reply",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 3,
+          "position": [850, 200],
+          "id": "send-reply"
+        },
+        {
+          "parameters": {
+            "respondWith": "text",
+            "responseBody": "OK"
+          },
+          "name": "Respond to Webhook",
+          "type": "n8n-nodes-base.respondToWebhook",
+          "typeVersion": 1,
+          "position": [1050, 200],
+          "id": "respond"
+        }
+      ],
+      "connections": {
+        "Webhook - Incoming Message": {
+          "main": [
+            [
+              {
+                "node": "Is Status Command?",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Is Status Command?": {
+          "main": [
+            [
+              {
+                "node": "Get Current Status",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            []
+          ]
+        },
+        "Get Current Status": {
+          "main": [
+            [
+              {
+                "node": "Send Status Reply",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send Status Reply": {
+          "main": [
+            [
+              {
+                "node": "Respond to Webhook",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    }
+  ],
+  "setup_instructions": {
+    "1_baby_buddy_token": "צור API token: python manage.py drf_create_token USERNAME",
+    "2_green_api": {
+      "register": "https://green-api.com/",
+      "get_instance_id": "מהלוח הבקרה של Green API",
+      "get_token": "מהלוח הבקרה של Green API"
+    },
+    "3_import_to_n8n": [
+      "פתח n8n",
+      "לחץ על Import from File",
+      "בחר workflow אחד מהרשימה למעלה",
+      "עדכן את הערכים:",
+      "  - YOUR-BABY-BUDDY-DOMAIN.com",
+      "  - YOUR_API_TOKEN_HERE",
+      "  - YOUR_CHILD_SLUG",
+      "הוסף Credentials ל-n8n:",
+      "  - greenApiInstanceId",
+      "  - greenApiToken",
+      "  - whatsappNumber (פורמט: 972501234567@c.us)",
+      "הפעל את ה-Workflow!"
+    ],
+    "4_whatsapp_number_format": "972501234567@c.us (ללא + או -)",
+    "5_test": "בדוק שהכל עובד עם Execute Workflow ידנית"
+  }
+}
