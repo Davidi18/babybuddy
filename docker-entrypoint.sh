@@ -31,9 +31,9 @@ else
     echo "✅ Static files already exist (from git repo)"
 fi
 
-# 4. Collect static files
+# 4. Collect static files (without --clear to preserve pre-built files from git)
 echo "🎨 Collecting static files..."
-python manage.py collectstatic --noinput --clear
+python manage.py collectstatic --noinput
 
 # 5. Create cache table
 echo "💾 Setting up cache..."
