@@ -248,7 +248,11 @@ msgstr "מנהל בסיס נתונים"
 
 #: babybuddy/templates/babybuddy/base.html:37
 msgid "Home"
-msgstr "בית"
+msgstr "בית "
+
+#: dashboard/templates/dashboard/child.html:369
+msgid "Alert"
+msgstr "תזכורת"
 
 #: babybuddy/templates/babybuddy/filter.html:20
 msgid "Filter"
@@ -1831,10 +1835,9 @@ msgid "Advanced Fields"
 msgstr ""
 
 #: core/templates/timeline/_timeline.html:41
-#, fuzzy, python-format
-#| msgid "%(since)s ago (%(time)s)"
+#, python-format
 msgid "%(since)s ago (%(time)s)"
-msgstr "לפני %(since) (%(time)s)"
+msgstr "לפני %(since)s (%(time)s)"
 
 #: core/templates/timeline/_timeline.html:47
 #, python-format
@@ -1876,42 +1879,42 @@ msgstr "אתמול"
 #: core/timeline.py:56
 #, python-format
 msgid "%(child)s started tummy time!"
-msgstr "%(child)s התחיל זמן על הבטן!"
+msgstr "%(child)s התחילה זמן על הבטן!"
 
 #: core/timeline.py:68
 #, python-format
 msgid "%(child)s finished tummy time."
-msgstr "%(child)s סיים להיות על הבטן."
+msgstr "%(child)s סיימה להיות על הבטן."
 
 #: core/timeline.py:96
 #, python-format
 msgid "%(child)s fell asleep."
-msgstr "%(child)s נרדם."
+msgstr "%(child)s נרדמה."
 
 #: core/timeline.py:108
 #, python-format
 msgid "%(child)s woke up."
-msgstr "%(child)s התעורר."
+msgstr "%(child)s התעוררה."
 
 #: core/timeline.py:155
 #, python-format
 msgid "%(child)s started feeding."
-msgstr "%(child)s התחיל לאכול."
+msgstr "%(child)s התחילה לאכול."
 
 #: core/timeline.py:164
 #, python-format
 msgid "%(child)s finished feeding."
-msgstr "%(child)s סיים לאכול."
+msgstr "%(child)s סיימה לאכול."
 
 #: core/timeline.py:174
-#, fuzzy, python-format
+#, python-format
 msgid "%(child)s had a feeding."
-msgstr "%(child)s התחיל לאכול."
+msgstr "%(child)s אכלה."
 
 #: core/timeline.py:196
 #, python-format
 msgid "%(child)s had a %(type)s diaper change."
-msgstr "%(child)sהוחלף חיתול.%(type)s"
+msgstr "הוחלף ל%(child)s חיתול %(type)s"
 
 #: core/timeline.py:239
 #, python-format

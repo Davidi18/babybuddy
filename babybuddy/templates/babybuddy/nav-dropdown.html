@@ -363,5 +363,26 @@
 #nav-quick-add-link + .dropdown-menu.bg-dark .dropdown-item:hover i {
     opacity: 1;
 }
+
+/* RTL dropdown positioning and z-index fixes */
+[dir="rtl"] .dropdown-menu {
+    right: 0 !important;
+    left: auto !important;
+}
+
+[dir="rtl"] .dropdown-menu-end {
+    right: 0 !important;
+    left: auto !important;
+}
+
+.dropdown-menu {
+    z-index: 1060 !important;
+}
+
+/* Fix quick-add menu in RTL */
+[dir="rtl"] #nav-quick-add-link + .dropdown-menu.bg-dark {
+    right: 0 !important;
+    left: auto !important;
+}
 </style>
 {% endblock %}

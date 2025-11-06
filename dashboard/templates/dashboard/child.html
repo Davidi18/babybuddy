@@ -29,45 +29,45 @@
                     <div id="analytics-content" style="display:none;">
                         <div class="row g-3">
                             <!-- Last Feeding -->
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-6">
                                 <div class="status-item">
                                     <div class="status-icon">🍼</div>
                                     <div class="status-details">
-                                        <div class="text-muted mb-1">{% trans "Last Feeding" %}</div>
-                                        <div id="last-feeding-time" class="fw-bold fs-5"></div>
+                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">האכלה אחרונה</div>
+                                        <div id="last-feeding-time" class="fw-bold" style="font-size: 1.3rem;"></div>
                                         <div id="last-feeding-type" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Next Feeding Prediction -->
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-6">
                                 <div class="status-item">
                                     <div class="status-icon">⏰</div>
                                     <div class="status-details">
-                                        <div class="text-muted mb-1">{% trans "Next Feeding" %}</div>
-                                        <div id="next-feeding-prediction" class="fw-bold fs-5"></div>
+                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">האכלה הבאה</div>
+                                        <div id="next-feeding-prediction" class="fw-bold" style="font-size: 1.3rem;"></div>
                                         <div id="next-feeding-time" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Sleep Status -->
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-6">
                                 <div class="status-item">
                                     <div class="status-icon">💤</div>
                                     <div class="status-details">
-                                        <div class="text-muted mb-1">{% trans "Sleep Status" %}</div>
-                                        <div id="sleep-status" class="fw-bold fs-5"></div>
+                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">מצב שינה</div>
+                                        <div id="sleep-status" class="fw-bold" style="font-size: 1.3rem;"></div>
                                         <div id="sleep-prediction" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Alerts -->
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-6">
                                 <div class="status-item">
                                     <div class="status-icon" id="alert-icon">ℹ️</div>
                                     <div class="status-details">
-                                        <div class="text-muted mb-1">{% trans "Status" %}</div>
-                                        <div id="alert-message" class="fw-bold text-success fs-5">{% trans "All good" %}</div>
+                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">סטטוס</div>
+                                        <div id="alert-message" class="fw-bold text-success" style="font-size: 1.3rem;">הכל בסדר</div>
                                         <div id="alert-time" class="text-muted small"></div>
                                     </div>
                                 </div>
@@ -165,25 +165,26 @@
             const mins = Math.round(minutes % 60);
             
             if (hours > 0) {
-                return `{% trans "ago" %} ${hours}:${mins.toString().padStart(2, '0')}`;
+                return `לפני ${hours}:${mins.toString().padStart(2, '0')}`;
             }
-            return `{% trans "ago" %} ${mins} {% trans "min" %}`;
+            return `לפני ${mins} דקות`;
         }
 
         function formatTimeUntil(minutes) {
             if (!minutes && minutes !== 0) return '';
             
             if (minutes < 0) {
-                return `{% trans "overdue" %} ${Math.abs(Math.round(minutes))} {% trans "min" %}`;
+                // במקום "עבר הזמן" - פשוט נראה את הזמן שעבר
+                return `לפני ${Math.abs(Math.round(minutes))} דקות`;
             }
             
             const hours = Math.floor(minutes / 60);
             const mins = Math.round(minutes % 60);
             
             if (hours > 0) {
-                return `{% trans "in" %} ${hours}:${mins.toString().padStart(2, '0')}`;
+                return `בעוד ${hours}:${mins.toString().padStart(2, '0')}`;
             }
-            return `{% trans "in" %} ${mins} {% trans "min" %}`;
+            return `בעוד ${mins} דקות`;
         }
 
         function getStatusClass(status) {
@@ -218,22 +219,22 @@
             if (data.next_feeding_prediction) {
                 const pred = data.next_feeding_prediction;
                 const predEl = document.getElementById('next-feeding-prediction');
-                predEl.textContent = pred.message || '{% trans "Unknown" %}';
+                predEl.textContent = pred.message || 'לא ידוע';
                 predEl.className = 'fw-bold ' + getStatusClass(pred.status);
                 
-                if (pred.minutes_until !== null) {
+                if (pred.minutes_until_next !== null && pred.minutes_until_next !== undefined) {
                     document.getElementById('next-feeding-time').textContent = 
-                        formatTimeUntil(pred.minutes_until);
+                        formatTimeUntil(pred.minutes_until_next);
                 }
             } else {
                 document.getElementById('next-feeding-prediction').textContent = 
-                    '{% trans "Not enough data" %}';
+                    'אין מספיק נתונים';
             }
 
             // Sleep Status
-            if (data.awake_minutes !== null) {
+            if (data.last_sleep_minutes_ago !== null && data.last_sleep_minutes_ago !== undefined) {
                 document.getElementById('sleep-status').textContent = 
-                    formatTimeAgo(data.awake_minutes);
+                    formatTimeAgo(data.last_sleep_minutes_ago);
             } else {
                 document.getElementById('sleep-status').textContent = 'N/A';
             }
@@ -242,7 +243,7 @@
                 const sleepPred = data.next_sleep_prediction;
                 const sleepEl = document.getElementById('sleep-prediction');
                 sleepEl.textContent = sleepPred.message || '';
-                sleepEl.className = 'text-muted ' + getStatusClass(sleepPred.status);
+                sleepEl.className = 'text-muted small ' + getStatusClass(sleepPred.status);
             }
 
             // Alerts
@@ -363,14 +364,16 @@
             toast.setAttribute('role', 'alert');
             toast.setAttribute('aria-live', 'assertive');
             toast.setAttribute('aria-atomic', 'true');
+            toast.style.minWidth = '350px';
+            toast.style.fontSize = '1.1rem';
             
             toast.innerHTML = `
-                <div class="toast-header ${bgClass} text-white">
-                    <strong class="me-auto">${alert.icon || '⚠️'} {% trans "Alert" %}</strong>
+                <div class="toast-header ${bgClass} text-white" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.15rem; padding: 0.75rem 1rem;">
+                    <strong class="ms-auto">${alert.icon || '⚠️'} {% trans "Alert" %}</strong>
                     <small>${alert.time || ''}</small>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
-                <div class="toast-body">
+                <div class="toast-body" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.05rem; padding: 1rem;">
                     ${alert.message}
                 </div>
             `;

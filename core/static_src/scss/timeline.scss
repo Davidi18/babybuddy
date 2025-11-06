@@ -154,3 +154,84 @@ $card-shadow: rgba(0, 0, 0, .175);
         }
     }
 }
+
+// RTL Support for Hebrew
+[dir="rtl"] {
+    .timeline {
+        li {
+            .card {
+                float: right;
+
+                &::before {
+                    right: auto;
+                    left: -15px;
+                    border-left-width: 0;
+                    border-right-width: 15px;
+                }
+
+                &::after {
+                    right: auto;
+                    left: -14px;
+                    border-left-width: 0;
+                    border-right-width: 14px;
+                }
+            }
+
+            &.timeline-inverted {
+                .card {
+                    float: left;
+
+                    &::before {
+                        left: auto;
+                        right: -15px;
+                        border-left-width: 15px;
+                        border-right-width: 0;
+                    }
+
+                    &::after {
+                        left: auto;
+                        right: -14px;
+                        border-left-width: 14px;
+                        border-right-width: 0;
+                    }
+                }
+            }
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        .timeline {
+            &::before {
+                left: auto;
+                right: 40px;
+            }
+
+            li {
+                .card {
+                    float: left;
+
+                    &::before {
+                        left: auto;
+                        right: -15px;
+                        border-left-width: 15px;
+                        border-right-width: 0;
+                    }
+
+                    &::after {
+                        left: auto;
+                        right: -14px;
+                        border-left-width: 14px;
+                        border-right-width: 0;
+                    }
+                }
+
+                .timeline-badge {
+                    left: auto;
+                    right: 15px;
+                    margin-left: 0;
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}

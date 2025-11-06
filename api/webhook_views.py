@@ -227,7 +227,9 @@ def status_webhook(request):
             last_diaper['time_since_minutes'] if last_diaper else None
         ),
         'next_feeding_status': next_feeding['status'] if next_feeding else None,
+        'next_feeding_prediction': next_feeding,
         'next_sleep_status': next_sleep['status'] if next_sleep else None,
+        'next_sleep_prediction': next_sleep,
         'alerts': [],
     }
 
@@ -280,7 +282,7 @@ def alerts_webhook(request):
         alerts.append({
             'type': 'feeding_overdue',
             'severity': 'high',
-            'title': 'התינוק רעב!',
+            'title': f'{child.first_name} רעבה!',
             'message': next_feeding['message'],
             'minutes_overdue': abs(next_feeding['minutes_until_next']),
         })
@@ -291,7 +293,7 @@ def alerts_webhook(request):
         alerts.append({
             'type': 'overtired',
             'severity': 'high',
-            'title': 'התינוק עייף מאוד!',
+            'title': f'{child.first_name} עייפה מאוד!',
             'message': next_sleep['message'],
             'minutes_awake': next_sleep['minutes_awake'],
         })

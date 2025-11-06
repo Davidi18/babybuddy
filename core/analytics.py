@@ -124,10 +124,10 @@ class BabyAnalytics:
         minutes_until_next = avg_interval_minutes - time_since_minutes
 
         if minutes_until_next < 0:
-            # עבר הזמן הממוצע - התינוק כנראה רעב!
+            # עבר הזמן הממוצע - התינוקת כנראה רעבה!
             status = "overdue"
             minutes_until_next = abs(minutes_until_next)
-            message = f"עבר הזמן! התינוק כנראה רעב (איחור של {int(minutes_until_next)} דקות)"
+            message = f"{self.child.first_name} כנראה רעבה (לפני {int(minutes_until_next)} דקות)"
         elif minutes_until_next < 30:
             status = "soon"
             message = f"בקרוב! בעוד ~{int(minutes_until_next)} דקות"
@@ -258,16 +258,16 @@ class BabyAnalytics:
 
         if minutes_until_tired < 0:
             status = "overtired"
-            message = f"התינוק כנראה עייף! עבר הזמן ב-{int(abs(minutes_until_tired))} דקות"
+            message = f"{self.child.first_name} כנראה עייפה (ערה {int(abs(minutes_until_tired))} דקות יותר מדי)"
         elif minutes_until_tired < 15:
             status = "getting_tired"
-            message = f"התינוק מתחיל להתעייף - בעוד ~{int(minutes_until_tired)} דקות"
+            message = f"{self.child.first_name} מתחילה להתעייף - בעוד ~{int(minutes_until_tired)} דקות"
         elif minutes_until_tired < 30:
             status = "soon"
-            message = f"בקרוב יתעייף - בעוד ~{int(minutes_until_tired)} דקות"
+            message = f"בקרוב תתעייף - בעוד ~{int(minutes_until_tired)} דקות"
         else:
             status = "awake"
-            message = f"עוד {int(minutes_until_tired)} דקות עד שיתעייף"
+            message = f"עוד {int(minutes_until_tired)} דקות עד שתתעייף"
 
         return {
             "status": status,

@@ -51,4 +51,4 @@ devenv.local.nix
 .vscode
 
 # Mock dbsettings (temporary for development)
-/dbsettings/
+/dbsettings/venv/
