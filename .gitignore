@@ -49,3 +49,6 @@ devenv.local.nix
 .pre-commit-config.yaml
 
 .vscode
+
+# Mock dbsettings (temporary for development)
+/dbsettings/
