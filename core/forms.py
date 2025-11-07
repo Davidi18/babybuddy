@@ -267,16 +267,21 @@ class FeedingForm(CoreModelForm, TaggableModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         # Get child from instance or initial data
         child = None
         if self.instance and self.instance.pk:
             child = self.instance.child
         elif 'child' in self.initial:
-            try:
-                child = models.Child.objects.get(pk=self.initial['child'])
-            except models.Child.DoesNotExist:
-                pass
+            child_value = self.initial['child']
+            # Check if it's already a Child instance or needs to be fetched
+            if isinstance(child_value, models.Child):
+                child = child_value
+            else:
+                try:
+                    child = models.Child.objects.get(pk=child_value)
+                except (models.Child.DoesNotExist, ValueError, TypeError):
+                    pass
         
         # Adjust form based on feeding mode
         if child and child.feeding_mode == 'bottle_only':
