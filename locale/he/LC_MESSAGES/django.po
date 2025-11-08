@@ -1282,7 +1282,7 @@ msgstr "אכל בעצמו"
 
 #: core/models.py:323 core/templates/core/feeding_list.html:32
 msgid "Method"
-msgstr "סוג"
+msgstr "שיטה"
 
 #: core/models.py:425 core/models.py:759
 msgid "Girl"
