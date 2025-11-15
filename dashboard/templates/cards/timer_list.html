@@ -2,6 +2,11 @@
 {% load i18n %}
 {% block header %}
     <a href="{% url "core:timer-list" %}">{% trans "Timers" %}</a>
+    {% if perms.core.add_timer %}
+        <a href="{% url 'core:timer-add' %}" class="btn btn-sm btn-success float-end" title="{% trans 'Start Timer' %}">
+            <i class="icon-add" aria-hidden="true"></i>
+        </a>
+    {% endif %}
 {% endblock %}
 {% block title %}
     {% with instances|length as count %}
@@ -15,15 +20,38 @@
 {% block listgroup %}
     <ul class="list-group list-group-flush">
         {% for timer in instances %}
-            <a href="{% url 'core:timer-detail' timer.id %}"
-               class="list-group-item list-group-item-action">
-                <strong>{{ timer.title_with_child }}</strong>
-                <p class="text-body-secondary small m-0">
-                    {% blocktrans trimmed with start=timer.start|time user=timer.user_username %}
-                        Started by {{ user }} at {{ start }}
-                    {% endblocktrans %}
-                </p>
-            </a>
+            <li class="list-group-item">
+                <a href="{% url 'core:timer-detail' timer.id %}" class="text-decoration-none text-dark">
+                    <strong>{{ timer.title_with_child }}</strong>
+                    <p class="text-body-secondary small m-0">
+                        {% blocktrans trimmed with start=timer.start|time user=timer.user_username %}
+                            Started by {{ user }} at {{ start }}
+                        {% endblocktrans %}
+                    </p>
+                </a>
+                <div class="btn-group w-100 mt-2" role="group" aria-label="{% trans "Timer controls" %}">
+                    {% if perms.core.change_timer %}
+                        <form action="{% url 'core:timer-stop' timer.id %}" method="post" class="flex-fill">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm w-100">
+                                <i class="icon-stop" aria-hidden="true"></i>
+                                {% trans "Stop" %}
+                            </button>
+                        </form>
+                        <form action="{% url 'core:timer-restart' timer.id %}" method="post" class="flex-fill ms-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm w-100">
+                                <i class="icon-refresh" aria-hidden="true"></i>
+                                {% trans "Restart" %}
+                            </button>
+                        </form>
+                    {% endif %}
+                    <a href="{% url 'core:timer-detail' timer.id %}" class="btn btn-primary btn-sm flex-fill ms-1">
+                        <i class="icon-view" aria-hidden="true"></i>
+                        {% trans "View" %}
+                    </a>
+                </div>
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}

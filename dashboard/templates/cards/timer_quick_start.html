@@ -1,0 +1,41 @@
+{% extends 'cards/base.html' %}
+{% load i18n %}
+{% block header %}
+    <i class="icon-timer" aria-hidden="true"></i>
+    <a href="{% url 'core:timer-list' %}">{% trans "Quick Start" %}</a>
+{% endblock %}
+{% block title %}
+    {% trans "Start Activity Timer" %}
+{% endblock %}
+{% block content %}
+    <div class="d-grid gap-3 mb-2">
+        {% if perms.core.add_timer %}
+            <a href="{% url 'core:timer-quick-start' 'sleep' %}"
+               class="btn btn-lg text-white" style="background-color: #6c5ce7; border: none; font-size: 1.1rem; padding: 1rem;">
+                <i class="icon-sleep" aria-hidden="true"></i>
+                <span style="font-size: 1.3rem;">💤</span>
+                {% trans "Sleep" %}
+            </a>
+            <a href="{% url 'core:timer-quick-start' 'tummy-time' %}"
+               class="btn btn-lg text-white" style="background-color: #00b894; border: none; font-size: 1.1rem; padding: 1rem;">
+                <i class="icon-tummytime" aria-hidden="true"></i>
+                <span style="font-size: 1.3rem;">🤸</span>
+                {% trans "Tummy Time" %}
+            </a>
+            <a href="{% url 'core:timer-quick-start' 'pumping' %}"
+               class="btn btn-lg text-white" style="background-color: #0984e3; border: none; font-size: 1.1rem; padding: 1rem;">
+                <i class="icon-pumping" aria-hidden="true"></i>
+                <span style="font-size: 1.3rem;">🤱</span>
+                {% trans "Pumping" %}
+            </a>
+            <hr class="my-2">
+            <a href="{% url 'core:timer-add' %}"
+               class="btn btn-lg btn-outline-secondary" style="font-size: 1rem;">
+                <i class="icon-add" aria-hidden="true"></i>
+                ⏱️ {% trans "Custom Timer" %}
+            </a>
+        {% else %}
+            <p class="text-muted">{% trans "You don't have permission to add timers." %}</p>
+        {% endif %}
+    </div>
+{% endblock %}
