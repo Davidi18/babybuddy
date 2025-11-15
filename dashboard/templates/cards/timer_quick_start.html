@@ -9,7 +9,7 @@
 {% endblock %}
 {% block content %}
     <div class="mb-2">
-        {% if perms.core.add_timer and child %}
+        {% if request.user.is_authenticated and child %}
             <div class="row g-2 text-center">
                 <div class="col-4">
                     <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' child.slug %}">
@@ -48,8 +48,8 @@
                 <i class="icon-add" aria-hidden="true"></i>
                 ⏱️ {% trans "Custom Timer" %}
             </a>
-        {% elif not perms.core.add_timer %}
-            <p class="text-muted">{% trans "You don't have permission to add timers." %}</p>
+        {% elif not request.user.is_authenticated %}
+            <p class="text-muted">{% trans "Please log in to use quick timers." %}</p>
         {% else %}
             <p class="text-muted">{% trans "Quick timers are available on child dashboards." %}</p>
         {% endif %}
