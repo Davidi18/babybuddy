@@ -796,6 +796,21 @@ def card_timer_list(context, child=None):
     }
 
 
+@register.inclusion_tag("cards/timer_quick_start.html", takes_context=True)
+def card_timer_quick_start(context, child=None):
+    """
+    Displays quick start buttons for common timer types.
+    :param child: an instance of the Child model (optional).
+    :returns: a dictionary with context for quick start buttons.
+    """
+    return {
+        "type": "timer",
+        "child": child,
+        "empty": False,
+        "hide_empty": False,  # Always show quick start card
+    }
+
+
 @register.inclusion_tag("cards/tummytime_last.html", takes_context=True)
 def card_tummytime_last(context, child):
     """
