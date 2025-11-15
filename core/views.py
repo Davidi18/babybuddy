@@ -601,13 +601,21 @@ class TimerQuickToggle(LoginRequiredMixin, RedirectView):
         timer_name = TimerQuickStart.TIMER_TEMPLATES.get(timer_type, _("Timer"))
 
         # Look for an existing active timer for this user/child/activity.
+        # Check both translated and English names for language-independent matching.
         active_timer = None
         if child is not None:
+            # Build list of possible timer names (current translation + common translations)
+            timer_names = [str(timer_name)]
+            if timer_type == "sleep":
+                timer_names.extend(["Sleep", "שינה"])
+            elif timer_type == "tummy-time":
+                timer_names.extend(["Tummy Time", "זמן בטן"])
+
             active_timer = models.Timer.objects.filter(
                 user=request.user,
                 child=child,
                 active=True,
-                name=str(timer_name),
+                name__in=timer_names,
             ).order_by("-start").first()
 
         if active_timer is None:

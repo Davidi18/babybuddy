@@ -813,18 +813,19 @@ def card_timer_quick_start(context, child=None):
     tummy_active = False
 
     if child is not None:
+        # Check both translated and English names for language-independent matching
         sleep_active = models.Timer.objects.filter(
             user=user,
             child=child,
             active=True,
-            name=str(sleep_name),
+            name__in=[str(sleep_name), "Sleep", "שינה"],
         ).exists()
 
         tummy_active = models.Timer.objects.filter(
             user=user,
             child=child,
             active=True,
-            name=str(tummy_name),
+            name__in=[str(tummy_name), "Tummy Time", "זמן בטן"],
         ).exists()
 
     return {

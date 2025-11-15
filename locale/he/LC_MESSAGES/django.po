@@ -2882,3 +2882,6 @@ msgstr "התחלה מהירה"
 msgid "Start Activity Timer"
 msgstr "התחל טיימר פעילות"
 
+msgid "{timer_name} recorded."
+msgstr "{timer_name} נרשם."
+
