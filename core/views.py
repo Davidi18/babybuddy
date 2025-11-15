@@ -569,6 +569,102 @@ class TimerQuickStart(PermissionRequiredMixin, RedirectView):
         return super().get(request, *args, **kwargs)
 
 
+class TimerQuickToggle(PermissionRequiredMixin, RedirectView):
+    """Toggle quick timers for common activities (sleep, tummy-time).
+
+    - If no active timer exists for the given child & activity: start one.
+    - If an active timer exists: stop it and create the corresponding entry
+      (Sleep or TummyTime) with start/end populated, without showing a form.
+    """
+
+    http_method_names = ["post"]
+    permission_required = ("core.add_timer", "core.change_timer")
+
+    def post(self, request, *args, **kwargs):
+        timer_type = kwargs.get("timer_type")
+        child_slug = kwargs.get("child_slug")
+
+        # Only support known quick types.
+        if timer_type not in ("sleep", "tummy-time"):
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", reverse("dashboard:dashboard")))
+
+        child = None
+        if child_slug:
+            try:
+                child = models.Child.objects.get(slug=child_slug)
+            except models.Child.DoesNotExist:
+                child = None
+
+        # Fall back to single child if none explicitly provided.
+        if child is None and models.Child.count() == 1:
+            child = models.Child.objects.first()
+
+        # Derive the timer name from the templates mapping used by TimerQuickStart.
+        timer_name = TimerQuickStart.TIMER_TEMPLATES.get(timer_type, _("Timer"))
+
+        # Look for an existing active timer for this user/child/activity.
+        active_timer = None
+        if child is not None:
+            active_timer = models.Timer.objects.filter(
+                user=request.user,
+                child=child,
+                active=True,
+                name=str(timer_name),
+            ).order_by("-start").first()
+
+        if active_timer is None:
+            # Start a new timer.
+            instance = models.Timer.objects.create(
+                user=request.user,
+                name=str(timer_name),
+                child=child,
+                start=timezone.now(),
+            )
+            messages.success(
+                request,
+                _("{timer_name} timer started!").format(timer_name=timer_name),
+            )
+        else:
+            # Stop existing timer and create the corresponding model entry.
+            end_time = timezone.now()
+
+            if timer_type == "sleep":
+                models.Sleep.objects.create(
+                    child=child,
+                    start=active_timer.start,
+                    end=end_time,
+                    nap=False,
+                )
+            elif timer_type == "tummy-time":
+                models.TummyTime.objects.create(
+                    child=child,
+                    start=active_timer.start,
+                    end=end_time,
+                    milestone="",
+                )
+
+            # Mark timer inactive and remove it.
+            active_timer.active = False
+            active_timer.save()
+            active_timer.stop()
+
+            messages.success(
+                request,
+                _("{timer_name} recorded.").format(timer_name=timer_name),
+            )
+
+        # Redirect back to the child's dashboard or to the referrer.
+        redirect_url = request.META.get("HTTP_REFERER")
+        if not redirect_url:
+            if child is not None:
+                redirect_url = reverse("dashboard:dashboard-child", args=[child.slug])
+            else:
+                redirect_url = reverse("dashboard:dashboard")
+
+        self.url = redirect_url
+        return super().post(request, *args, **kwargs)
+
+
 class TimerRestart(PermissionRequiredMixin, RedirectView):
     http_method_names = ["post"]
     permission_required = ("core.change_timer",)

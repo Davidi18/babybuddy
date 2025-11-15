@@ -803,9 +803,35 @@ def card_timer_quick_start(context, child=None):
     :param child: an instance of the Child model (optional).
     :returns: a dictionary with context for quick start buttons.
     """
+    user = context["request"].user
+
+    # Derive names in the same way as TimerQuickStart.TIMER_TEMPLATES.
+    sleep_name = _("Sleep")
+    tummy_name = _("Tummy Time")
+
+    sleep_active = False
+    tummy_active = False
+
+    if child is not None:
+        sleep_active = models.Timer.objects.filter(
+            user=user,
+            child=child,
+            active=True,
+            name=str(sleep_name),
+        ).exists()
+
+        tummy_active = models.Timer.objects.filter(
+            user=user,
+            child=child,
+            active=True,
+            name=str(tummy_name),
+        ).exists()
+
     return {
         "type": "timer",
         "child": child,
+        "sleep_active": sleep_active,
+        "tummy_active": tummy_active,
         "empty": False,
         "hide_empty": False,  # Always show quick start card
     }
