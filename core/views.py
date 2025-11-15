@@ -529,10 +529,9 @@ class TimerAddQuick(PermissionRequiredMixin, RedirectView):
         return super(TimerAddQuick, self).get(request, *args, **kwargs)
 
 
-class TimerQuickStart(PermissionRequiredMixin, RedirectView):
+class TimerQuickStart(LoginRequiredMixin, RedirectView):
     """Quick start timer with predefined template (feeding, sleep, etc.)"""
     http_method_names = ["get", "post"]
-    permission_required = ("core.add_timer",)
     
     # Timer templates mapping
     TIMER_TEMPLATES = {
@@ -569,7 +568,7 @@ class TimerQuickStart(PermissionRequiredMixin, RedirectView):
         return super().get(request, *args, **kwargs)
 
 
-class TimerQuickToggle(PermissionRequiredMixin, RedirectView):
+class TimerQuickToggle(LoginRequiredMixin, RedirectView):
     """Toggle quick timers for common activities (sleep, tummy-time).
 
     - If no active timer exists for the given child & activity: start one.
@@ -578,7 +577,6 @@ class TimerQuickToggle(PermissionRequiredMixin, RedirectView):
     """
 
     http_method_names = ["post"]
-    permission_required = ("core.add_timer", "core.change_timer")
 
     def post(self, request, *args, **kwargs):
         timer_type = kwargs.get("timer_type")
