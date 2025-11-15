@@ -1984,9 +1984,8 @@ msgid "%(model)s reading for %(child)s updated."
 msgstr "%(model)s קריאה עבור %(child)s התעדכן."
 
 #: dashboard/templates/cards/breastfeeding.html:4
-#, fuzzy
 msgid "Breastfeeding"
-msgstr "האכלה אחרונה"
+msgstr "הנקה"
 
 #: dashboard/templates/cards/breastfeeding.html:10
 #: dashboard/templates/cards/diaperchange_types.html:10
@@ -2859,4 +2858,27 @@ msgstr "חיתולים ליום"
 
 msgid "Status"
 msgstr "סטטוס"
+
+# Child Settings - Feeding Mode
+msgid "Feeding mode"
+msgstr "אמצעי האכלה"
+
+msgid "Breastfeeding & Bottle"
+msgstr "הנקה ובקבוק"
+
+msgid "Bottle Only"
+msgstr "בקבוק בלבד"
+
+msgid "Breastfeeding Only"
+msgstr "הנקה בלבד"
+
+msgid "Select how this child is fed to customize the interface"
+msgstr "בחר כיצד התינוק ניזון כדי להתאים את הממשק"
+
+# Timer Quick Start Buttons
+msgid "Quick Start"
+msgstr "התחלה מהירה"
+
+msgid "Start Activity Timer"
+msgstr "התחל טיימר פעילות"
 
