@@ -781,3 +781,257 @@ class WeightPercentile(models.Model):
 
     def __str__(self):
         return f"Sex: {self.sex}, Age: {self.age_in_days} days, p3: {self.p3_weight} kg, p15: {self.p15_weight} kg, p50: {self.p50_weight} kg, p85: {self.p85_weight} kg, p97: {self.p97_weight} kg"
+
+
+class Medication(models.Model):
+    """
+    Medication tracking - for vitamins, drops, medicines, etc.
+    """
+    model_name = "medication"
+
+    child = models.ForeignKey(
+        "Child",
+        related_name="medications",
+        on_delete=models.CASCADE,
+        verbose_name=_("Child"),
+    )
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_("Name"),
+        help_text=_("Medication name (e.g., Vitamin D, Iron drops)"),
+    )
+    medication_type = models.CharField(
+        max_length=50,
+        choices=[
+            ("vitamin", _("Vitamin")),
+            ("drops", _("Drops")),
+            ("medicine", _("Medicine")),
+            ("supplement", _("Supplement")),
+            ("other", _("Other")),
+        ],
+        default="vitamin",
+        verbose_name=_("Type"),
+    )
+    dosage = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name=_("Dosage"),
+        help_text=_("e.g., 5 drops, 1ml, 400 IU"),
+    )
+    frequency = models.CharField(
+        max_length=50,
+        choices=[
+            ("once_daily", _("Once daily")),
+            ("twice_daily", _("Twice daily")),
+            ("three_times_daily", _("Three times daily")),
+            ("every_other_day", _("Every other day")),
+            ("weekly", _("Weekly")),
+            ("as_needed", _("As needed")),
+            ("custom", _("Custom")),
+        ],
+        default="once_daily",
+        verbose_name=_("Frequency"),
+    )
+    schedule_times = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_("Schedule times"),
+        help_text=_("Comma-separated times (e.g., 09:00, 21:00)"),
+    )
+    start_date = models.DateField(
+        default=timezone.now,
+        verbose_name=_("Start date"),
+    )
+    end_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_("End date"),
+        help_text=_("Leave blank for ongoing medication"),
+    )
+    inventory_count = models.IntegerField(
+        default=0,
+        verbose_name=_("Inventory count"),
+        help_text=_("Number of doses remaining"),
+    )
+    low_inventory_threshold = models.IntegerField(
+        default=7,
+        verbose_name=_("Low inventory alert"),
+        help_text=_("Alert when inventory falls below this number"),
+    )
+    active = models.BooleanField(
+        default=True,
+        verbose_name=_("Active"),
+    )
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes"),
+    )
+    tags = TaggableManager(
+        blank=True,
+        through="core.Tagged",
+        verbose_name=_("Tags"),
+    )
+
+    objects = models.Manager()
+
+    class Meta:
+        default_permissions = ("view", "add", "change", "delete")
+        ordering = ["-active", "name"]
+        verbose_name = _("Medication")
+        verbose_name_plural = _("Medications")
+
+    def __str__(self):
+        return f"{self.name} - {self.child.name()}"
+
+    def is_due_today(self):
+        """Check if medication is due today based on frequency"""
+        today = timezone.localdate()
+
+        if not self.active:
+            return False
+
+        if self.end_date and today > self.end_date:
+            return False
+
+        if today < self.start_date:
+            return False
+
+        if self.frequency == "as_needed":
+            return False
+
+        if self.frequency == "weekly":
+            # Check if it's been 7 days since last dose
+            last_dose = self.doses.filter(given=True).order_by("-time").first()
+            if last_dose:
+                days_since = (today - last_dose.time.date()).days
+                return days_since >= 7
+            return True
+
+        if self.frequency == "every_other_day":
+            last_dose = self.doses.filter(given=True).order_by("-time").first()
+            if last_dose:
+                days_since = (today - last_dose.time.date()).days
+                return days_since >= 2
+            return True
+
+        # For daily frequencies, check if already given today
+        doses_today = self.doses.filter(
+            time__date=today,
+            given=True
+        ).count()
+
+        frequency_map = {
+            "once_daily": 1,
+            "twice_daily": 2,
+            "three_times_daily": 3,
+        }
+
+        required_doses = frequency_map.get(self.frequency, 1)
+        return doses_today < required_doses
+
+    def next_dose_time(self):
+        """Get the next scheduled dose time"""
+        if not self.schedule_times:
+            return None
+
+        now = timezone.now()
+        today = timezone.localdate()
+        times = [t.strip() for t in self.schedule_times.split(",")]
+
+        for time_str in times:
+            try:
+                hour, minute = map(int, time_str.split(":"))
+                scheduled_time = timezone.make_aware(
+                    datetime.datetime.combine(today, datetime.time(hour, minute))
+                )
+
+                # Check if this dose was already given
+                dose_given = self.doses.filter(
+                    time__date=today,
+                    time__hour=hour,
+                    given=True
+                ).exists()
+
+                if not dose_given and scheduled_time > now:
+                    return scheduled_time
+            except (ValueError, IndexError):
+                continue
+
+        return None
+
+    def is_low_inventory(self):
+        """Check if inventory is low"""
+        return self.inventory_count <= self.low_inventory_threshold and self.inventory_count > 0
+
+    def is_out_of_stock(self):
+        """Check if out of stock"""
+        return self.inventory_count <= 0
+
+
+class MedicationDose(models.Model):
+    """
+    Record of giving a medication dose
+    """
+    model_name = "medication dose"
+
+    medication = models.ForeignKey(
+        "Medication",
+        related_name="doses",
+        on_delete=models.CASCADE,
+        verbose_name=_("Medication"),
+    )
+    child = models.ForeignKey(
+        "Child",
+        related_name="medication_doses",
+        on_delete=models.CASCADE,
+        verbose_name=_("Child"),
+    )
+    time = models.DateTimeField(
+        default=timezone.now,
+        verbose_name=_("Time"),
+    )
+    given = models.BooleanField(
+        default=True,
+        verbose_name=_("Given"),
+        help_text=_("Was the medication actually given?"),
+    )
+    skipped_reason = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_("Skipped reason"),
+        help_text=_("Why was this dose skipped?"),
+    )
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes"),
+    )
+    tags = TaggableManager(
+        blank=True,
+        through="core.Tagged",
+        verbose_name=_("Tags"),
+    )
+
+    objects = models.Manager()
+
+    class Meta:
+        default_permissions = ("view", "add", "change", "delete")
+        ordering = ["-time"]
+        verbose_name = _("Medication dose")
+        verbose_name_plural = _("Medication doses")
+
+    def __str__(self):
+        return f"{self.medication.name} - {self.time.strftime('%Y-%m-%d %H:%M')}"
+
+    def save(self, *args, **kwargs):
+        """Decrease inventory count when dose is given"""
+        is_new = self.pk is None
+
+        # If this is a new dose and it's marked as given, decrease inventory
+        if is_new and self.given and self.medication.inventory_count > 0:
+            self.medication.inventory_count -= 1
+            self.medication.save()
+
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        validate_date(self.time.date(), "time")
