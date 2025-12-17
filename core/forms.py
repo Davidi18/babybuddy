@@ -481,3 +481,92 @@ class WeightForm(CoreModelForm, TaggableModelForm):
             "date": DateInput(),
             "notes": forms.Textarea(attrs={"rows": 5}),
         }
+
+
+class MedicationForm(CoreModelForm, TaggableModelForm):
+    fieldsets = [
+        {
+            "fields": [
+                "child",
+                "name",
+                "medication_type",
+                "dosage",
+                "frequency",
+                "schedule_times",
+            ],
+            "layout": "required",
+        },
+        {
+            "fields": ["start_date", "end_date", "active"],
+        },
+        {"fields": ["notes", "tags"], "layout": "advanced"},
+    ]
+
+    class Meta:
+        model = models.Medication
+        fields = [
+            "child",
+            "name",
+            "medication_type",
+            "dosage",
+            "frequency",
+            "schedule_times",
+            "start_date",
+            "end_date",
+            "active",
+            "notes",
+            "tags",
+        ]
+        widgets = {
+            "child": ChildRadioSelect,
+            "medication_type": PillRadioSelect(
+                choices=[
+                    ("vitamin", _("Vitamin")),
+                    ("drops", _("Drops")),
+                    ("medicine", _("Medicine")),
+                    ("supplement", _("Supplement")),
+                    ("other", _("Other")),
+                ]
+            ),
+            "frequency": PillRadioSelect(
+                choices=[
+                    ("once_daily", _("Once daily")),
+                    ("twice_daily", _("Twice daily")),
+                    ("three_times_daily", _("Three times daily")),
+                    ("every_other_day", _("Every other day")),
+                    ("weekly", _("Weekly")),
+                    ("as_needed", _("As needed")),
+                    ("custom", _("Custom")),
+                ]
+            ),
+            "start_date": DateInput(),
+            "end_date": DateInput(),
+            "notes": forms.Textarea(attrs={"rows": 5}),
+        }
+
+
+class MedicationDoseForm(CoreModelForm, TaggableModelForm):
+    fieldsets = [
+        {
+            "fields": ["medication", "child", "time", "given"],
+            "layout": "required",
+        },
+        {"fields": ["skipped_reason", "notes", "tags"], "layout": "advanced"},
+    ]
+
+    class Meta:
+        model = models.MedicationDose
+        fields = ["medication", "child", "time", "given", "skipped_reason", "notes", "tags"]
+        widgets = {
+            "child": ChildRadioSelect,
+            "time": DateTimeInput(),
+            "notes": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(MedicationDoseForm, self).__init__(*args, **kwargs)
+        # Filter medications to only active ones for the selected child
+        if "child" in self.initial:
+            self.fields["medication"].queryset = models.Medication.objects.filter(
+                child=self.initial["child"], active=True
+            )

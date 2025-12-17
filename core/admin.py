@@ -295,3 +295,49 @@ class TagAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
     search_fields = ("name", "color")
     prepopulated_fields = {"slug": ["name"]}
     resource_class = TagImportExportResource
+
+
+class MedicationImportExportResource(ImportExportResourceBase):
+    class Meta:
+        model = models.Medication
+
+
+@admin.register(models.Medication)
+class MedicationAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
+    list_display = (
+        "name",
+        "child",
+        "medication_type",
+        "dosage",
+        "frequency",
+        "active",
+    )
+    list_filter = ("child", "medication_type", "active", "tags")
+    search_fields = (
+        "child__first_name",
+        "child__last_name",
+        "name",
+    )
+    resource_class = MedicationImportExportResource
+
+
+class MedicationDoseImportExportResource(ImportExportResourceBase):
+    class Meta:
+        model = models.MedicationDose
+
+
+@admin.register(models.MedicationDose)
+class MedicationDoseAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
+    list_display = (
+        "medication",
+        "child",
+        "time",
+        "given",
+    )
+    list_filter = ("child", "medication", "given", "tags")
+    search_fields = (
+        "child__first_name",
+        "child__last_name",
+        "medication__name",
+    )
+    resource_class = MedicationDoseImportExportResource

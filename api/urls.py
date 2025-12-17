@@ -127,4 +127,9 @@ urlpatterns = [
         webhook_views.alerts_webhook,
         name="webhook-alerts",
     ),
+    path(
+        "api/webhooks/medications/",
+        webhook_views.medication_status_webhook,
+        name="webhook-medications",
+    ),
 ]

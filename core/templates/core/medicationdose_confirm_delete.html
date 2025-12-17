@@ -1,0 +1,22 @@
+{% extends 'babybuddy/page.html' %}
+{% load i18n %}
+{% block title %}
+    {% trans "Delete a Medication Dose" %}
+{% endblock %}
+{% block breadcrumbs %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'core:medicationdose-list' %}">{% trans "Medication Doses" %}</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans "Delete" %}</li>
+{% endblock %}
+{% block content %}
+    <form role="form" method="post">
+        <h1>{% trans "Delete" %} <span class="text-danger">{{ object }}</span>?</h1>
+        {% csrf_token %}
+        <input type="submit"
+               class="btn btn-danger"
+               value="{% trans "Delete" %}" />
+        <a class="btn btn-default"
+           href="{% url 'core:medicationdose-list' %}">{% trans "Cancel" %}</a>
+    </form>
+{% endblock %}

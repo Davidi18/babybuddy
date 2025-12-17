@@ -2901,3 +2901,133 @@ msgstr "הזנה מהירה זמינה בלוח הבקרה של התינוק."
 msgid "{timer_name} recorded."
 msgstr "{timer_name} נרשם."
 
+# Medication Module
+msgid "Medication"
+msgstr "תרופה"
+
+msgid "Medications"
+msgstr "תרופות"
+
+msgid "Medication Dose"
+msgstr "מנת תרופה"
+
+msgid "Medication Doses"
+msgstr "מנות תרופה"
+
+msgid "Add Medication"
+msgstr "הוסף תרופה"
+
+msgid "Update"
+msgstr "עדכן"
+
+msgid "Delete a Medication"
+msgstr "מחק תרופה"
+
+msgid "Delete a Medication Dose"
+msgstr "מחק מנת תרופה"
+
+msgid "Medication Type"
+msgstr "סוג תרופה"
+
+msgid "Vitamin"
+msgstr "ויטמין"
+
+msgid "Drops"
+msgstr "טיפות"
+
+msgid "Medicine"
+msgstr "תרופה"
+
+msgid "Supplement"
+msgstr "תוסף תזונה"
+
+msgid "Other"
+msgstr "אחר"
+
+msgid "Frequency"
+msgstr "תדירות"
+
+msgid "Once Daily"
+msgstr "פעם ביום"
+
+msgid "Twice Daily"
+msgstr "פעמיים ביום"
+
+msgid "Three Times Daily"
+msgstr "שלוש פעמים ביום"
+
+msgid "Four Times Daily"
+msgstr "ארבע פעמים ביום"
+
+msgid "As Needed"
+msgstr "לפי הצורך"
+
+msgid "Custom"
+msgstr "מותאם אישית"
+
+msgid "Dosage"
+msgstr "מינון"
+
+msgid "Schedule Times"
+msgstr "זמני מתן"
+
+msgid "Schedule times (e.g., 09:00, 21:00)"
+msgstr "זמני מתן (לדוגמה: 09:00, 21:00)"
+
+msgid "Start Date"
+msgstr "תאריך התחלה"
+
+msgid "End Date"
+msgstr "תאריך סיום"
+
+msgid "Active"
+msgstr "פעיל"
+
+msgid "Given"
+msgstr "ניתן"
+
+msgid "Skipped"
+msgstr "דולג"
+
+msgid "Skipped Reason"
+msgstr "סיבת דילוג"
+
+msgid "Next Medication"
+msgstr "תרופה הבאה"
+
+msgid "No medications scheduled for today"
+msgstr "אין תרופות מתוזמנות להיום"
+
+msgid "No active medications"
+msgstr "אין תרופות פעילות"
+
+msgid "Give Now"
+msgstr "תן עכשיו"
+
+msgid "minutes until due"
+msgstr "דקות עד למועד"
+
+msgid "OVERDUE"
+msgstr "באיחור"
+
+msgid "Medications Due Today"
+msgstr "תרופות להיום"
+
+msgid "Next medication"
+msgstr "התרופה הבאה"
+
+msgid "Warning:"
+msgstr "אזהרה:"
+
+msgid "This will also delete all medication dose records for this medication!"
+msgstr "פעולה זו תמחק גם את כל רשומות המינונים של תרופה זו!"
+
+msgid "View all medications"
+msgstr "צפה בכל התרופות"
+
+msgid "Medication recorded successfully"
+msgstr "התרופה נרשמה בהצלחה"
+
+msgid "Medication dose recorded"
+msgstr "מנת התרופה נרשמה"
+

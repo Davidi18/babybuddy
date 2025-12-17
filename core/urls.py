@@ -134,4 +134,36 @@ urlpatterns = [
     path("bmi/add/", views.BMIAdd.as_view(), name="bmi-add"),
     path("bmi/<int:pk>/", views.BMIUpdate.as_view(), name="bmi-update"),
     path("bmi/<int:pk>/delete/", views.BMIDelete.as_view(), name="bmi-delete"),
+    path("medications/", views.MedicationList.as_view(), name="medication-list"),
+    path("medications/add/", views.MedicationAdd.as_view(), name="medication-add"),
+    path(
+        "medications/<int:pk>/",
+        views.MedicationUpdate.as_view(),
+        name="medication-update",
+    ),
+    path(
+        "medications/<int:pk>/delete/",
+        views.MedicationDelete.as_view(),
+        name="medication-delete",
+    ),
+    path(
+        "medication-doses/",
+        views.MedicationDoseList.as_view(),
+        name="medicationdose-list",
+    ),
+    path(
+        "medication-doses/add/",
+        views.MedicationDoseAdd.as_view(),
+        name="medicationdose-add",
+    ),
+    path(
+        "medication-doses/<int:pk>/",
+        views.MedicationDoseUpdate.as_view(),
+        name="medicationdose-update",
+    ),
+    path(
+        "medication-doses/<int:pk>/delete/",
+        views.MedicationDoseDelete.as_view(),
+        name="medicationdose-delete",
+    ),
 ]
