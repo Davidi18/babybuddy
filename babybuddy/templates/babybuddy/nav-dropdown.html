@@ -56,6 +56,12 @@
             {% trans "Feeding" %}
         </a>
     {% endif %}
+    {% if perms.core.add_medicationdose %}
+        <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:medicationdose-add' %}">
+            💊
+            {% trans "Medication" %}
+        </a>
+    {% endif %}
     {% if perms.core.add_pumping %}
         {% load misc %}
         {% get_children_for_pumping as show_pumping %}
@@ -244,6 +250,18 @@
 <a class="dropdown-item ps-5{% if request.path == '/feedings/add/' %} active{% endif %}"
    href="{% url 'core:feeding-add' %}"><i class="icon-add" aria-hidden="true"></i>
 {% trans "Feeding" %}
+</a>
+{% endif %}
+{% if perms.core.view_medication %}
+<a class="dropdown-item{% if request.path == '/medications/' %} active{% endif %}"
+   href="{% url 'core:medication-list' %}">💊
+{% trans "Medications" %}
+</a>
+{% endif %}
+{% if perms.core.add_medicationdose %}
+<a class="dropdown-item ps-5{% if request.path == '/medication-doses/add/' %} active{% endif %}"
+   href="{% url 'core:medicationdose-add' %}"><i class="icon-add" aria-hidden="true"></i>
+{% trans "Medication Dose" %}
 </a>
 {% endif %}
 {% if perms.core.view_pumping %}
