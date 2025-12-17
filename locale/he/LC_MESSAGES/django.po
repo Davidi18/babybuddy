@@ -2882,6 +2882,22 @@ msgstr "התחלה מהירה"
 msgid "Start Activity Timer"
 msgstr "התחל טיימר פעילות"
 
+# Quick Entry Buttons
+msgid "Quick Entry"
+msgstr "הזנה מהירה"
+
+msgid "Add Activity Quickly"
+msgstr "הוסף פעילות במהירות"
+
+msgid "Diaper"
+msgstr "חיתול"
+
+msgid "Please log in to use quick entry."
+msgstr "אנא התחבר כדי להשתמש בהזנה מהירה."
+
+msgid "Quick entry is available on child dashboards."
+msgstr "הזנה מהירה זמינה בלוח הבקרה של התינוק."
+
 msgid "{timer_name} recorded."
 msgstr "{timer_name} נרשם."
 
