@@ -10,54 +10,21 @@
 {% block content %}
     <div class="mb-2">
         {% if request.user.is_authenticated and child %}
-            <div class="row g-2 text-center">
-                <div class="col-6">
+            <div class="row g-3">
+                <div class="col-12">
                     <a href="{% url 'core:feeding-add' %}?child={{ child.slug }}"
-                       class="btn btn-lg w-100 btn-primary"
-                       style="font-size: 1.1rem; padding: 1rem 0.5rem;">
-                        <div style="font-size: 2rem;">🍼</div>
-                        <div style="font-weight: 600;">{% trans "Feeding" %}</div>
+                       class="btn btn-lg w-100 btn-primary d-flex align-items-center justify-content-center"
+                       style="font-size: 1.3rem; padding: 1.2rem; border-radius: 0.5rem;">
+                        <span style="font-size: 2.5rem; margin-left: 0.75rem;">🍼</span>
+                        <span style="font-weight: 600; flex: 1;">{% trans "Feeding" %}</span>
                     </a>
                 </div>
-                <div class="col-6">
+                <div class="col-12">
                     <a href="{% url 'core:diaperchange-add' %}?child={{ child.slug }}"
-                       class="btn btn-lg w-100 btn-danger"
-                       style="font-size: 1.1rem; padding: 1rem 0.5rem;">
-                        <div style="font-size: 2rem;">🧷</div>
-                        <div style="font-weight: 600;">{% trans "Diaper" %}</div>
-                    </a>
-                </div>
-            </div>
-            <hr class="my-2">
-            <div class="row g-2 text-center">
-                <div class="col-4">
-                    <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' child.slug %}">
-                        {% csrf_token %}
-                        <button type="submit"
-                                class="btn btn-sm w-100 {% if sleep_active %}btn-success{% else %}btn-outline-secondary{% endif %}"
-                                style="font-size: 0.9rem; padding: 0.5rem 0.25rem;">
-                            <div style="font-size: 1.2rem;">💤</div>
-                            <div style="font-size: 0.85rem;">{% trans "Sleep" %}</div>
-                        </button>
-                    </form>
-                </div>
-                <div class="col-4">
-                    <form method="post" action="{% url 'core:timer-quick-toggle' 'tummy-time' child.slug %}">
-                        {% csrf_token %}
-                        <button type="submit"
-                                class="btn btn-sm w-100 {% if tummy_active %}btn-success{% else %}btn-outline-secondary{% endif %}"
-                                style="font-size: 0.9rem; padding: 0.5rem 0.25rem;">
-                            <div style="font-size: 1.2rem;">🤸</div>
-                            <div style="font-size: 0.85rem;">{% trans "Tummy Time" %}</div>
-                        </button>
-                    </form>
-                </div>
-                <div class="col-4">
-                    <a href="{% url 'core:timer-add' %}"
-                       class="btn btn-sm w-100 btn-outline-secondary"
-                       style="font-size: 0.9rem; padding: 0.5rem 0.25rem;">
-                        <div style="font-size: 1.2rem;">⏱️</div>
-                        <div style="font-size: 0.85rem;">{% trans "Timer" %}</div>
+                       class="btn btn-lg w-100 btn-danger d-flex align-items-center justify-content-center"
+                       style="font-size: 1.3rem; padding: 1.2rem; border-radius: 0.5rem;">
+                        <span style="font-size: 2.5rem; margin-left: 0.75rem;">🧷</span>
+                        <span style="font-weight: 600; flex: 1;">{% trans "Diaper" %}</span>
                     </a>
                 </div>
             </div>

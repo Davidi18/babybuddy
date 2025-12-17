@@ -3031,3 +3031,33 @@ msgstr "התרופה נרשמה בהצלחה"
 msgid "Medication dose recorded"
 msgstr "מנת התרופה נרשמה"
 
+msgid "Actions"
+msgstr "פעולות"
+
+msgid "Name"
+msgstr "שם"
+
+msgid "Type"
+msgstr "סוג"
+
+msgid "Schedule"
+msgstr "לוח זמנים"
+
+msgid "Inactive"
+msgstr "לא פעיל"
+
+msgid "No medications found."
+msgstr "לא נמצאו תרופות."
+
+msgid "Add Dose"
+msgstr "הוסף מינון"
+
+msgid "View Medications"
+msgstr "צפה בתרופות"
+
+msgid "No medication doses found."
+msgstr "לא נמצאו מינוני תרופות."
+
+msgid "Time"
+msgstr "זמן"
+
