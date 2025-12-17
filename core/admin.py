@@ -310,7 +310,6 @@ class MedicationAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
         "medication_type",
         "dosage",
         "frequency",
-        "inventory_count",
         "active",
     )
     list_filter = ("child", "medication_type", "active", "tags")

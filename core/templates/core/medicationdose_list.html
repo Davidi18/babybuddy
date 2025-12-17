@@ -1,0 +1,92 @@
+{% extends 'babybuddy/page.html' %}
+{% load i18n widget_tweaks %}
+{% block title %}
+    {% trans "Medication Doses" %}
+{% endblock %}
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">{% trans "Medication Doses" %}</li>
+{% endblock %}
+{% block content %}
+    <h1>
+        {% trans "Medication Doses" %}
+        {% if perms.core.add_medicationdose %}
+            <a href="{% url 'core:medicationdose-add' %}" class="btn btn-sm btn-success">
+                <i class="icon-add" aria-hidden="true"></i> {% trans "Add Dose" %}
+            </a>
+        {% endif %}
+        <a href="{% url 'core:medication-list' %}" class="btn btn-sm btn-primary">
+            <i class="icon-medication" aria-hidden="true"></i> {% trans "View Medications" %}
+        </a>
+    </h1>
+    <div class="table-responsive">
+        <table class="table table-instances table-borderless table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>{% trans "Actions" %}</th>
+                    <th>{% trans "Time" %}</th>
+                    <th>{% trans "Medication" %}</th>
+                    {% if not unique_child %}
+                        <th>{% trans "Child" %}</th>
+                    {% endif %}
+                    <th>{% trans "Given" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dose in object_list %}
+                    <tr>
+                        <td>
+                            <div class="btn-group btn-group-sm"
+                                 role="group"
+                                 aria-label="{% trans 'Actions' %}">
+                                {% if perms.core.change_medicationdose %}
+                                    <a href="{% url 'core:medicationdose-update' dose.id %}"
+                                       class="btn btn-primary">
+                                        <i class="icon-update" aria-hidden="true"></i>
+                                    </a>
+                                {% endif %}
+                                {% if perms.core.delete_medicationdose %}
+                                    <a href="{% url 'core:medicationdose-delete' dose.id %}"
+                                       class="btn btn-danger">
+                                        <i class="icon-delete" aria-hidden="true"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <th scope="row">{{ dose.time }}</th>
+                        <td>
+                            <strong>{{ dose.medication.name }}</strong><br>
+                            <small class="text-muted">{{ dose.medication.dosage }}</small>
+                        </td>
+                        {% if not unique_child %}
+                            <td>
+                                <a href="{% url 'core:child' dose.child.slug %}">{{ dose.child }}</a>
+                            </td>
+                        {% endif %}
+                        <td>
+                            {% if dose.given %}
+                                <span class="badge bg-success">{% trans "Given" %} ✓</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">{% trans "Skipped" %}</span>
+                                {% if dose.skipped_reason %}
+                                    <br><small class="text-muted">{{ dose.skipped_reason }}</small>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if dose.notes %}
+                        <tr class="row-details">
+                            <td colspan="5">
+                                <i class="icon-note me-2" aria-hidden="true"></i>{{ dose.notes }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% empty %}
+                    <tr>
+                        <th colspan="5">{% trans "No medication doses found." %}</th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'babybuddy/paginator.html' %}
+{% endblock %}

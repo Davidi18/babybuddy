@@ -793,3 +793,83 @@ class WeightDelete(CoreDeleteView):
     model = models.Weight
     permission_required = ("core.delete_weight",)
     success_url = reverse_lazy("core:weight-list")
+
+
+# Medication views
+
+
+class MedicationList(BabyBuddyPaginatedView):
+    model = models.Medication
+    template_name = "core/medication_list.html"
+    permission_required = ("core.view_medication",)
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = models.Medication.objects.order_by("-active", "name")
+        # Filter by child if provided
+        child_slug = self.request.GET.get("child")
+        if child_slug:
+            qs = qs.filter(child__slug=child_slug)
+        return qs
+
+
+class MedicationAdd(CoreAddView):
+    model = models.Medication
+    permission_required = ("core.add_medication",)
+    form_class = forms.MedicationForm
+    success_url = reverse_lazy("core:medication-list")
+
+
+class MedicationUpdate(CoreUpdateView):
+    model = models.Medication
+    permission_required = ("core.change_medication",)
+    form_class = forms.MedicationForm
+    success_url = reverse_lazy("core:medication-list")
+
+
+class MedicationDelete(CoreDeleteView):
+    model = models.Medication
+    permission_required = ("core.delete_medication",)
+    success_url = reverse_lazy("core:medication-list")
+
+
+# Medication Dose views
+
+
+class MedicationDoseList(BabyBuddyPaginatedView):
+    model = models.MedicationDose
+    template_name = "core/medicationdose_list.html"
+    permission_required = ("core.view_medicationdose",)
+    paginate_by = 25
+
+    def get_queryset(self):
+        qs = models.MedicationDose.objects.order_by("-time")
+        # Filter by child if provided
+        child_slug = self.request.GET.get("child")
+        if child_slug:
+            qs = qs.filter(child__slug=child_slug)
+        # Filter by medication if provided
+        medication_id = self.request.GET.get("medication")
+        if medication_id:
+            qs = qs.filter(medication_id=medication_id)
+        return qs
+
+
+class MedicationDoseAdd(CoreAddView):
+    model = models.MedicationDose
+    permission_required = ("core.add_medicationdose",)
+    form_class = forms.MedicationDoseForm
+    success_url = reverse_lazy("core:medicationdose-list")
+
+
+class MedicationDoseUpdate(CoreUpdateView):
+    model = models.MedicationDose
+    permission_required = ("core.change_medicationdose",)
+    form_class = forms.MedicationDoseForm
+    success_url = reverse_lazy("core:medicationdose-list")
+
+
+class MedicationDoseDelete(CoreDeleteView):
+    model = models.MedicationDose
+    permission_required = ("core.delete_medicationdose",)
+    success_url = reverse_lazy("core:medicationdose-list")

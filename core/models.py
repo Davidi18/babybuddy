@@ -848,16 +848,6 @@ class Medication(models.Model):
         verbose_name=_("End date"),
         help_text=_("Leave blank for ongoing medication"),
     )
-    inventory_count = models.IntegerField(
-        default=0,
-        verbose_name=_("Inventory count"),
-        help_text=_("Number of doses remaining"),
-    )
-    low_inventory_threshold = models.IntegerField(
-        default=7,
-        verbose_name=_("Low inventory alert"),
-        help_text=_("Alert when inventory falls below this number"),
-    )
     active = models.BooleanField(
         default=True,
         verbose_name=_("Active"),
@@ -959,14 +949,6 @@ class Medication(models.Model):
 
         return None
 
-    def is_low_inventory(self):
-        """Check if inventory is low"""
-        return self.inventory_count <= self.low_inventory_threshold and self.inventory_count > 0
-
-    def is_out_of_stock(self):
-        """Check if out of stock"""
-        return self.inventory_count <= 0
-
 
 class MedicationDose(models.Model):
     """
@@ -1021,17 +1003,6 @@ class MedicationDose(models.Model):
 
     def __str__(self):
         return f"{self.medication.name} - {self.time.strftime('%Y-%m-%d %H:%M')}"
-
-    def save(self, *args, **kwargs):
-        """Decrease inventory count when dose is given"""
-        is_new = self.pk is None
-
-        # If this is a new dose and it's marked as given, decrease inventory
-        if is_new and self.given and self.medication.inventory_count > 0:
-            self.medication.inventory_count -= 1
-            self.medication.save()
-
-        super().save(*args, **kwargs)
 
     def clean(self):
         validate_date(self.time.date(), "time")
