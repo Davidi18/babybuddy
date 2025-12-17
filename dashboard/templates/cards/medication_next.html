@@ -1,0 +1,48 @@
+{% extends 'cards/base.html' %}
+{% load i18n %}
+{% block header %}
+    <i class="icon-medication" aria-hidden="true"></i>
+    <a href="{% url "core:medication-list" %}">{% trans "Medications" %}</a>
+{% endblock %}
+{% block title %}
+    {% if next_medication %}
+        <div>
+            {{ next_medication.name }}
+            <span class="badge bg-info">{{ next_medication.get_medication_type_display }}</span>
+        </div>
+        {% if next_medication.next_dose_time %}
+            <small>{{ next_medication.next_dose_time|time }}</small>
+        {% endif %}
+    {% elif active_medications %}
+        {% trans "All medications given today" %} ✓
+    {% else %}
+        {% trans "No active medications" %}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    {% if next_medication %}
+        <div class="mb-2">
+            <strong>{% trans "Dosage:" %}</strong> {{ next_medication.dosage|default:"-" }}<br>
+            <strong>{% trans "Frequency:" %}</strong> {{ next_medication.get_frequency_display }}
+        </div>
+        <a href="{% url 'core:medicationdose-add' %}?child={{ child.slug }}&medication={{ next_medication.id }}"
+           class="btn btn-sm btn-success w-100">
+            <i class="icon-add" aria-hidden="true"></i> {% trans "Give Now" %} 💊
+        </a>
+    {% elif active_medications %}
+        <div class="text-center py-3">
+            <div style="font-size: 3rem;">✅</div>
+            <p class="text-muted mb-2">{% trans "All medications given for today" %}</p>
+            <a href="{% url 'core:medication-list' %}" class="btn btn-sm btn-outline-secondary">
+                {% trans "View All Medications" %}
+            </a>
+        </div>
+    {% else %}
+        <div class="text-center py-3">
+            <p class="text-muted mb-2">{% trans "No medications configured" %}</p>
+            <a href="{% url 'core:medication-add' %}?child={{ child.slug }}" class="btn btn-sm btn-primary">
+                <i class="icon-add" aria-hidden="true"></i> {% trans "Add Medication" %}
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}

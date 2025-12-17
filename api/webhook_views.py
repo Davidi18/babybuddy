@@ -333,3 +333,104 @@ def alerts_webhook(request):
         'alerts': alerts,
         'timestamp': timezone.now().isoformat(),
     })
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def medication_status_webhook(request):
+    """
+    Webhook for medication status and reminders
+
+    GET/POST /api/webhooks/medications/
+    GET/POST /api/webhooks/medications/?child=emma
+    """
+    from core.models import Medication, MedicationDose
+    from django.db.models import Q
+
+    child_slug = request.GET.get('child') or request.POST.get('child')
+
+    if child_slug:
+        try:
+            child = Child.objects.get(slug=child_slug)
+        except Child.DoesNotExist:
+            return Response({'error': f'Child not found: {child_slug}'}, status=404)
+    else:
+        child = Child.objects.first()
+        if not child:
+            return Response({'error': 'No children in the system'}, status=404)
+
+    today = timezone.localdate()
+    now = timezone.now()
+
+    # Get all active medications
+    active_medications = Medication.objects.filter(
+        child=child,
+        active=True,
+        start_date__lte=today
+    ).filter(
+        Q(end_date__isnull=True) | Q(end_date__gte=today)
+    )
+
+    medications_due = []
+    next_medication = None
+    earliest_time = None
+
+    for medication in active_medications:
+        if medication.is_due_today():
+            next_time = medication.next_dose_time()
+
+            med_info = {
+                'id': medication.id,
+                'name': medication.name,
+                'type': medication.medication_type,
+                'dosage': medication.dosage,
+                'frequency': medication.frequency,
+                'schedule_times': medication.schedule_times,
+            }
+
+            if next_time:
+                minutes_until = int((next_time - now).total_seconds() / 60)
+                med_info['next_dose_time'] = next_time.isoformat()
+                med_info['minutes_until'] = minutes_until
+                med_info['is_overdue'] = minutes_until < 0
+
+                if not earliest_time or next_time < earliest_time:
+                    earliest_time = next_time
+                    next_medication = med_info
+
+            medications_due.append(med_info)
+
+    # Build message for WhatsApp/Telegram
+    if medications_due:
+        message_parts = [
+            f"💊 תרופות ל-{child.first_name}",
+            f"📅 {today.strftime('%d/%m/%Y')}",
+            ""
+        ]
+
+        for med in medications_due:
+            time_str = ""
+            if 'next_dose_time' in med:
+                time_obj = timezone.datetime.fromisoformat(med['next_dose_time'])
+                time_str = f" ב-{time_obj.strftime('%H:%M')}"
+
+            message_parts.append(f"• {med['name']} - {med['dosage']}{time_str}")
+
+        message_text = "\n".join(message_parts)
+    else:
+        message_text = f"✅ כל התרופות ל-{child.first_name} ניתנו היום!"
+
+    response_data = {
+        'success': True,
+        'timestamp': now.isoformat(),
+        'child': {
+            'name': child.name(),
+            'slug': child.slug,
+        },
+        'medications_due_today': medications_due,
+        'next_medication': next_medication,
+        'total_active_medications': active_medications.count(),
+        'message': message_text,
+    }
+
+    return Response(response_data)
