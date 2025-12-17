@@ -1,24 +1,43 @@
 {% extends 'cards/base.html' %}
 {% load i18n %}
 {% block header %}
-    <i class="icon-timer" aria-hidden="true"></i>
-    <a href="{% url 'core:timer-list' %}">{% trans "Quick Start" %}</a>
+    <i class="icon-add-circle" aria-hidden="true"></i>
+    {% trans "Quick Entry" %}
 {% endblock %}
 {% block title %}
-    {% trans "Start Activity Timer" %}
+    {% trans "Add Activity Quickly" %}
 {% endblock %}
 {% block content %}
     <div class="mb-2">
         {% if request.user.is_authenticated and child %}
             <div class="row g-2 text-center">
+                <div class="col-6">
+                    <a href="{% url 'core:feeding-add' %}?child={{ child.slug }}"
+                       class="btn btn-lg w-100 btn-primary"
+                       style="font-size: 1.1rem; padding: 1rem 0.5rem;">
+                        <div style="font-size: 2rem;">🍼</div>
+                        <div style="font-weight: 600;">{% trans "Feeding" %}</div>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="{% url 'core:diaperchange-add' %}?child={{ child.slug }}"
+                       class="btn btn-lg w-100 btn-danger"
+                       style="font-size: 1.1rem; padding: 1rem 0.5rem;">
+                        <div style="font-size: 2rem;">🧷</div>
+                        <div style="font-weight: 600;">{% trans "Diaper" %}</div>
+                    </a>
+                </div>
+            </div>
+            <hr class="my-2">
+            <div class="row g-2 text-center">
                 <div class="col-4">
                     <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' child.slug %}">
                         {% csrf_token %}
                         <button type="submit"
-                                class="btn btn-lg w-100 {% if sleep_active %}btn-success{% else %}btn-outline-secondary{% endif %}"
-                                style="font-size: 1.05rem; padding: 0.85rem 0.5rem;">
-                            <div style="font-size: 1.5rem;">💤</div>
-                            <div>{% trans "Sleep" %}</div>
+                                class="btn btn-sm w-100 {% if sleep_active %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                style="font-size: 0.9rem; padding: 0.5rem 0.25rem;">
+                            <div style="font-size: 1.2rem;">💤</div>
+                            <div style="font-size: 0.85rem;">{% trans "Sleep" %}</div>
                         </button>
                     </form>
                 </div>
@@ -26,32 +45,26 @@
                     <form method="post" action="{% url 'core:timer-quick-toggle' 'tummy-time' child.slug %}">
                         {% csrf_token %}
                         <button type="submit"
-                                class="btn btn-lg w-100 {% if tummy_active %}btn-success{% else %}btn-outline-secondary{% endif %}"
-                                style="font-size: 1.05rem; padding: 0.85rem 0.5rem;">
-                            <div style="font-size: 1.5rem;">🤸</div>
-                            <div>{% trans "Tummy Time" %}</div>
+                                class="btn btn-sm w-100 {% if tummy_active %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                style="font-size: 0.9rem; padding: 0.5rem 0.25rem;">
+                            <div style="font-size: 1.2rem;">🤸</div>
+                            <div style="font-size: 0.85rem;">{% trans "Tummy Time" %}</div>
                         </button>
                     </form>
                 </div>
                 <div class="col-4">
-                    <a href="{% url 'core:timer-quick-start' 'pumping' %}"
-                       class="btn btn-lg w-100 btn-outline-secondary"
-                       style="font-size: 1.05rem; padding: 0.85rem 0.5rem;">
-                        <div style="font-size: 1.5rem;">🤱</div>
-                        <div>{% trans "Pumping" %}</div>
+                    <a href="{% url 'core:timer-add' %}"
+                       class="btn btn-sm w-100 btn-outline-secondary"
+                       style="font-size: 0.9rem; padding: 0.5rem 0.25rem;">
+                        <div style="font-size: 1.2rem;">⏱️</div>
+                        <div style="font-size: 0.85rem;">{% trans "Timer" %}</div>
                     </a>
                 </div>
             </div>
-            <hr class="my-2">
-            <a href="{% url 'core:timer-add' %}"
-               class="btn btn-sm btn-outline-secondary w-100" style="font-size: 0.95rem;">
-                <i class="icon-add" aria-hidden="true"></i>
-                ⏱️ {% trans "Custom Timer" %}
-            </a>
         {% elif not request.user.is_authenticated %}
-            <p class="text-muted">{% trans "Please log in to use quick timers." %}</p>
+            <p class="text-muted">{% trans "Please log in to use quick entry." %}</p>
         {% else %}
-            <p class="text-muted">{% trans "Quick timers are available on child dashboards." %}</p>
+            <p class="text-muted">{% trans "Quick entry is available on child dashboards." %}</p>
         {% endif %}
     </div>
 {% endblock %}

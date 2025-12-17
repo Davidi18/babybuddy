@@ -355,24 +355,35 @@
             toast.id = alertId;
             
             let bgClass = 'bg-info';
+            let textClass = 'text-dark'; // Default for light backgrounds
+            let closeButtonClass = 'btn-close'; // Default (dark X)
+
             if (alert.type === 'overdue' || alert.type === 'overtired') {
                 bgClass = 'bg-danger';
+                textClass = 'text-white';
+                closeButtonClass = 'btn-close btn-close-white';
             } else if (alert.type === 'soon' || alert.type === 'getting_tired') {
                 bgClass = 'bg-warning';
+                textClass = 'text-dark';
+                closeButtonClass = 'btn-close';
+            } else {
+                bgClass = 'bg-info';
+                textClass = 'text-dark';
+                closeButtonClass = 'btn-close';
             }
 
-            toast.className = `toast ${bgClass} text-white mb-2`;
+            toast.className = `toast ${bgClass} ${textClass} mb-2`;
             toast.setAttribute('role', 'alert');
             toast.setAttribute('aria-live', 'assertive');
             toast.setAttribute('aria-atomic', 'true');
             toast.style.minWidth = '350px';
             toast.style.fontSize = '1.1rem';
-            
+
             toast.innerHTML = `
-                <div class="toast-header ${bgClass} text-white" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.15rem; padding: 0.75rem 1rem;">
+                <div class="toast-header ${bgClass} ${textClass}" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.15rem; padding: 0.75rem 1rem;">
                     <strong class="ms-auto">${alert.icon || '⚠️'} {% trans "Alert" %}</strong>
                     <small>${alert.time || ''}</small>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    <button type="button" class="${closeButtonClass}" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
                 <div class="toast-body" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.05rem; padding: 1rem;">
                     ${alert.message}
