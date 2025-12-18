@@ -5,6 +5,7 @@ import re
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.db.utils import OperationalError
 from django.db import models
 from django.db.models.functions import Lower
 from django.utils import timezone
@@ -217,6 +218,19 @@ class Child(models.Model):
     def delete(self, using=None, keep_parents=False):
         super(Child, self).delete(using, keep_parents)
         cache.set(self.cache_key_count, Child.objects.count(), None)
+
+    def picture_file_exists(self):
+        if not self.picture:
+            return False
+
+        name = getattr(self.picture, "name", None)
+        if not name:
+            return False
+
+        try:
+            return bool(self.picture.storage.exists(name))
+        except (OSError, ValueError, TypeError, OperationalError):
+            return False
 
     def name(self, reverse=False):
         if not self.last_name:
