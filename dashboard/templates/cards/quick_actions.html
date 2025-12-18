@@ -8,7 +8,7 @@
     {% trans "Add Activity Quickly" %}
 {% endblock %}
 {% block content %}
-    {% if request.user.is_authenticated and child %}
+    {% if user.is_authenticated and child %}
         <div class="row g-2">
             <div class="col-6">
                 <div class="dropdown w-100">
@@ -76,7 +76,7 @@
                 </div>
             </div>
         </div>
-    {% elif not request.user.is_authenticated %}
+    {% elif not user.is_authenticated %}
         <p class="text-muted">{% trans "Please log in to use quick entry." %}</p>
     {% else %}
         <p class="text-muted">{% trans "Quick entry is available on child dashboards." %}</p>

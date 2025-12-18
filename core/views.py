@@ -892,7 +892,9 @@ class MedicationDoseAdd(CoreAddView):
         kwargs = super().get_form_kwargs()
         medication_id = self.request.GET.get("medication", None)
         if medication_id:
-            kwargs.update({"medication": medication_id})
+            if not kwargs.get("initial"):
+                kwargs["initial"] = {}
+            kwargs["initial"].update({"medication": medication_id})
         return kwargs
 
 

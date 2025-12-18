@@ -564,8 +564,11 @@ class MedicationDoseForm(CoreModelForm, TaggableModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        medication_id = kwargs.get("medication")
+        medication_id = kwargs.pop("medication", None)
         super(MedicationDoseForm, self).__init__(*args, **kwargs)
+
+        if not medication_id:
+            medication_id = self.initial.get("medication")
 
         if medication_id and not self.initial.get("medication") and not getattr(self.instance, "pk", None):
             try:
