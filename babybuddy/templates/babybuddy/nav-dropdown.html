@@ -32,7 +32,7 @@
 </div>
 <div class="d-lg-none d-md-none d-flex ms-auto p-0 me-2">
     {% quick_timer_nav %}
-    <div class="dropdown show">
+    <div class="dropdown show nav-quick-add">
     <a class="text-success"
        href="#"
        role="button"
@@ -395,14 +395,10 @@
 }
 
 /* RTL dropdown positioning and z-index fixes */
-[dir="rtl"] .dropdown-menu {
-    right: 0 !important;
-    left: auto !important;
-}
-
-[dir="rtl"] .dropdown-menu-end {
-    right: 0 !important;
-    left: auto !important;
+[dir="rtl"] #nav-quick-add-link + .dropdown-menu.bg-dark {
+    left: 0.5rem !important;
+    right: auto !important;
+    max-width: calc(100vw - 1rem);
 }
 
 .dropdown-menu {
@@ -410,9 +406,10 @@
 }
 
 /* Fix quick-add menu in RTL */
-[dir="rtl"] #nav-quick-add-link + .dropdown-menu.bg-dark {
-    right: 0 !important;
+[dir="ltr"] #nav-quick-add-link + .dropdown-menu.bg-dark {
+    right: 0.5rem !important;
     left: auto !important;
+    max-width: calc(100vw - 1rem);
 }
 </style>
 {% endblock %}

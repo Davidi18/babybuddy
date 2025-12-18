@@ -12217,7 +12217,13 @@ textarea.form-control-lg {
 @media (min-width: 768px) {
   #view-core\:child .child-detail-column {
     position: fixed;
-    width: 100%;
+    width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  #view-core\:child .child-detail-column {
+    width: 33.33333333%;
   }
 }
 .timeline {
