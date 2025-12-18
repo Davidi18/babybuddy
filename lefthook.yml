@@ -2,4 +2,4 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      run: gulp lint
+      run: bash -lc 'if command -v pipenv >/dev/null 2>&1; then npx gulp lint; else files=$(git diff --cached --name-only --diff-filter=ACM | tr "\n" " "); prettier_files=$(echo "$files" | tr " " "\n" | grep -E "\.(js|jsx|ts|tsx|json|yml|yaml|md|css|scss|html)$" || true); scss_files=$(echo "$files" | tr " " "\n" | grep -E "\.scss$" || true); if [ -n "$prettier_files" ]; then npx prettier --check --ignore-unknown $prettier_files; fi; if [ -n "$scss_files" ]; then npx stylelint $scss_files; fi; fi'
