@@ -168,6 +168,7 @@ def smart_alerts_webhook(request):
     feeding_threshold = int(request.GET.get("feeding_threshold", 15))
     sleep_threshold = int(request.GET.get("sleep_threshold", 90))
     diaper_threshold = int(request.GET.get("diaper_threshold", 180))
+    medication_threshold = int(request.GET.get("medication_threshold", 0))
 
     quiet_hours_start = int(request.GET.get("quiet_hours_start", 22))
     quiet_hours_end = int(request.GET.get("quiet_hours_end", 7))
@@ -274,6 +275,67 @@ def smart_alerts_webhook(request):
 
                 cache.set(alert_key, True, timeout=snooze_minutes * 60)
 
+    # Medication reminders (next due/overdue)
+    try:
+        from django.db.models import Q
+        from core.models import Medication
+
+        today = timezone.localdate()
+        now = timezone.now()
+
+        active_meds = Medication.objects.filter(
+            child=child,
+            active=True,
+            start_date__lte=today,
+        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=today))
+
+        next_med = None
+        next_time = None
+
+        for med in active_meds:
+            if not med.is_due_today():
+                continue
+            med_time = med.next_dose_time()
+            if not med_time:
+                continue
+            if next_time is None or med_time < next_time:
+                next_time = med_time
+                next_med = med
+
+        if next_med and next_time:
+            minutes_until = int((next_time - now).total_seconds() / 60)
+            # Alert when overdue or within configured threshold
+            if minutes_until <= medication_threshold:
+                alert_key = f"alert_medication_{child.id}_{next_med.id}"
+
+                if not cache.get(alert_key):
+                    alerts.append(
+                        {
+                            "type": "medication_due",
+                            "severity": "high" if minutes_until < 0 else "medium",
+                            "title": "זמן לתרופה",
+                            "message": (
+                                f"{next_med.name} ({next_med.dosage}) - "
+                                + ("איחור" if minutes_until < 0 else "בעוד")
+                                + f" {abs(minutes_until)} דקות"
+                            ),
+                            "medication": {
+                                "id": next_med.id,
+                                "name": next_med.name,
+                                "dosage": next_med.dosage,
+                                "type": next_med.medication_type,
+                            },
+                            "next_dose_time": next_time.isoformat(),
+                            "minutes_until": minutes_until,
+                            "threshold_used": medication_threshold,
+                        }
+                    )
+
+                    cache.set(alert_key, True, timeout=snooze_minutes * 60)
+    except Exception:
+        # Do not break the webhook if medication logic fails for any reason.
+        pass
+
     if not alerts:
         return Response(
             {
@@ -285,6 +347,7 @@ def smart_alerts_webhook(request):
                     "feeding": feeding_threshold,
                     "sleep": sleep_threshold,
                     "diaper": diaper_threshold,
+                    "medication": medication_threshold,
                 },
                 "child": {
                     "name": child.name(),
@@ -304,6 +367,7 @@ def smart_alerts_webhook(request):
                 "feeding": feeding_threshold,
                 "sleep": sleep_threshold,
                 "diaper": diaper_threshold,
+                "medication": medication_threshold,
             },
             "snooze_minutes": snooze_minutes,
             "child": {
