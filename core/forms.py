@@ -530,12 +530,12 @@ class MedicationForm(CoreModelForm, TaggableModelForm):
             ),
             "frequency": PillRadioSelect(
                 choices=[
-                    ("once_daily", _("Once daily")),
-                    ("twice_daily", _("Twice daily")),
-                    ("three_times_daily", _("Three times daily")),
-                    ("every_other_day", _("Every other day")),
+                    ("once_daily", _("Once Daily")),
+                    ("twice_daily", _("Twice Daily")),
+                    ("three_times_daily", _("Three Times Daily")),
+                    ("every_other_day", _("Every Other Day")),
                     ("weekly", _("Weekly")),
-                    ("as_needed", _("As needed")),
+                    ("as_needed", _("As Needed")),
                     ("custom", _("Custom")),
                 ]
             ),
@@ -564,9 +564,26 @@ class MedicationDoseForm(CoreModelForm, TaggableModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        medication_id = kwargs.get("medication")
         super(MedicationDoseForm, self).__init__(*args, **kwargs)
-        # Filter medications to only active ones for the selected child
-        if "child" in self.initial:
-            self.fields["medication"].queryset = models.Medication.objects.filter(
-                child=self.initial["child"], active=True
-            )
+
+        if medication_id and not self.initial.get("medication") and not getattr(self.instance, "pk", None):
+            try:
+                self.initial["medication"] = models.Medication.objects.get(id=medication_id)
+            except (models.Medication.DoesNotExist, ValueError, TypeError):
+                pass
+
+        selected_child = None
+
+        if getattr(self.instance, "pk", None):
+            selected_child = getattr(self.instance, "child", None)
+        if not selected_child:
+            selected_child = self.initial.get("child")
+        if not selected_child:
+            initial_medication = self.initial.get("medication")
+            selected_child = getattr(initial_medication, "child", None)
+
+        qs = models.Medication.objects.filter(active=True)
+        if selected_child:
+            qs = qs.filter(child=selected_child)
+        self.fields["medication"].queryset = qs

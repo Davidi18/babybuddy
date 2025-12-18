@@ -2917,9 +2917,6 @@ msgstr "מנות תרופה"
 msgid "Add Medication"
 msgstr "הוסף תרופה"
 
-msgid "Update"
-msgstr "עדכן"
-
 msgid "Delete a Medication"
 msgstr "מחק תרופה"
 
@@ -2980,9 +2977,6 @@ msgstr "תאריך התחלה"
 msgid "End Date"
 msgstr "תאריך סיום"
 
-msgid "Active"
-msgstr "פעיל"
-
 msgid "Given"
 msgstr "ניתן"
 
@@ -3030,4 +3024,10 @@ msgstr "התרופה נרשמה בהצלחה"
 
 msgid "Medication dose recorded"
 msgstr "מנת התרופה נרשמה"
+
+msgid "Medication doses today"
+msgstr "מנות תרופה היום"
+
+msgid "Medication doses (past 7 days)"
+msgstr "מנות תרופה (7 הימים האחרונים)"
 

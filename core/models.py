@@ -821,12 +821,12 @@ class Medication(models.Model):
     frequency = models.CharField(
         max_length=50,
         choices=[
-            ("once_daily", _("Once daily")),
-            ("twice_daily", _("Twice daily")),
-            ("three_times_daily", _("Three times daily")),
-            ("every_other_day", _("Every other day")),
+            ("once_daily", _("Once Daily")),
+            ("twice_daily", _("Twice Daily")),
+            ("three_times_daily", _("Three Times Daily")),
+            ("every_other_day", _("Every Other Day")),
             ("weekly", _("Weekly")),
-            ("as_needed", _("As needed")),
+            ("as_needed", _("As Needed")),
             ("custom", _("Custom")),
         ],
         default="once_daily",
@@ -980,7 +980,7 @@ class MedicationDose(models.Model):
     skipped_reason = models.CharField(
         max_length=255,
         blank=True,
-        verbose_name=_("Skipped reason"),
+        verbose_name=_("Skipped Reason"),
         help_text=_("Why was this dose skipped?"),
     )
     notes = models.TextField(

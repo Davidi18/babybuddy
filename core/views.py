@@ -861,6 +861,13 @@ class MedicationDoseAdd(CoreAddView):
     form_class = forms.MedicationDoseForm
     success_url = reverse_lazy("core:medicationdose-list")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        medication_id = self.request.GET.get("medication", None)
+        if medication_id:
+            kwargs.update({"medication": medication_id})
+        return kwargs
+
 
 class MedicationDoseUpdate(CoreUpdateView):
     model = models.MedicationDose

@@ -14,7 +14,7 @@
             <small>{{ next_medication.next_dose_time|time }}</small>
         {% endif %}
     {% elif active_medications %}
-        {% trans "All medications given today" %} ✓
+        {% trans "No medications scheduled for today" %}
     {% else %}
         {% trans "No active medications" %}
     {% endif %}
@@ -27,19 +27,18 @@
         </div>
         <a href="{% url 'core:medicationdose-add' %}?child={{ child.slug }}&medication={{ next_medication.id }}"
            class="btn btn-sm btn-success w-100">
-            <i class="icon-add" aria-hidden="true"></i> {% trans "Give Now" %} 💊
+            <i class="icon-add" aria-hidden="true"></i> {% trans "Give Now" %}
         </a>
     {% elif active_medications %}
         <div class="text-center py-3">
-            <div style="font-size: 3rem;">✅</div>
-            <p class="text-muted mb-2">{% trans "All medications given for today" %}</p>
+            <p class="text-muted mb-2">{% trans "No medications scheduled for today" %}</p>
             <a href="{% url 'core:medication-list' %}" class="btn btn-sm btn-outline-secondary">
-                {% trans "View All Medications" %}
+                {% trans "View all medications" %}
             </a>
         </div>
     {% else %}
         <div class="text-center py-3">
-            <p class="text-muted mb-2">{% trans "No medications configured" %}</p>
+            <p class="text-muted mb-2">{% trans "No active medications" %}</p>
             <a href="{% url 'core:medication-add' %}?child={{ child.slug }}" class="btn btn-sm btn-primary">
                 <i class="icon-add" aria-hidden="true"></i> {% trans "Add Medication" %}
             </a>

@@ -442,6 +442,23 @@ def card_statistics(context, child):
                 }
             )
 
+    medication = _medicationdose_statistics(child)
+    if medication:
+        stats.append(
+            {
+                "type": "int",
+                "stat": medication["today"],
+                "title": _("Medication doses today"),
+            }
+        )
+        stats.append(
+            {
+                "type": "int",
+                "stat": medication["week"],
+                "title": _("Medication doses (past 7 days)"),
+            }
+        )
+
     naps = _nap_statistics(child)
     if naps:
         stats.append(
@@ -613,6 +630,20 @@ def _feeding_statistics(child):
         if timespan["btwn_count"] > 0:
             timespan["btwn_average"] = timespan["btwn_total"] / timespan["btwn_count"]
     return feedings
+
+
+def _medicationdose_statistics(child):
+    today = timezone.localdate()
+    week_start = today - timezone.timedelta(days=6)
+
+    qs = models.MedicationDose.objects.filter(child=child, given=True)
+    if not qs.exists():
+        return False
+
+    return {
+        "today": qs.filter(time__date=today).count(),
+        "week": qs.filter(time__date__gte=week_start, time__date__lte=today).count(),
+    }
 
 
 def _nap_statistics(child):
