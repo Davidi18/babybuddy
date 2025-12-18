@@ -1,0 +1,84 @@
+{% extends 'cards/base.html' %}
+{% load i18n %}
+{% block header %}
+    <i class="icon-add-circle" aria-hidden="true"></i>
+    {% trans "Quick Entry" %}
+{% endblock %}
+{% block title %}
+    {% trans "Add Activity Quickly" %}
+{% endblock %}
+{% block content %}
+    {% if request.user.is_authenticated and child %}
+        <div class="row g-2">
+            <div class="col-6">
+                <div class="dropdown w-100">
+                    <button class="btn btn-primary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% trans "Feeding" %}
+                    </button>
+                    <ul class="dropdown-menu w-100">
+                        {% if child.feeding_mode != 'bottle_only' %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'core:feeding-add' %}?child={{ child.slug }}&type=breast%20milk&method=left%20breast">
+                                    {% trans "Left breast" %}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'core:feeding-add' %}?child={{ child.slug }}&type=breast%20milk&method=right%20breast">
+                                    {% trans "Right breast" %}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'core:feeding-add' %}?child={{ child.slug }}&type=breast%20milk&method=both%20breasts">
+                                    {% trans "Both breasts" %}
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:bottle-feeding-add' %}?child={{ child.slug }}&type=formula">
+                                {% trans "Bottle" %} ({% trans "Formula" %})
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:bottle-feeding-add' %}?child={{ child.slug }}&type=breast%20milk">
+                                {% trans "Bottle" %} ({% trans "Breast milk" %})
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:feeding-add' %}?child={{ child.slug }}&type=solid%20food&method=parent%20fed">
+                                {% trans "Solid food" %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="dropdown w-100">
+                    <button class="btn btn-danger w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% trans "Diaper Change" %}
+                    </button>
+                    <ul class="dropdown-menu w-100">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:diaperchange-add' %}?child={{ child.slug }}&wet=1&solid=0">
+                                {% trans "Wet" %}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:diaperchange-add' %}?child={{ child.slug }}&wet=0&solid=1">
+                                {% trans "Solid" %}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:diaperchange-add' %}?child={{ child.slug }}&wet=1&solid=1">
+                                {% trans "Wet" %} + {% trans "Solid" %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% elif not request.user.is_authenticated %}
+        <p class="text-muted">{% trans "Please log in to use quick entry." %}</p>
+    {% else %}
+        <p class="text-muted">{% trans "Quick entry is available on child dashboards." %}</p>
+    {% endif %}
+{% endblock %}

@@ -120,7 +120,7 @@
     <div id="dashboard-child"
          class="row"
          data-masonry='{"percentPosition": true }'>
-        <div class="col-sm-6 col-lg-4">{% card_timer_quick_start object %}</div>
+        <div class="col-sm-6 col-lg-4">{% card_quick_actions object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_timer_list object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_last object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_medication_next object %}</div>
@@ -146,7 +146,7 @@
 {% block javascript %}
     {% if user.settings.dashboard_refresh_rate %}
         <script type="application/javascript">
-            BabyBuddy.Dashboard.watch('dashboard-child', {{ user.settings.dashboard_refresh_rate_milliseconds }});
+            BabyBuddy.Dashboard.watch('dashboard-child', Number('{{ user.settings.dashboard_refresh_rate_milliseconds }}'));
         </script>
     {% else %}
         <script type="application/javascript">BabyBuddy.Dashboard.watch('dashboard-child', false);</script>

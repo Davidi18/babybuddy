@@ -921,6 +921,20 @@ def card_tummytime_day(context, child, date=None):
     }
 
 
+@register.inclusion_tag("cards/quick_actions.html", takes_context=True)
+def card_quick_actions(context, child=None):
+    """
+    Quick action buttons for common entries (feeding/diaper) with preset options.
+    :param child: an instance of the Child model (optional).
+    """
+    return {
+        "type": "quick_actions",
+        "child": child,
+        "empty": False,
+        "hide_empty": False,
+    }
+
+
 @register.inclusion_tag("cards/medication_next.html", takes_context=True)
 def card_medication_next(context, child):
     """

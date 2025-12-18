@@ -164,6 +164,16 @@ class DiaperChangeAdd(CoreAddView):
     form_class = forms.DiaperChangeForm
     success_url = reverse_lazy("core:diaperchange-list")
 
+    def get_initial(self):
+        initial = super().get_initial()
+        wet = self.request.GET.get("wet")
+        solid = self.request.GET.get("solid")
+        if wet is not None:
+            initial["wet"] = wet in ("1", "true", "True", "yes", "on")
+        if solid is not None:
+            initial["solid"] = solid in ("1", "true", "True", "yes", "on")
+        return initial
+
 
 class DiaperChangeUpdate(CoreUpdateView):
     model = models.DiaperChange
@@ -191,12 +201,29 @@ class FeedingAdd(CoreAddView):
     form_class = forms.FeedingForm
     success_url = reverse_lazy("core:feeding-list")
 
+    def get_initial(self):
+        initial = super().get_initial()
+        feeding_type = self.request.GET.get("type")
+        method = self.request.GET.get("method")
+        if feeding_type:
+            initial["type"] = feeding_type
+        if method:
+            initial["method"] = method
+        return initial
+
 
 class BottleFeedingAdd(CoreAddView):
     model = models.Feeding
     permission_required = ("core.add_feeding",)
     form_class = forms.BottleFeedingForm
     success_url = reverse_lazy("core:feeding-list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        feeding_type = self.request.GET.get("type")
+        if feeding_type:
+            initial["type"] = feeding_type
+        return initial
 
 
 class FeedingUpdate(CoreUpdateView):
