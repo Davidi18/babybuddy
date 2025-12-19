@@ -10,7 +10,7 @@ services:
       # נתיב לשמירת הנתונים (חשוב מאוד!)
       - babybuddy-data:/data
       # נתיבים נוספים (אופציונלי)
-      - babybuddy-media:/app/media
+      - babybuddy-media:/data/media
     environment:
       # Admin User
       - ADMIN_USERNAME=admin

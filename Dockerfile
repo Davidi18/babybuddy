@@ -31,7 +31,7 @@ RUN pip install --upgrade pip && \
 COPY . /app/
 
 # Create directories for data, static, and media
-RUN mkdir -p /data /app/static /app/media && \
+RUN mkdir -p /data /data/media /app/static /app/media && \
     chmod -R 755 /data /app/static /app/media
 
 # Make entrypoint executable

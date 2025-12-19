@@ -255,9 +255,11 @@ WHITENOISE_ROOT = os.path.join(BASE_DIR, "static", "babybuddy", "root")
 # Media files (User uploaded content)
 # https://docs.djangoproject.com/en/5.0/topics/files/
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT") or (
+    "/data/media" if os.path.isdir("/data") else os.path.join(BASE_DIR, "media")
+)
 
-MEDIA_URL = "media/"
+MEDIA_URL = os.path.join(os.environ.get("SUB_PATH") or "", "media/")
 
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME") or None
 
