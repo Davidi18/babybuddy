@@ -26,31 +26,12 @@
                 </a>
             </div>
             <div class="col-4">
-                <div class="dropdown w-100">
-                    <button class="btn w-100 btn-success dropdown-toggle" 
-                            type="button" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false"
-                            style="font-size: 0.85rem; padding: 0.5rem 0.2rem;">
-                        <div style="font-size: 1.5rem;">💊</div>
-                        <div style="font-weight: 600; font-size: 0.8rem;">{% trans "Medication" %}</div>
-                    </button>
-                    <ul class="dropdown-menu w-100">
-                        {% for medication in medications %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'core:medicationdose-add' %}?child={{ child.slug }}&medication={{ medication.id }}">
-                                    {{ medication.name }}
-                                </a>
-                            </li>
-                        {% empty %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'core:medication-add' %}?child={{ child.slug }}">
-                                    {% trans "Add Medication" %}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                <a href="{% url 'core:medicationdose-add' %}?child={{ child.slug }}"
+                   class="btn w-100 btn-success"
+                   style="font-size: 0.85rem; padding: 0.5rem 0.2rem;">
+                    <div style="font-size: 1.5rem;">💊</div>
+                    <div style="font-weight: 600; font-size: 0.8rem;">{% trans "Medication" %}</div>
+                </a>
             </div>
         </div>
     {% else %}
