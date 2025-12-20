@@ -5,7 +5,6 @@
     {% trans "Quick Entry" %}
 {% endblock %}
 {% block title %}
-    {% trans "Add Activity Quickly" %}
 {% endblock %}
 {% block content %}
     {% if child %}
@@ -27,12 +26,12 @@
                 </a>
             </div>
             <div class="col-4">
-                <div class="dropdown w-100">
-                    <button class="btn w-100 btn-success dropdown-toggle" 
+                <div class="dropdown w-100" style="height: 100%;">
+                    <button class="btn w-100 btn-success dropdown-toggle h-100" 
                             type="button" 
                             data-bs-toggle="dropdown" 
                             aria-expanded="false"
-                            style="font-size: 0.85rem; padding: 0.5rem 0.2rem;">
+                            style="font-size: 0.85rem; padding: 0.5rem 0.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div style="font-size: 1.5rem;">💊</div>
                         <div style="font-weight: 600; font-size: 0.8rem;">{% trans "Medication" %}</div>
                     </button>

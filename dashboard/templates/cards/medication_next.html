@@ -21,8 +21,8 @@
 {% block content %}
     {% if next_medication %}
         <div class="mb-2">
-            <strong>{% trans "Dosage:" %}</strong> {{ next_medication.dosage|default:"-" }}<br>
-            <strong>{% trans "Frequency:" %}</strong> {{ next_medication.get_frequency_display }}
+            <strong>מינון:</strong> {{ next_medication.dosage|default:"-" }}<br>
+            <strong>תדירות:</strong> {{ next_medication.get_frequency_display }}
         </div>
         <a href="{% url 'core:medicationdose-add' %}?child={{ child.slug }}&medication={{ next_medication.id }}"
            class="btn btn-sm btn-primary w-100">

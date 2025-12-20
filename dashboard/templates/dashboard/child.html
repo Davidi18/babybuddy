@@ -262,8 +262,9 @@
                 document.getElementById('alert-time').textContent = alert.time || '';
             } else {
                 document.getElementById('alert-icon').textContent = '✅';
-                document.getElementById('alert-message').textContent = '{% trans "All good" %}';
+                document.getElementById('alert-message').textContent = 'הכל בסדר';
                 document.getElementById('alert-message').className = 'fw-bold text-success';
+                document.getElementById('alert-time').textContent = '';
             }
             
             // Weekly Stats
@@ -388,7 +389,7 @@
                 <div class="toast-header ${bgClass} ${textClass}" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.15rem; padding: 0.75rem 1rem;">
                     <strong class="ms-auto">${alert.icon || '⚠️'} {% trans "Alert" %}</strong>
                     <small>${alert.time || ''}</small>
-                    <button type="button" class="${closeButtonClass}" data-bs-dismiss="toast" aria-label="Close"></button>
+                    <button type="button" class="${closeButtonClass}" data-bs-dismiss="toast" aria-label="Close" style="filter: invert(1) grayscale(100%) brightness(200%);"></button>
                 </div>
                 <div class="toast-body" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.05rem; padding: 1rem;">
                     ${alert.message}
