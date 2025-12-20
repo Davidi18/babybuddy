@@ -1,0 +1,23 @@
+{% extends 'cards/base.html' %}
+{% load duration i18n %}
+{% block header %}
+    <a href="{% url "core:medicationdose-list" %}">מנת תרופה אחרונה</a>
+{% endblock %}
+{% block title %}
+    {% if dose %}
+        <div>
+            {% blocktrans trimmed with time_ago=dose.time|deltasince|duration_string:'m' %}
+                {{ time_ago }} ago
+            {% endblocktrans %}
+        </div>
+        <small>{{ dose.time|time }}</small>
+    {% else %}
+        {% trans "None" %}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    {% if dose %}
+        {{ dose.medication.name }}
+        {% if dose.medication.dosage %} - {{ dose.medication.dosage }}{% endif %}
+    {% endif %}
+{% endblock %}

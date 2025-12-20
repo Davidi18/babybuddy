@@ -942,46 +942,23 @@ def card_quick_actions(context, child=None):
     }
 
 
-@register.inclusion_tag("cards/medication_next.html", takes_context=True)
-def card_medication_next(context, child):
+@register.inclusion_tag("cards/medication_last.html", takes_context=True)
+def card_medication_last(context, child):
     """
-    Information about the next medication due.
+    Information about the last medication dose given.
     :param child: an instance of the Child model.
-    :returns: a dictionary with the next medication due.
+    :returns: a dictionary with the last medication dose.
     """
-    today = timezone.localdate()
+    # Get the most recent medication dose for this child
+    last_dose = models.MedicationDose.objects.filter(
+        child=child
+    ).order_by("-time").first()
 
-    # Get all active medications for this child
-    active_medications = models.Medication.objects.filter(
-        child=child,
-        active=True,
-        start_date__lte=today
-    ).filter(
-        Q(end_date__isnull=True) | Q(end_date__gte=today)
-    )
-
-    # Find next medication due
-    next_medication = None
-    earliest_time = None
-
-    for medication in active_medications:
-        if medication.is_due_today():
-            next_time = medication.next_dose_time()
-            if next_time:
-                if not earliest_time or next_time < earliest_time:
-                    earliest_time = next_time
-                    next_medication = medication
-            else:
-                # If no specific time but due today, consider it next
-                if not next_medication:
-                    next_medication = medication
-
-    empty = not active_medications.exists()
+    empty = last_dose is None
 
     return {
-        "type": "medication",
-        "next_medication": next_medication,
-        "active_medications": active_medications,
+        "type": "medicationdose",
+        "dose": last_dose,
         "child": child,
         "empty": empty,
         "hide_empty": _hide_empty(context),
