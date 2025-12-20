@@ -91,6 +91,11 @@
     }
 }
 
+// Increase z-index for dropdown menus to appear above toasts
+.dropdown-menu {
+    z-index: 1060 !important; // Bootstrap toasts are at 1055
+}
+
 // RTL adjustments for status items
 [dir="rtl"] {
     .status-item {
@@ -98,25 +103,30 @@
             text-align: right;
         }
     }
-    
+
     // Fix dropdown menu positioning in RTL
     .dropdown-menu {
         right: 0 !important;
         left: auto !important;
     }
-    
+
     .dropdown-menu-end {
         right: 0 !important;
         left: auto !important;
     }
-    
+
     .dropdown-menu-start {
         right: auto !important;
         left: 0 !important;
     }
 }
 
-// Increase z-index for dropdown menus to appear above toasts
-.dropdown-menu {
-    z-index: 1060 !important; // Bootstrap toasts are at 1055
+// Alert close button - darker color to match alert text
+.alert .btn-close {
+    filter: brightness(0.4) !important;
+    opacity: 0.8;
+
+    &:hover {
+        opacity: 1;
+    }
 }

@@ -143,11 +143,13 @@ def smart_alerts_webhook(request):
             alert_key = f'alert_diaper_{child.id}'
             
             if not cache.get(alert_key):
+                from .llm_messages import format_time_since
+                time_text = format_time_since(last_diaper['time_since_hours'])
                 alerts.append({
                     'type': 'diaper_overdue',
                     'severity': 'medium',
                     'title': 'זמן לחיתול',
-                    'message': f'עברו {last_diaper["time_since_hours"]:.1f} שעות מחיתול אחרון',
+                    'message': f'עברו {time_text} מחיתול אחרון',
                     'hours_since': last_diaper['time_since_hours'],
                     'threshold_used': diaper_threshold,
                 })

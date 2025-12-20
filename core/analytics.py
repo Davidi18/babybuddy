@@ -10,6 +10,8 @@ from typing import Dict, List, Optional, Tuple
 from django.db.models import Avg, Count, Sum, QuerySet
 from django.utils import timezone
 
+from api.llm_messages import format_time_since
+
 
 class BabyAnalytics:
     """
@@ -101,7 +103,7 @@ class BabyAnalytics:
             "feeding": last_feeding,
             "time_since_minutes": time_since.total_seconds() / 60,
             "time_since_hours": hours,
-            "time_since_formatted": f"{int(hours)}:{int(minutes):02d}",
+            "time_since_formatted": format_time_since(hours),
             "type": last_feeding.type,
             "amount": last_feeding.amount,
         }
@@ -229,7 +231,7 @@ class BabyAnalytics:
             "sleep": last_sleep,
             "time_since_minutes": time_since.total_seconds() / 60,
             "time_since_hours": hours,
-            "time_since_formatted": f"{int(hours)}:{int(minutes):02d}",
+            "time_since_formatted": format_time_since(hours),
             "was_nap": last_sleep.nap,
             "duration_minutes": sleep_duration_minutes,
         }
@@ -330,7 +332,7 @@ class BabyAnalytics:
             "change": last_change,
             "time_since_minutes": time_since.total_seconds() / 60,
             "time_since_hours": hours,
-            "time_since_formatted": f"{int(hours)}:{int(minutes):02d}",
+            "time_since_formatted": format_time_since(hours),
             "was_wet": last_change.wet,
             "was_solid": last_change.solid,
         }

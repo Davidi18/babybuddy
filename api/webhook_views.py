@@ -18,21 +18,33 @@ from rest_framework.response import Response
 
 from core.models import Child
 from core.analytics import BabyAnalytics
+from .llm_messages import get_message_generator
 
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def daily_summary_webhook(request):
     """
-    Webhook לסיכום יומי - מתאים ל-n8n / Zapier / Make
-    Daily summary webhook - suitable for n8n / Zapier / Make
+    Webhook לסיכום יומי - מציג נתונים של אתמול בברירת מחדל
+    Daily summary webhook - shows yesterday's data by default (for morning reports)
 
-    GET/POST /api/webhooks/daily-summary/
-    GET/POST /api/webhooks/daily-summary/?child=emma
+    Query Parameters:
+    - child: Child slug (default: first child)
+    - date: Date for summary in YYYY-MM-DD format (default: yesterday)
+    - use_llm: Whether to use LLM for cute messages (default: true)
+
+    Examples:
+    - GET /api/webhooks/daily-summary/  (yesterday's data)
+    - GET /api/webhooks/daily-summary/?date=2025-01-15
+    - GET /api/webhooks/daily-summary/?child=נעמי-מאייר&use_llm=true
     """
-    child_slug = request.GET.get('child') or request.POST.get('child')
+    import datetime
 
-    # בחירת ילד
+    child_slug = request.GET.get('child') or request.POST.get('child')
+    date_param = request.GET.get('date') or request.POST.get('date')
+    use_llm = request.GET.get('use_llm', 'true').lower() != 'false'
+
+    # Get child
     if child_slug:
         try:
             child = Child.objects.get(slug=child_slug)
@@ -49,334 +61,51 @@ def daily_summary_webhook(request):
                 status=404
             )
 
+    # Get date - default to yesterday
+    if date_param:
+        try:
+            summary_date = datetime.datetime.strptime(date_param, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {'error': 'Invalid date format. Use YYYY-MM-DD'},
+                status=400
+            )
+    else:
+        # Default to yesterday
+        summary_date = timezone.localdate() - datetime.timedelta(days=1)
+
     analytics = BabyAnalytics(child)
 
-    # סיכום יומי
-    today_summary = analytics.get_daily_summary()
+    # Get summary for the specified date
+    yesterday_summary = analytics.get_daily_summary(date=summary_date)
 
-    # מצב נוכחי
-    status = analytics.get_current_status()
+    # Format date nicely
+    date_str = summary_date.strftime('%d/%m/%Y')
 
-    # סטטיסטיקות שבועיות
-    feeding_stats = analytics.get_feeding_stats(days=7)
-    sleep_stats = analytics.get_sleep_stats(days=7)
+    # Generate cute message with LLM
+    msg_gen = get_message_generator()
+    message_text = msg_gen.generate_daily_summary(
+        child_name=child.first_name,
+        summary_data=yesterday_summary,
+        date_str=date_str,
+        use_llm=use_llm
+    )
 
-    # חיזויים
-    next_feeding = analytics.predict_next_feeding()
-    next_sleep = analytics.predict_next_sleep()
-
-    # בניית הודעה טקסטואלית (לשליחה בהודעות)
-    message_parts = [
-        f"📊 סיכום יומי - {child.name()}",
-        f"📅 {timezone.localdate().strftime('%d/%m/%Y')}",
-        "",
-        "🍼 האכלות היום:",
-        f"  • {today_summary['feedings']['count']} האכלות",
-        f"  • {today_summary['feedings']['total_duration_minutes']:.0f} דקות",
-    ]
-
-    if today_summary['feedings']['total_amount']:
-        message_parts.append(f"  • {today_summary['feedings']['total_amount']:.0f} ml")
-
-    message_parts.extend([
-        "",
-        "💤 שינה היום:",
-        f"  • {today_summary['sleep']['count']} תקופות שינה",
-        f"  • {today_summary['sleep']['total_duration_hours']:.1f} שעות",
-        f"  • {today_summary['sleep']['naps']} תנומות",
-        "",
-        "🧷 חיתולים היום:",
-        f"  • {today_summary['diapers']['count']} חיתולים",
-        "",
-        "📈 ממוצעים שבועיים:",
-        f"  • האכלה כל {feeding_stats['average_interval_minutes']:.0f} דקות",
-        f"  • {sleep_stats['average_sleep_hours_per_day']:.1f} שעות שינה ביום",
-    ])
-
-    # הוספת חיזויים
-    if next_feeding:
-        message_parts.extend([
-            "",
-            "🔮 חיזויים:",
-            f"  • האכלה הבאה: {next_feeding['message']}",
-        ])
-
-        if next_feeding['status'] in ['overdue', 'soon']:
-            message_parts.append("  ⚠️ שים לב!")
-
-    if next_sleep:
-        message_parts.append(f"  • שינה: {next_sleep['message']}")
-
-    message_text = "\n".join(message_parts)
-
-    # Response מובנה ל-n8n
+    # Response data
     response_data = {
         'success': True,
         'timestamp': timezone.now().isoformat(),
+        'summary_date': summary_date.isoformat(),
         'child': {
             'name': child.name(),
             'slug': child.slug,
         },
-        'message': message_text,  # טקסט מעוצב לשליחה
-        'data': {
-            'today': today_summary,
-            'stats_7_days': {
-                'feeding': feeding_stats,
-                'sleep': sleep_stats,
-            },
-            'predictions': {
-                'next_feeding': next_feeding,
-                'next_sleep': next_sleep,
-            },
-        },
-        # שדות נוספים שימושיים ל-n8n
-        'alerts': [],
+        'message': message_text,
+        'data': yesterday_summary,
+        'llm_enabled': msg_gen.is_available() and use_llm,
     }
 
-    # זיהוי התראות
-    if next_feeding and next_feeding['status'] == 'overdue':
-        response_data['alerts'].append({
-            'type': 'feeding_overdue',
-            'severity': 'high',
-            'message': next_feeding['message'],
-        })
-
-    if next_sleep and next_sleep['status'] == 'overtired':
-        response_data['alerts'].append({
-            'type': 'overtired',
-            'severity': 'medium',
-            'message': next_sleep['message'],
-        })
-
-    # אם עברו יותר מ-3 שעות מחיתול אחרון
-    last_diaper = status.get('last_diaper')
-    if last_diaper and last_diaper['time_since_hours'] > 3:
-        response_data['alerts'].append({
-            'type': 'diaper_overdue',
-            'severity': 'medium',
-            'message': f'עברו {last_diaper["time_since_hours"]:.1f} שעות מחיתול אחרון',
-        })
-
     return Response(response_data)
-
-
-@api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
-def smart_alerts_webhook(request):
-    child_slug = request.GET.get("child") or request.POST.get("child")
-
-    feeding_threshold = int(request.GET.get("feeding_threshold", 15))
-    sleep_threshold = int(request.GET.get("sleep_threshold", 90))
-    diaper_threshold = int(request.GET.get("diaper_threshold", 180))
-    medication_threshold = int(request.GET.get("medication_threshold", 0))
-
-    quiet_hours_start = int(request.GET.get("quiet_hours_start", 22))
-    quiet_hours_end = int(request.GET.get("quiet_hours_end", 7))
-    respect_quiet_hours = request.GET.get("respect_quiet_hours", "true").lower() != "false"
-
-    snooze_minutes = int(request.GET.get("snooze_minutes", 30))
-
-    if child_slug:
-        try:
-            child = Child.objects.get(slug=child_slug)
-        except Child.DoesNotExist:
-            return Response({"error": f"Child not found: {child_slug}"}, status=404)
-    else:
-        child = Child.objects.first()
-        if not child:
-            return Response({"error": "No children in the system"}, status=404)
-
-    current_hour = timezone.localtime().hour
-    is_quiet_hours = False
-
-    if respect_quiet_hours:
-        if quiet_hours_start > quiet_hours_end:
-            is_quiet_hours = current_hour >= quiet_hours_start or current_hour < quiet_hours_end
-        else:
-            is_quiet_hours = quiet_hours_start <= current_hour < quiet_hours_end
-
-    if is_quiet_hours:
-        return Response(
-            {
-                "success": True,
-                "has_alerts": False,
-                "message": f"שעות שקטות ({quiet_hours_start}:00-{quiet_hours_end}:00) - לא שולחים התראות",
-                "quiet_hours": True,
-                "current_hour": current_hour,
-                "child": {
-                    "name": child.name(),
-                    "slug": child.slug,
-                },
-            }
-        )
-
-    analytics = BabyAnalytics(child)
-    status = analytics.get_current_status()
-
-    alerts = []
-
-    next_feeding = status.get("next_feeding_prediction")
-    if next_feeding:
-        minutes_until = next_feeding.get("minutes_until_next", 0)
-        if minutes_until < -feeding_threshold:
-            alert_key = f"alert_feeding_{child.id}"
-
-            if not cache.get(alert_key):
-                alerts.append(
-                    {
-                        "type": "feeding_overdue",
-                        "severity": "high",
-                        "title": f"{child.first_name} רעבה!",
-                        "message": f"עבר זמן האכלה! איחור של {abs(minutes_until)} דקות",
-                        "minutes_overdue": abs(minutes_until),
-                        "threshold_used": feeding_threshold,
-                    }
-                )
-
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
-
-    next_sleep = status.get("next_sleep_prediction")
-    if next_sleep:
-        minutes_awake = next_sleep.get("minutes_awake", 0)
-        if minutes_awake > sleep_threshold:
-            alert_key = f"alert_sleep_{child.id}"
-
-            if not cache.get(alert_key):
-                alerts.append(
-                    {
-                        "type": "overtired",
-                        "severity": "high",
-                        "title": f"{child.first_name} עייפה מאוד!",
-                        "message": f"ערה כבר {minutes_awake} דקות! זמן לישון",
-                        "minutes_awake": minutes_awake,
-                        "threshold_used": sleep_threshold,
-                    }
-                )
-
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
-
-    last_diaper = status.get("last_diaper")
-    if last_diaper:
-        minutes_since = last_diaper.get("time_since_minutes", 0)
-        if minutes_since > diaper_threshold:
-            alert_key = f"alert_diaper_{child.id}"
-
-            if not cache.get(alert_key):
-                alerts.append(
-                    {
-                        "type": "diaper_overdue",
-                        "severity": "medium",
-                        "title": "זמן לחיתול",
-                        "message": f"עברו {last_diaper['time_since_hours']:.1f} שעות מחיתול אחרון",
-                        "hours_since": last_diaper["time_since_hours"],
-                        "threshold_used": diaper_threshold,
-                    }
-                )
-
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
-
-    # Medication reminders (next due/overdue)
-    try:
-        from django.db.models import Q
-        from core.models import Medication
-
-        today = timezone.localdate()
-        now = timezone.now()
-
-        active_meds = Medication.objects.filter(
-            child=child,
-            active=True,
-            start_date__lte=today,
-        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=today))
-
-        next_med = None
-        next_time = None
-
-        for med in active_meds:
-            if not med.is_due_today():
-                continue
-            med_time = med.next_dose_time()
-            if not med_time:
-                continue
-            if next_time is None or med_time < next_time:
-                next_time = med_time
-                next_med = med
-
-        if next_med and next_time:
-            minutes_until = int((next_time - now).total_seconds() / 60)
-            # Alert when overdue or within configured threshold
-            if minutes_until <= medication_threshold:
-                alert_key = f"alert_medication_{child.id}_{next_med.id}"
-
-                if not cache.get(alert_key):
-                    alerts.append(
-                        {
-                            "type": "medication_due",
-                            "severity": "high" if minutes_until < 0 else "medium",
-                            "title": "זמן לתרופה",
-                            "message": (
-                                f"{next_med.name} ({next_med.dosage}) - "
-                                + ("איחור" if minutes_until < 0 else "בעוד")
-                                + f" {abs(minutes_until)} דקות"
-                            ),
-                            "medication": {
-                                "id": next_med.id,
-                                "name": next_med.name,
-                                "dosage": next_med.dosage,
-                                "type": next_med.medication_type,
-                            },
-                            "next_dose_time": next_time.isoformat(),
-                            "minutes_until": minutes_until,
-                            "threshold_used": medication_threshold,
-                        }
-                    )
-
-                    cache.set(alert_key, True, timeout=snooze_minutes * 60)
-    except Exception:
-        # Do not break the webhook if medication logic fails for any reason.
-        pass
-
-    if not alerts:
-        return Response(
-            {
-                "success": True,
-                "has_alerts": False,
-                "message": "הכל בסדר! אין התראות",
-                "quiet_hours": False,
-                "thresholds": {
-                    "feeding": feeding_threshold,
-                    "sleep": sleep_threshold,
-                    "diaper": diaper_threshold,
-                    "medication": medication_threshold,
-                },
-                "child": {
-                    "name": child.name(),
-                    "slug": child.slug,
-                },
-            }
-        )
-
-    return Response(
-        {
-            "success": True,
-            "has_alerts": True,
-            "alert_count": len(alerts),
-            "alerts": alerts,
-            "quiet_hours": False,
-            "thresholds": {
-                "feeding": feeding_threshold,
-                "sleep": sleep_threshold,
-                "diaper": diaper_threshold,
-                "medication": medication_threshold,
-            },
-            "snooze_minutes": snooze_minutes,
-            "child": {
-                "name": child.name(),
-                "slug": child.slug,
-            },
-            "timestamp": timezone.now().isoformat(),
-        }
-    )
 
 
 @api_view(['GET', 'POST'])
@@ -473,14 +202,48 @@ def status_webhook(request):
 @permission_classes([IsAuthenticated])
 def alerts_webhook(request):
     """
-    Webhook להתראות בלבד - מחזיר רק אם יש משהו דחוף
-    Alerts-only webhook - returns only if there's something urgent
+    Unified Smart Alerts Webhook with LLM-generated cute messages
 
-    GET/POST /api/webhooks/alerts/
-    GET/POST /api/webhooks/alerts/?child=emma
+    Supports customizable thresholds, quiet hours, snooze, and medication alerts.
+    Uses Claude AI to generate varied, cute messages (optional).
+
+    Query Parameters:
+    - child: Child slug (default: first child)
+    - feeding_threshold: Minutes overdue to trigger feeding alert (default: 15)
+    - sleep_threshold: Minutes awake to trigger overtired alert (default: 90)
+    - diaper_threshold: Minutes since last diaper to alert (default: 180)
+    - medication_threshold: Minutes before/after dose to alert (default: 0)
+    - snooze_minutes: Minutes to wait before re-alerting (default: 30)
+    - quiet_hours_start: Hour to start quiet period (default: 22)
+    - quiet_hours_end: Hour to end quiet period (default: 7)
+    - respect_quiet_hours: Whether to respect quiet hours (default: true)
+    - use_llm: Whether to use LLM for messages (default: true)
+
+    Examples:
+    - GET /api/webhooks/alerts/
+    - GET /api/webhooks/alerts/?child=emma
+    - GET /api/webhooks/alerts/?feeding_threshold=20&use_llm=true
     """
     child_slug = request.GET.get('child') or request.POST.get('child')
 
+    # Thresholds (in minutes)
+    feeding_threshold = int(request.GET.get('feeding_threshold', 15))
+    sleep_threshold = int(request.GET.get('sleep_threshold', 90))
+    diaper_threshold = int(request.GET.get('diaper_threshold', 180))
+    medication_threshold = int(request.GET.get('medication_threshold', 0))
+
+    # Quiet hours configuration
+    quiet_hours_start = int(request.GET.get('quiet_hours_start', 22))
+    quiet_hours_end = int(request.GET.get('quiet_hours_end', 7))
+    respect_quiet_hours = request.GET.get('respect_quiet_hours', 'true').lower() != 'false'
+
+    # Snooze configuration
+    snooze_minutes = int(request.GET.get('snooze_minutes', 30))
+
+    # LLM configuration
+    use_llm = request.GET.get('use_llm', 'true').lower() != 'false'
+
+    # Get child
     if child_slug:
         try:
             child = Child.objects.get(slug=child_slug)
@@ -491,66 +254,242 @@ def alerts_webhook(request):
         if not child:
             return Response({'error': 'No children in the system'}, status=404)
 
-    analytics = BabyAnalytics(child)
-    status = analytics.get_current_status()
+    # Check quiet hours
+    current_hour = timezone.localtime().hour
+    is_quiet_hours = False
 
-    alerts = []
+    if respect_quiet_hours:
+        if quiet_hours_start > quiet_hours_end:
+            is_quiet_hours = current_hour >= quiet_hours_start or current_hour < quiet_hours_end
+        else:
+            is_quiet_hours = quiet_hours_start <= current_hour < quiet_hours_end
 
-    # בדיקת האכלה
-    next_feeding = status.get('next_feeding_prediction')
-    if next_feeding and next_feeding['status'] == 'overdue':
-        alerts.append({
-            'type': 'feeding_overdue',
-            'severity': 'high',
-            'title': f'{child.first_name} רעבה!',
-            'message': next_feeding['message'],
-            'minutes_overdue': abs(next_feeding['minutes_until_next']),
-        })
-
-    # בדיקת שינה
-    next_sleep = status.get('next_sleep_prediction')
-    if next_sleep and next_sleep['status'] == 'overtired':
-        alerts.append({
-            'type': 'overtired',
-            'severity': 'high',
-            'title': f'{child.first_name} עייפה מאוד!',
-            'message': next_sleep['message'],
-            'minutes_awake': next_sleep['minutes_awake'],
-        })
-
-    # בדיקת חיתול
-    last_diaper = status.get('last_diaper')
-    if last_diaper and last_diaper['time_since_hours'] > 3:
-        alerts.append({
-            'type': 'diaper_overdue',
-            'severity': 'medium',
-            'title': 'זמן לחיתול',
-            'message': f'עברו {last_diaper["time_since_hours"]:.1f} שעות מחיתול אחרון',
-            'hours_since': last_diaper['time_since_hours'],
-        })
-
-    # אם אין התראות
-    if not alerts:
+    if is_quiet_hours:
         return Response({
             'success': True,
             'has_alerts': False,
-            'message': 'הכל בסדר! אין התראות',
+            'message': f'שעות שקטות ({quiet_hours_start}:00-{quiet_hours_end}:00) - לא שולחים התראות',
+            'quiet_hours': True,
+            'current_hour': current_hour,
             'child': {
                 'name': child.name(),
                 'slug': child.slug,
             },
         })
 
-    # יש התראות!
+    # Get analytics
+    analytics = BabyAnalytics(child)
+    status = analytics.get_current_status()
+
+    # Initialize LLM message generator
+    msg_gen = get_message_generator()
+
+    alerts = []
+
+    # Check feeding
+    next_feeding = status.get('next_feeding_prediction')
+    if next_feeding:
+        minutes_until = next_feeding.get('minutes_until_next', 0)
+        if minutes_until < -feeding_threshold:
+            alert_key = f'alert_feeding_{child.id}'
+
+            if not cache.get(alert_key):
+                alert_details = {
+                    'minutes_overdue': abs(minutes_until),
+                    'threshold_used': feeding_threshold,
+                }
+
+                cute_message = msg_gen.generate_alert_message(
+                    child_name=child.first_name,
+                    alert_type='feeding_overdue',
+                    details=alert_details,
+                    use_llm=use_llm
+                )
+
+                alerts.append({
+                    'type': 'feeding_overdue',
+                    'severity': 'high',
+                    'title': f'{child.first_name} רעבה!',
+                    'message': cute_message,
+                    'minutes_overdue': abs(minutes_until),
+                    'threshold_used': feeding_threshold,
+                })
+
+                cache.set(alert_key, True, timeout=snooze_minutes * 60)
+
+    # Check sleep
+    next_sleep = status.get('next_sleep_prediction')
+    if next_sleep:
+        minutes_awake = next_sleep.get('minutes_awake', 0)
+        if minutes_awake > sleep_threshold:
+            alert_key = f'alert_sleep_{child.id}'
+
+            if not cache.get(alert_key):
+                alert_details = {
+                    'minutes_awake': minutes_awake,
+                    'threshold_used': sleep_threshold,
+                }
+
+                cute_message = msg_gen.generate_alert_message(
+                    child_name=child.first_name,
+                    alert_type='overtired',
+                    details=alert_details,
+                    use_llm=use_llm
+                )
+
+                alerts.append({
+                    'type': 'overtired',
+                    'severity': 'high',
+                    'title': f'{child.first_name} עייפה מאוד!',
+                    'message': cute_message,
+                    'minutes_awake': minutes_awake,
+                    'threshold_used': sleep_threshold,
+                })
+
+                cache.set(alert_key, True, timeout=snooze_minutes * 60)
+
+    # Check diaper
+    last_diaper = status.get('last_diaper')
+    if last_diaper:
+        minutes_since = last_diaper.get('time_since_minutes', 0)
+        if minutes_since > diaper_threshold:
+            alert_key = f'alert_diaper_{child.id}'
+
+            if not cache.get(alert_key):
+                alert_details = {
+                    'hours_since': last_diaper['time_since_hours'],
+                    'threshold_used': diaper_threshold,
+                }
+
+                cute_message = msg_gen.generate_alert_message(
+                    child_name=child.first_name,
+                    alert_type='diaper_overdue',
+                    details=alert_details,
+                    use_llm=use_llm
+                )
+
+                alerts.append({
+                    'type': 'diaper_overdue',
+                    'severity': 'medium',
+                    'title': 'זמן לחיתול',
+                    'message': cute_message,
+                    'hours_since': last_diaper['time_since_hours'],
+                    'threshold_used': diaper_threshold,
+                })
+
+                cache.set(alert_key, True, timeout=snooze_minutes * 60)
+
+    # Check medications
+    try:
+        from django.db.models import Q
+        from core.models import Medication
+
+        today = timezone.localdate()
+        now = timezone.now()
+
+        active_meds = Medication.objects.filter(
+            child=child,
+            active=True,
+            start_date__lte=today,
+        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=today))
+
+        next_med = None
+        next_time = None
+
+        for med in active_meds:
+            if not med.is_due_today():
+                continue
+            med_time = med.next_dose_time()
+            if not med_time:
+                continue
+            if next_time is None or med_time < next_time:
+                next_time = med_time
+                next_med = med
+
+        if next_med and next_time:
+            minutes_until = int((next_time - now).total_seconds() / 60)
+
+            if minutes_until <= medication_threshold:
+                alert_key = f'alert_medication_{child.id}_{next_med.id}'
+
+                if not cache.get(alert_key):
+                    alert_details = {
+                        'medication': {
+                            'id': next_med.id,
+                            'name': next_med.name,
+                            'dosage': next_med.dosage,
+                            'type': next_med.medication_type,
+                        },
+                        'next_dose_time': next_time.isoformat(),
+                        'minutes_until': minutes_until,
+                        'threshold_used': medication_threshold,
+                    }
+
+                    cute_message = msg_gen.generate_alert_message(
+                        child_name=child.first_name,
+                        alert_type='medication_due',
+                        details=alert_details,
+                        use_llm=use_llm
+                    )
+
+                    alerts.append({
+                        'type': 'medication_due',
+                        'severity': 'high' if minutes_until < 0 else 'medium',
+                        'title': 'זמן לתרופה',
+                        'message': cute_message,
+                        'medication': {
+                            'id': next_med.id,
+                            'name': next_med.name,
+                            'dosage': next_med.dosage,
+                            'type': next_med.medication_type,
+                        },
+                        'next_dose_time': next_time.isoformat(),
+                        'minutes_until': minutes_until,
+                        'threshold_used': medication_threshold,
+                    })
+
+                    cache.set(alert_key, True, timeout=snooze_minutes * 60)
+    except Exception:
+        pass
+
+    # No alerts
+    if not alerts:
+        return Response({
+            'success': True,
+            'has_alerts': False,
+            'message': 'הכל בסדר! אין התראות',
+            'quiet_hours': False,
+            'thresholds': {
+                'feeding': feeding_threshold,
+                'sleep': sleep_threshold,
+                'diaper': diaper_threshold,
+                'medication': medication_threshold,
+            },
+            'child': {
+                'name': child.name(),
+                'slug': child.slug,
+            },
+        })
+
+    # Has alerts
     return Response({
         'success': True,
         'has_alerts': True,
         'alert_count': len(alerts),
+        'alerts': alerts,
+        'quiet_hours': False,
+        'thresholds': {
+            'feeding': feeding_threshold,
+            'sleep': sleep_threshold,
+            'diaper': diaper_threshold,
+            'medication': medication_threshold,
+        },
+        'snooze_minutes': snooze_minutes,
+        'llm_enabled': msg_gen.is_available() and use_llm,
         'child': {
             'name': child.name(),
             'slug': child.slug,
         },
-        'alerts': alerts,
         'timestamp': timezone.now().isoformat(),
     })
 

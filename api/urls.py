@@ -132,9 +132,4 @@ urlpatterns = [
         webhook_views.medication_status_webhook,
         name="webhook-medications",
     ),
-    path(
-        "api/webhooks/smart-alerts/",
-        webhook_views.smart_alerts_webhook,
-        name="webhook-smart-alerts",
-    ),
 ]

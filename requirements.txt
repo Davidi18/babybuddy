@@ -1,5 +1,6 @@
 -i https://pypi.python.org/simple
 annotated-types==0.7.0; python_version >= '3.8'
+anthropic==0.39.0; python_version >= '3.8'
 asgiref==3.8.1; python_version >= '3.8'
 boto3==1.36.26; python_version >= '3.8'
 botocore==1.36.26; python_version >= '3.8'
