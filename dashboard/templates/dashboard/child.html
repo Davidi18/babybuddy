@@ -217,8 +217,12 @@
             if (data.last_feeding_minutes_ago !== null) {
                 document.getElementById('last-feeding-time').textContent = 
                     formatTimeAgo(data.last_feeding_minutes_ago);
-                document.getElementById('last-feeding-type').textContent = 
-                    data.last_feeding_type || '';
+                
+                let feedingInfo = data.last_feeding_type || '';
+                if (data.last_feeding_amount) {
+                    feedingInfo += feedingInfo ? ` - ${data.last_feeding_amount}` : data.last_feeding_amount;
+                }
+                document.getElementById('last-feeding-type').textContent = feedingInfo;
             } else {
                 document.getElementById('last-feeding-time').textContent = 'N/A';
             }
