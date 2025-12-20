@@ -7,7 +7,7 @@ from PIL import Image
 import os
 
 # Source logo
-SOURCE_LOGO = "final_logo.png"
+SOURCE_LOGO = "babybuddy/static_src/logo/logo.png"
 OUTPUT_DIR = "babybuddy/static_src/root"
 
 # Icon sizes to generate

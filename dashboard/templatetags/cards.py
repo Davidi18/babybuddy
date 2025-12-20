@@ -924,12 +924,19 @@ def card_tummytime_day(context, child, date=None):
 @register.inclusion_tag("cards/quick_actions.html", takes_context=True)
 def card_quick_actions(context, child=None):
     """
-    Quick action buttons for common entries (feeding/diaper) with preset options.
+    Quick action buttons for common entries (feeding/diaper/medication) with preset options.
     :param child: an instance of the Child model (optional).
     """
+    from core.models import Medication
+    
+    medications = []
+    if child:
+        medications = Medication.objects.filter(child=child, active=True).order_by("name")
+    
     return {
         "type": "quick_actions",
         "child": child,
+        "medications": medications,
         "empty": False,
         "hide_empty": False,
     }

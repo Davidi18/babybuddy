@@ -825,11 +825,12 @@ class WeightDelete(CoreDeleteView):
 # Medication views
 
 
-class MedicationList(BabyBuddyPaginatedView):
+class MedicationList(PermissionRequiredMixin, BabyBuddyPaginatedView, BabyBuddyFilterView):
     model = models.Medication
     template_name = "core/medication_list.html"
     permission_required = ("core.view_medication",)
     paginate_by = 10
+    filterset_fields = ("child",)
 
     def get_queryset(self):
         qs = models.Medication.objects.order_by("-active", "name")
@@ -863,11 +864,12 @@ class MedicationDelete(CoreDeleteView):
 # Medication Dose views
 
 
-class MedicationDoseList(BabyBuddyPaginatedView):
+class MedicationDoseList(PermissionRequiredMixin, BabyBuddyPaginatedView, BabyBuddyFilterView):
     model = models.MedicationDose
     template_name = "core/medicationdose_list.html"
     permission_required = ("core.view_medicationdose",)
     paginate_by = 25
+    filterset_fields = ("child", "medication")
 
     def get_queryset(self):
         qs = models.MedicationDose.objects.order_by("-time")
