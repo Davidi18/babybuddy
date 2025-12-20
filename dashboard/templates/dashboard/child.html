@@ -11,6 +11,13 @@
     <li class="breadcrumb-item active" aria-current="page">{% trans "Dashboard" %}</li>
 {% endblock %}
 {% block content %}
+    <!-- Quick Actions -->
+    <div class="row mb-3">
+        <div class="col-12">
+            {% card_quick_actions object %}
+        </div>
+    </div>
+
     <!-- Analytics Status Widget -->
     <div class="row mb-3">
         <div class="col-12">
@@ -39,14 +46,14 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Next Feeding Prediction -->
+                            <!-- Last Diaper Change -->
                             <div class="col-12 col-md-6">
                                 <div class="status-item">
-                                    <div class="status-icon">⏰</div>
+                                    <div class="status-icon">🧷</div>
                                     <div class="status-details">
-                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">האכלה הבאה</div>
-                                        <div id="next-feeding-prediction" class="fw-bold" style="font-size: 1.3rem;"></div>
-                                        <div id="next-feeding-time" class="text-muted small"></div>
+                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">החלפה אחרונה</div>
+                                        <div id="last-diaper-time" class="fw-bold" style="font-size: 1.3rem;"></div>
+                                        <div id="last-diaper-type" class="text-muted small"></div>
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +127,6 @@
     <div id="dashboard-child"
          class="row"
          data-masonry='{"percentPosition": true }'>
-        <div class="col-sm-6 col-lg-4">{% card_quick_actions object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_timer_list object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_last object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_medication_next object %}</div>
@@ -217,20 +223,14 @@
                 document.getElementById('last-feeding-time').textContent = 'N/A';
             }
 
-            // Next Feeding Prediction
-            if (data.next_feeding_prediction) {
-                const pred = data.next_feeding_prediction;
-                const predEl = document.getElementById('next-feeding-prediction');
-                predEl.textContent = pred.message || 'לא ידוע';
-                predEl.className = 'fw-bold ' + getStatusClass(pred.status);
-                
-                if (pred.minutes_until_next !== null && pred.minutes_until_next !== undefined) {
-                    document.getElementById('next-feeding-time').textContent = 
-                        formatTimeUntil(pred.minutes_until_next);
-                }
+            // Last Diaper Change
+            if (data.last_diaper_minutes_ago !== null) {
+                document.getElementById('last-diaper-time').textContent = 
+                    formatTimeAgo(data.last_diaper_minutes_ago);
+                document.getElementById('last-diaper-type').textContent = 
+                    data.last_diaper_type || '';
             } else {
-                document.getElementById('next-feeding-prediction').textContent = 
-                    'אין מספיק נתונים';
+                document.getElementById('last-diaper-time').textContent = 'N/A';
             }
 
             // Sleep Status

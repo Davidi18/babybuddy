@@ -1,8 +1,7 @@
 {% extends 'cards/base.html' %}
 {% load i18n %}
 {% block header %}
-    <i class="icon-medication" aria-hidden="true"></i>
-    <a href="{% url "core:medication-list" %}">{% trans "Medications" %}</a>
+    <a href="{% url "core:medication-list" %}">{% trans "Next Medication" %}</a>
 {% endblock %}
 {% block title %}
     {% if next_medication %}
@@ -26,7 +25,7 @@
             <strong>{% trans "Frequency:" %}</strong> {{ next_medication.get_frequency_display }}
         </div>
         <a href="{% url 'core:medicationdose-add' %}?child={{ child.slug }}&medication={{ next_medication.id }}"
-           class="btn btn-sm btn-success w-100">
+           class="btn btn-sm btn-primary w-100">
             <i class="icon-add" aria-hidden="true"></i> {% trans "Give Now" %}
         </a>
     {% elif active_medications %}
