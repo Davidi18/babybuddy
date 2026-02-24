@@ -603,9 +603,9 @@ class BabyAnalytics:
 
         מצבים:
         - sleeping: התינוק ישן כרגע (יש טיימר שינה פעיל)
-        - awake: התינוק ער (אחרי תנומה ראשונה ביום, לפני 20:00)
-        - good_morning: בוקר טוב (לפני התנומה הראשונה ביום)
-        - good_night: לילה טוב (אחרי 20:00)
+        - awake: התינוק ער (אחרי תנומה ראשונה ביום, בין 06:00-18:00)
+        - good_morning: בוקר טוב (לפני 06:00 או לפני התנומה הראשונה)
+        - good_night: לילה טוב (אחרי 18:00)
         """
         from core.models import Sleep, Timer
 
@@ -639,8 +639,8 @@ class BabyAnalytics:
             datetime.datetime.combine(local_now.date(), datetime.time.min)
         )
 
-        # אחרי 20:00 - לילה טוב
-        if current_hour >= 20:
+        # אחרי 18:00 - לילה טוב
+        if current_hour >= 18:
             # סיכום תנומות היום
             today_naps = Sleep.objects.filter(
                 child=self.child,
@@ -663,6 +663,16 @@ class BabyAnalytics:
                 "mode": "good_night",
                 "display_text": "לילה טוב 🌙",
                 "sub_text": sub,
+                "duration_minutes": None,
+                "since": None,
+            }
+
+        # לפני 06:00 - בוקר טוב (עוד לילה)
+        if current_hour < 6:
+            return {
+                "mode": "good_morning",
+                "display_text": "בוקר טוב ☀️",
+                "sub_text": "",
                 "duration_minutes": None,
                 "since": None,
             }
