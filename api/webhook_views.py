@@ -139,6 +139,7 @@ def status_webhook(request):
     last_diaper = status.get('last_diaper')
     next_feeding = status.get('next_feeding_prediction')
     next_sleep = status.get('next_sleep_prediction')
+    sleep_display = status.get('sleep_display_status')
 
     # טקסט סטטוס קצר
     status_parts = [f"👶 {child.name()}"]
@@ -148,7 +149,9 @@ def status_webhook(request):
             f"🍼 האכלה: לפני {last_feeding['time_since_formatted']}"
         )
 
-    if last_sleep:
+    if sleep_display:
+        status_parts.append(f"💤 {sleep_display['display_text']}")
+    elif last_sleep:
         status_parts.append(
             f"💤 ער: {last_sleep['time_since_formatted']}"
         )
@@ -179,6 +182,7 @@ def status_webhook(request):
         'next_feeding_prediction': next_feeding,
         'next_sleep_status': next_sleep['status'] if next_sleep else None,
         'next_sleep_prediction': next_sleep,
+        'sleep_display': sleep_display,
         'alerts': [],
     }
 
@@ -195,25 +199,6 @@ def status_webhook(request):
             'message': next_sleep['message'],
             'icon': '😴' if next_sleep['status'] == 'getting_tired' else '😫',
         })
-
-    # הוספת נתוני סטטיסטיקות שבועיות
-    stats_7 = status.get('stats_7_days', {})
-    if stats_7:
-        feeding_stats = stats_7.get('feeding', {})
-        sleep_stats = stats_7.get('sleep', {})
-        diaper_stats = stats_7.get('diapers', {})
-        response_data['stats_7_days'] = {
-            'feedings': {
-                'avg_per_day': round(feeding_stats.get('count', 0) / 7, 1),
-                'avg_interval_minutes': feeding_stats.get('average_interval_minutes', 0),
-            },
-            'sleep': {
-                'avg_duration_hours': sleep_stats.get('average_sleep_hours_per_day', 0),
-            },
-            'diapers': {
-                'avg_per_day': diaper_stats.get('average_per_day', 0),
-            },
-        }
 
     return Response(response_data)
 

@@ -60,9 +60,9 @@
                             <!-- Sleep Status -->
                             <div class="col-12 col-md-6">
                                 <div class="status-item">
-                                    <div class="status-icon">💤</div>
+                                    <div class="status-icon" id="sleep-icon">💤</div>
                                     <div class="status-details">
-                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">מצב שינה</div>
+                                        <div class="text-muted mb-1" style="font-size: 0.9rem;" id="sleep-label">מצב שינה</div>
                                         <div id="sleep-status" class="fw-bold" style="font-size: 1.3rem;"></div>
                                         <div id="sleep-prediction" class="text-muted small"></div>
                                     </div>
@@ -78,44 +78,6 @@
                                         <div id="alert-time" class="text-muted small"></div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Weekly Stats Summary -->
-                        <div id="weekly-stats" class="row g-3 mt-3 pt-3" style="display:none; border-top: 1px solid rgba(0,0,0,0.1);">
-                            <div class="col-12 mb-2">
-                                <h6 class="text-muted text-uppercase mb-0" style="font-size: 0.9rem; letter-spacing: 0.5px;">
-                                    📈 {% trans "Weekly Averages" %}
-                                </h6>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Feedings/Day" %}</div>
-                                    <div class="fw-bold" id="avg-feedings" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Sleep/Day" %}</div>
-                                    <div class="fw-bold" id="avg-sleep" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Feeding Interval" %}</div>
-                                    <div class="fw-bold" id="avg-interval" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Diapers/Day" %}</div>
-                                    <div class="fw-bold" id="avg-diapers" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-12 text-center mt-3">
-                                <a href="{% url 'dashboard:analytics-child' object.slug %}" class="btn btn-outline-primary">
-                                    {% trans "View Full Analytics" %} →
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -238,19 +200,56 @@
                 document.getElementById('last-diaper-time').textContent = 'N/A';
             }
 
-            // Sleep Status
-            if (data.last_sleep_minutes_ago !== null && data.last_sleep_minutes_ago !== undefined) {
-                document.getElementById('sleep-status').textContent = 
+            // Sleep Status - rich display
+            if (data.sleep_display) {
+                const sd = data.sleep_display;
+                const sleepStatusEl = document.getElementById('sleep-status');
+                const sleepPredEl = document.getElementById('sleep-prediction');
+                const sleepIconEl = document.getElementById('sleep-icon');
+                const sleepLabelEl = document.getElementById('sleep-label');
+
+                sleepStatusEl.textContent = sd.display_text;
+                sleepPredEl.textContent = sd.sub_text || '';
+
+                if (sd.mode === 'sleeping') {
+                    sleepIconEl.textContent = '😴';
+                    sleepLabelEl.textContent = 'שינה';
+                    sleepStatusEl.className = 'fw-bold text-info';
+                    sleepPredEl.className = 'text-muted small';
+                } else if (sd.mode === 'awake') {
+                    sleepIconEl.textContent = '👁️';
+                    sleepLabelEl.textContent = 'ערות';
+                    sleepStatusEl.className = 'fw-bold';
+                    sleepPredEl.className = 'text-muted small';
+                    // show sleep prediction as additional info
+                    if (data.next_sleep_prediction && data.next_sleep_prediction.message) {
+                        const pred = data.next_sleep_prediction;
+                        const predText = sd.sub_text ? sd.sub_text + ' · ' + pred.message : pred.message;
+                        sleepPredEl.textContent = predText;
+                        sleepPredEl.className = 'text-muted small ' + getStatusClass(pred.status);
+                    }
+                } else if (sd.mode === 'good_night') {
+                    sleepIconEl.textContent = '🌙';
+                    sleepLabelEl.textContent = 'שינה';
+                    sleepStatusEl.className = 'fw-bold text-muted';
+                    sleepPredEl.className = 'text-muted small';
+                } else if (sd.mode === 'good_morning') {
+                    sleepIconEl.textContent = '☀️';
+                    sleepLabelEl.textContent = 'שינה';
+                    sleepStatusEl.className = 'fw-bold text-success';
+                    sleepPredEl.className = 'text-muted small';
+                }
+            } else if (data.last_sleep_minutes_ago !== null && data.last_sleep_minutes_ago !== undefined) {
+                document.getElementById('sleep-status').textContent =
                     formatTimeAgo(data.last_sleep_minutes_ago);
+                if (data.next_sleep_prediction) {
+                    const sleepPred = data.next_sleep_prediction;
+                    const sleepEl = document.getElementById('sleep-prediction');
+                    sleepEl.textContent = sleepPred.message || '';
+                    sleepEl.className = 'text-muted small ' + getStatusClass(sleepPred.status);
+                }
             } else {
                 document.getElementById('sleep-status').textContent = 'N/A';
-            }
-
-            if (data.next_sleep_prediction) {
-                const sleepPred = data.next_sleep_prediction;
-                const sleepEl = document.getElementById('sleep-prediction');
-                sleepEl.textContent = sleepPred.message || '';
-                sleepEl.className = 'text-muted small ' + getStatusClass(sleepPred.status);
             }
 
             // Alerts
@@ -268,37 +267,6 @@
                 document.getElementById('alert-time').textContent = '';
             }
             
-            // Weekly Stats
-            if (data.stats_7_days) {
-                const stats = data.stats_7_days;
-                document.getElementById('weekly-stats').style.display = 'flex';
-                
-                // Feedings per day
-                if (stats.feedings && stats.feedings.avg_per_day) {
-                    document.getElementById('avg-feedings').textContent = 
-                        stats.feedings.avg_per_day.toFixed(1);
-                }
-                
-                // Sleep hours per day
-                if (stats.sleep && stats.sleep.avg_duration_hours) {
-                    document.getElementById('avg-sleep').textContent = 
-                        stats.sleep.avg_duration_hours.toFixed(1) + 'h';
-                }
-                
-                // Feeding interval
-                if (stats.feedings && stats.feedings.avg_interval_minutes) {
-                    const hours = Math.floor(stats.feedings.avg_interval_minutes / 60);
-                    const mins = Math.round(stats.feedings.avg_interval_minutes % 60);
-                    document.getElementById('avg-interval').textContent = 
-                        `${hours}:${mins.toString().padStart(2, '0')}`;
-                }
-                
-                // Diapers per day
-                if (stats.diapers && stats.diapers.avg_per_day) {
-                    document.getElementById('avg-diapers').textContent = 
-                        stats.diapers.avg_per_day.toFixed(1);
-                }
-            }
         }
 
         function loadAnalyticsStatus() {
@@ -470,11 +438,10 @@
         font-size: 2.5rem;
         line-height: 1;
         flex-shrink: 0;
-        animation: none !important;
-        transition: none !important;
     }
-    
-    #alert-icon {
+
+    .status-item,
+    .status-item * {
         animation: none !important;
         transition: none !important;
     }
@@ -483,15 +450,25 @@
         flex: 1;
         min-width: 0;
     }
-    
+
+    .status-details * {
+        transition: none !important;
+        animation: none !important;
+    }
+
     .status-details .text-muted {
         font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.3px;
     }
-    
+
     .status-details .fw-bold {
         line-height: 1.3;
+    }
+
+    #sleep-prediction,
+    #alert-time {
+        min-height: 1.2em;
     }
     
     @media (max-width: 768px) {

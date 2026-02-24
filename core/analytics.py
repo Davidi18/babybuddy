@@ -596,6 +596,119 @@ class BabyAnalytics:
             },
         }
 
+    def get_sleep_display_status(self) -> Dict:
+        """
+        מחזיר סטטוס שינה עשיר לתצוגה בדשבורד.
+        Returns rich sleep status for dashboard display.
+
+        מצבים:
+        - sleeping: התינוק ישן כרגע (יש טיימר שינה פעיל)
+        - awake: התינוק ער (אחרי תנומה ראשונה ביום, לפני 20:00)
+        - good_morning: בוקר טוב (לפני התנומה הראשונה ביום)
+        - good_night: לילה טוב (אחרי 20:00)
+        """
+        from core.models import Sleep, Timer
+
+        now = timezone.now()
+        local_now = timezone.localtime(now)
+        current_hour = local_now.hour
+
+        # בדיקה אם יש טיימר שינה פעיל (התינוק ישן כרגע)
+        sleep_timer_names = ["Sleep", "שינה"]
+        active_sleep_timer = Timer.objects.filter(
+            child=self.child,
+            active=True,
+            name__in=sleep_timer_names,
+        ).order_by("-start").first()
+
+        if active_sleep_timer:
+            sleep_duration = now - active_sleep_timer.start
+            sleep_minutes = sleep_duration.total_seconds() / 60
+            hours = int(sleep_minutes // 60)
+            mins = int(sleep_minutes % 60)
+            return {
+                "mode": "sleeping",
+                "display_text": f"ישנה כבר {hours}:{mins:02d}",
+                "sub_text": f"נרדמה ב-{timezone.localtime(active_sleep_timer.start).strftime('%H:%M')}",
+                "duration_minutes": round(sleep_minutes, 1),
+                "since": active_sleep_timer.start.isoformat(),
+            }
+
+        # התינוק ער - בדיקת שעה ותנומות היום
+        today_start = timezone.make_aware(
+            datetime.datetime.combine(local_now.date(), datetime.time.min)
+        )
+
+        # אחרי 20:00 - לילה טוב
+        if current_hour >= 20:
+            # סיכום תנומות היום
+            today_naps = Sleep.objects.filter(
+                child=self.child,
+                start__gte=today_start,
+                nap=True,
+            )
+            nap_count = today_naps.count()
+            total_nap_minutes = sum(
+                s.duration.total_seconds() / 60
+                for s in today_naps
+                if s.duration
+            )
+            if nap_count > 0:
+                hours = int(total_nap_minutes // 60)
+                mins = int(total_nap_minutes % 60)
+                sub = f"היום: {nap_count} תנומות, סה״כ {hours}:{mins:02d}"
+            else:
+                sub = ""
+            return {
+                "mode": "good_night",
+                "display_text": "לילה טוב 🌙",
+                "sub_text": sub,
+                "duration_minutes": None,
+                "since": None,
+            }
+
+        # בדיקה אם הייתה תנומה היום
+        today_sleep = Sleep.objects.filter(
+            child=self.child,
+            end__gte=today_start,
+        ).order_by("-end").first()
+
+        if not today_sleep:
+            # בוקר טוב - לפני התנומה הראשונה
+            return {
+                "mode": "good_morning",
+                "display_text": "בוקר טוב ☀️",
+                "sub_text": "",
+                "duration_minutes": None,
+                "since": None,
+            }
+
+        # ערה אחרי תנומה - כמה זמן היא ערה
+        awake_duration = now - today_sleep.end
+        awake_minutes = awake_duration.total_seconds() / 60
+        hours = int(awake_minutes // 60)
+        mins = int(awake_minutes % 60)
+
+        last_nap_duration = today_sleep.duration
+        if last_nap_duration:
+            nap_mins = int(last_nap_duration.total_seconds() / 60)
+            nap_h = nap_mins // 60
+            nap_m = nap_mins % 60
+            if nap_h > 0:
+                sub = f"תנומה אחרונה: {nap_h}:{nap_m:02d}"
+            else:
+                sub = f"תנומה אחרונה: {nap_m} דקות"
+        else:
+            sub = ""
+
+        return {
+            "mode": "awake",
+            "display_text": f"ערה כבר {hours}:{mins:02d}",
+            "sub_text": sub,
+            "duration_minutes": round(awake_minutes, 1),
+            "since": today_sleep.end.isoformat(),
+        }
+
     def get_current_status(self) -> Dict:
         """
         מחזיר את המצב הנוכחי - מה קרה לאחרונה ומה צפוי להיות בקרוב
@@ -607,6 +720,7 @@ class BabyAnalytics:
             "last_sleep": self.get_last_sleep_info(),
             "next_sleep_prediction": self.predict_next_sleep(),
             "last_diaper": self.get_last_diaper_info(),
+            "sleep_display_status": self.get_sleep_display_status(),
             "stats_7_days": {
                 "feeding": self.get_feeding_stats(days=7),
                 "sleep": self.get_sleep_stats(days=7),
