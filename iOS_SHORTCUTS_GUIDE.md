@@ -321,6 +321,69 @@ Content-Type: application/json
 
 ---
 
+## Shortcut #9: "נעמי עייפה?" (חיזוי שינה חכם)
+
+**פקודת Siri:** "Hey Siri, נעמי עייפה?"
+
+**מה זה עושה:** שואל את האלגוריתם החכם מתי נעמי צפויה להתעייף, על סמך דפוסי השינה שלה.
+
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"נעמי עייפה?"**
+
+2. **הוסף Action: "Get Contents of URL"**
+   - URL: `https://baby.davidvmayer.com/api/analytics/child/נעמי-מאייר/predict-sleep/`
+   - Method: **GET**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+
+3. **הוסף Action: "Get Dictionary Value"**
+   - Key: `prediction`
+   - Dictionary: `Contents of URL`
+
+4. **הוסף Action: "Get Dictionary Value"**
+   - Key: `message`
+   - Dictionary: `Dictionary Value`
+
+5. **הוסף Action: "Set Variable"**
+   - Variable Name: `PredictionMessage`
+
+6. **חזור לשלב 3 ושלוף עוד ערכים:**
+
+   **הוסף Action: "Get Dictionary Value"** (מתוך `prediction`)
+   - Key: `minutes_awake`
+   → **Set Variable**: `MinutesAwake`
+
+   **הוסף Action: "Get Dictionary Value"** (מתוך `prediction`)
+   - Key: `predicted_wake_window_minutes`
+   → **Set Variable**: `WakeWindow`
+
+   **הוסף Action: "Get Dictionary Value"** (מתוך `prediction`)
+   - Key: `confidence`
+   → **Set Variable**: `Confidence`
+
+7. **הוסף Action: "Show Result"**
+   ```
+   נעמי - חיזוי שינה:
+
+   PredictionMessage
+
+   ערה כבר: MinutesAwake דקות
+   חלון ערות צפוי: WakeWindow דקות
+   רמת ביטחון: Confidence
+   ```
+
+### גרסה מקוצרת (רק הודעה):
+
+אם אתה רוצה גרסה פשוטה שרק מציגה את ההודעה:
+
+1. **"Get Contents of URL"** (כמו למעלה)
+2. **"Get Dictionary Value"** → Key: `prediction`
+3. **"Get Dictionary Value"** → Key: `message`
+4. **"Show Result"** → `Dictionary Value`
+
+---
+
 ## טיפים
 
 ### Widget על מסך הבית
@@ -343,6 +406,7 @@ Content-Type: application/json
 - "Hey Siri, זמן בטן"
 - "Hey Siri, סיים זמן בטן"
 - "Hey Siri, סיכום יום נעמי"
+- "Hey Siri, נעמי עייפה?"
 
 ---
 

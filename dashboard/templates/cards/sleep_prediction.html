@@ -1,0 +1,46 @@
+{% load i18n %}
+{% if not empty or not hide_empty %}
+    <div class="card card-dashboard card-sleep">
+        <div class="card-header">
+            <i class="icon-sleep pull-left" aria-hidden="true"></i>
+            {% trans "Sleep Prediction" %}
+        </div>
+        <div class="card-body">
+            {% if prediction %}
+                <span class="card-title"><strong>
+                    {% if prediction.status == "overtired" %}
+                        <span class="text-danger">{{ prediction.message }}</span>
+                    {% elif prediction.status == "getting_tired" %}
+                        <span class="text-warning">{{ prediction.message }}</span>
+                    {% elif prediction.status == "soon" %}
+                        <span class="text-info">{{ prediction.message }}</span>
+                    {% else %}
+                        <span class="text-success">{{ prediction.message }}</span>
+                    {% endif %}
+                </strong></span>
+                <div class="card-text mt-2">
+                    <small class="text-muted">
+                        {% trans "Awake for" %}: {{ prediction.minutes_awake|floatformat:0 }} {% trans "min" %}
+                        <br>
+                        {% trans "Predicted wake window" %}: {{ prediction.predicted_wake_window_minutes|floatformat:0 }} {% trans "min" %}
+                        {% if prediction.wake_window_stats.sample_size %}
+                            <br>
+                            {% blocktrans trimmed with samples=prediction.wake_window_stats.sample_size %}
+                                Based on {{ samples }} sleep records
+                            {% endblocktrans %}
+                        {% endif %}
+                        {% if prediction.confidence == "high" %}
+                            <span class="badge bg-success ms-1">{% trans "High confidence" %}</span>
+                        {% elif prediction.confidence == "medium" %}
+                            <span class="badge bg-warning ms-1">{% trans "Medium confidence" %}</span>
+                        {% else %}
+                            <span class="badge bg-secondary ms-1">{% trans "Age-based estimate" %}</span>
+                        {% endif %}
+                    </small>
+                </div>
+            {% else %}
+                <span class="card-title"><strong>{% trans "No sleep data yet" %}</strong></span>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
