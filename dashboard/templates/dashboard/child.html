@@ -80,44 +80,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Weekly Stats Summary -->
-                        <div id="weekly-stats" class="row g-3 mt-3 pt-3" style="display:none; border-top: 1px solid rgba(0,0,0,0.1);">
-                            <div class="col-12 mb-2">
-                                <h6 class="text-muted text-uppercase mb-0" style="font-size: 0.9rem; letter-spacing: 0.5px;">
-                                    📈 {% trans "Weekly Averages" %}
-                                </h6>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Feedings/Day" %}</div>
-                                    <div class="fw-bold" id="avg-feedings" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Sleep/Day" %}</div>
-                                    <div class="fw-bold" id="avg-sleep" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Feeding Interval" %}</div>
-                                    <div class="fw-bold" id="avg-interval" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center py-2">
-                                    <div class="text-muted mb-2" style="font-size: 1rem;">{% trans "Diapers/Day" %}</div>
-                                    <div class="fw-bold" id="avg-diapers" style="font-size: 2rem; color: #0d6efd;">-</div>
-                                </div>
-                            </div>
-                            <div class="col-12 text-center mt-3">
-                                <a href="{% url 'dashboard:analytics-child' object.slug %}" class="btn btn-outline-primary">
-                                    {% trans "View Full Analytics" %} →
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -305,37 +267,6 @@
                 document.getElementById('alert-time').textContent = '';
             }
             
-            // Weekly Stats
-            if (data.stats_7_days) {
-                const stats = data.stats_7_days;
-                document.getElementById('weekly-stats').style.display = 'flex';
-                
-                // Feedings per day
-                if (stats.feedings && stats.feedings.avg_per_day) {
-                    document.getElementById('avg-feedings').textContent = 
-                        stats.feedings.avg_per_day.toFixed(1);
-                }
-                
-                // Sleep hours per day
-                if (stats.sleep && stats.sleep.avg_duration_hours) {
-                    document.getElementById('avg-sleep').textContent = 
-                        stats.sleep.avg_duration_hours.toFixed(1) + 'h';
-                }
-                
-                // Feeding interval
-                if (stats.feedings && stats.feedings.avg_interval_minutes) {
-                    const hours = Math.floor(stats.feedings.avg_interval_minutes / 60);
-                    const mins = Math.round(stats.feedings.avg_interval_minutes % 60);
-                    document.getElementById('avg-interval').textContent = 
-                        `${hours}:${mins.toString().padStart(2, '0')}`;
-                }
-                
-                // Diapers per day
-                if (stats.diapers && stats.diapers.avg_per_day) {
-                    document.getElementById('avg-diapers').textContent = 
-                        stats.diapers.avg_per_day.toFixed(1);
-                }
-            }
         }
 
         function loadAnalyticsStatus() {
