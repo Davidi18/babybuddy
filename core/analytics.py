@@ -370,8 +370,13 @@ class BabyAnalytics:
         if not last_sleep:
             return None
 
-        time_awake_minutes = last_sleep["time_since_minutes"]
         current_hour = timezone.localtime().hour
+
+        # בשעות לילה (18:00-06:00) אין צורך בחיזוי שינה
+        if current_hour >= 18 or current_hour < 6:
+            return None
+
+        time_awake_minutes = last_sleep["time_since_minutes"]
 
         # שלב 1: חלונות ערות מהנתונים
         wake_windows = self._calculate_wake_windows(days=14)
