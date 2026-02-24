@@ -271,7 +271,107 @@ Baby Buddy עכשיו כולל מערכת טיימרים חכמה עם תבני�
 
 ---
 
-## 📝 Shortcut #4: רישום החלפת חיתול
+## 📝 Shortcut #4: מעקב שינה עם Siri (נרדמה / קמה)
+
+### מה זה עושה:
+שני Shortcuts שעובדים ביחד:
+- **"Hey Siri, נעמי נרדמה"** → מתחיל טיימר שינה
+- **"Hey Siri, נעמי קמה"** → עוצר את הטיימר ורושם את השינה
+
+### חלק א': Shortcut "נעמי נרדמה"
+
+1. **צור Shortcut חדש** → שם: **"נעמי נרדמה"**
+
+2. **הוסף "Get Contents of URL"**
+   ```
+   URL: http://YOUR_IP:8000/api/timers/
+   Method: POST
+   Headers:
+     Authorization: Token YOUR_API_KEY_HERE
+     Content-Type: application/json
+   ```
+
+3. **JSON Body:**
+   ```json
+   {
+     "child": 1,
+     "name": "Sleep"
+   }
+   ```
+
+4. **הוסף "Show Notification"**
+   ```
+   Title: 😴 נעמי נרדמה
+   Body: טיימר שינה התחיל
+   ```
+
+5. **שמור** ותן שם: **"נעמי נרדמה"**
+
+### חלק ב': Shortcut "נעמי קמה"
+
+1. **צור Shortcut חדש** → שם: **"נעמי קמה"**
+
+2. **הוסף "Get Contents of URL"** (לקבל את הטיימר הפעיל)
+   ```
+   URL: http://YOUR_IP:8000/api/timers/
+   Method: GET
+   Headers:
+     Authorization: Token YOUR_API_KEY_HERE
+   ```
+
+3. **הוסף "Get Dictionary Value"**
+   - Key: `results`
+   - Dictionary: `Contents of URL`
+
+4. **הוסף "Get Item from List"**
+   - Get: `First Item`
+   - List: `Dictionary Value`
+
+5. **הוסף "Get Dictionary Value"**
+   - Key: `id`
+   - Dictionary: `Item from List`
+
+6. **הוסף "Set Variable"**
+   - Variable Name: `TimerID`
+   - Value: `Dictionary Value`
+
+7. **הוסף "Get Contents of URL"** (יצירת רשומת שינה)
+   ```
+   URL: http://YOUR_IP:8000/api/sleep/
+   Method: POST
+   Headers:
+     Authorization: Token YOUR_API_KEY_HERE
+     Content-Type: application/json
+   ```
+
+8. **JSON Body:**
+   ```json
+   {
+     "timer": {{TimerID}}
+   }
+   ```
+
+9. **הוסף "Show Notification"**
+   ```
+   Title: ☀️ נעמי קמה!
+   Body: השינה נרשמה בהצלחה
+   ```
+
+10. **שמור** ותן שם: **"נעמי קמה"**
+
+### איך להשתמש:
+- כשנעמי נרדמת: **"Hey Siri, נעמי נרדמה"**
+- כשנעמי קמה: **"Hey Siri, נעמי קמה"**
+- הכל אוטומטי - הזמנים נרשמים מדויק!
+
+### טיפ: הגדרת שם הילד/ה
+- `"child": 1` מתייחס ל-ID של הילד/ה ב-Baby Buddy
+- אם נעמי היא לא ילד מספר 1, שנה את המספר ל-ID הנכון
+- אפשר למצוא את ה-ID דרך: `http://YOUR_IP:8000/api/children/`
+
+---
+
+## 📝 Shortcut #5: רישום החלפת חיתול
 
 ### מה זה עושה:
 שואל רטוב/מוצק → רושם החלפה
@@ -337,7 +437,7 @@ Baby Buddy עכשיו כולל מערכת טיימרים חכמה עם תבני�
 
 ---
 
-## 📝 Shortcut #5: סיכום יומי
+## 📝 Shortcut #6: סיכום יומי
 
 ### מה זה עושה:
 מציג כמה האכלות/החלפות היו היום
@@ -393,6 +493,8 @@ Baby Buddy עכשיו כולל מערכת טיימרים חכמה עם תבני�
 
 ### 3. **Siri**
 - כל Shortcut אפשר להפעיל עם Siri
+- "Hey Siri, נעמי נרדמה" ← מתחיל טיימר שינה
+- "Hey Siri, נעמי קמה" ← רושם את השינה
 - "Hey Siri, האכלה 120ml"
 - "Hey Siri, החלפת חיתול"
 - "Hey Siri, סיכום יום"
