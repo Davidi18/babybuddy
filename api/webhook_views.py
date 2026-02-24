@@ -189,11 +189,31 @@ def status_webhook(request):
             'message': next_feeding['message'],
         })
 
-    if next_sleep and next_sleep['status'] == 'overtired':
+    if next_sleep and next_sleep['status'] in ('overtired', 'getting_tired'):
         response_data['alerts'].append({
-            'type': 'overtired',
+            'type': next_sleep['status'],
             'message': next_sleep['message'],
+            'icon': '😴' if next_sleep['status'] == 'getting_tired' else '😫',
         })
+
+    # הוספת נתוני סטטיסטיקות שבועיות
+    stats_7 = status.get('stats_7_days', {})
+    if stats_7:
+        feeding_stats = stats_7.get('feeding', {})
+        sleep_stats = stats_7.get('sleep', {})
+        diaper_stats = stats_7.get('diapers', {})
+        response_data['stats_7_days'] = {
+            'feedings': {
+                'avg_per_day': round(feeding_stats.get('count', 0) / 7, 1),
+                'avg_interval_minutes': feeding_stats.get('average_interval_minutes', 0),
+            },
+            'sleep': {
+                'avg_duration_hours': sleep_stats.get('average_sleep_hours_per_day', 0),
+            },
+            'diapers': {
+                'avg_per_day': diaper_stats.get('average_per_day', 0),
+            },
+        }
 
     return Response(response_data)
 

@@ -1,482 +1,429 @@
-# 📱 Baby Buddy - iOS Shortcuts + Smart Timers
+# Baby Buddy - iOS Shortcuts למעקב אחרי נעמי
 
-## 🎯 מערכת טיימרים חכמה חדשה!
+## הפרטים שלך (מוכנים להעתקה)
 
-Baby Buddy עכשיו כולל מערכת טיימרים חכמה עם תבניות מוכנות:
+| פרט | ערך |
+|------|------|
+| **Server URL** | `https://baby.davidvmayer.com` |
+| **API Key** | `013a452982f3d41cf2a9af865c71660d62365b89` |
+| **Child ID** | `1` (נעמי מאייר) |
 
-### ✨ תבניות טיימר מהירות:
-- 😴 **Sleep Timer** - התחל מיד, סיים והמר לשינה
-- 🤸 **Tummy Time Timer** - התחל מיד, סיים והמר לזמן בטן
-- 🍼 **Pumping Timer** - התחל מיד, סיים והמר לשאיבה
-
-### 🚀 איך להשתמש:
-1. לחץ על **Timers** בתפריט
-2. בחר תבנית (למשל: "Feeding Timer")
-3. הטיימר מתחיל לרוץ מיד!
-4. כשגמרת - לחץ **Stop & Save**
-5. הטופס נפתח אוטומטית עם הזמנים מהטיימר
-6. השלם פרטים נוספים (כמות, סוג, וכו') ושמור!
+**Header שחוזר בכל Shortcut:**
+```
+Authorization: Token 013a452982f3d41cf2a9af865c71660d62365b89
+Content-Type: application/json
+```
 
 ---
 
-## מה זה iOS Shortcuts?
-אפליקציית Shortcuts של אפל מאפשרת לך ליצור "קיצורים" שמבצעים פעולות אוטומטיות.
-במקרה שלנו - לרשום פעילויות ב-Baby Buddy בלחיצה אחת או פקודת Siri.
+## Shortcut #1: "נעמי נרדמה" (מעקב שינה - התחלה)
+
+**פקודת Siri:** "Hey Siri, נעמי נרדמה"
+
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"נעמי נרדמה"**
+
+2. **הוסף Action: "Get Contents of URL"**
+   - URL: `https://baby.davidvmayer.com/api/timers/`
+   - Method: **POST**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+     - `Content-Type` = `application/json`
+   - Request Body: **JSON**
+     - `child` = `1` (Number)
+     - `name` = `Sleep` (Text)
+
+3. **הוסף Action: "Show Notification"**
+   - Title: `נעמי נרדמה`
+   - Body: `טיימר שינה התחיל`
 
 ---
 
-## 🚀 התחלה מהירה (5 דקות)
+## Shortcut #2: "נעמי קמה" (מעקב שינה - סיום)
 
-### שלב 1: קבל את ה-API Key שלך
-1. פתח http://127.0.0.1:8000 בדפדפן
-2. התחבר (admin/admin)
-3. לך ל-**User Settings**
-4. העתק את ה-**API Key**
+**פקודת Siri:** "Hey Siri, נעמי קמה"
 
-### שלב 2: פתח את אפליקציית Shortcuts באייפון
-- אפליקציה כחולה עם סמל של שני ריבועים
+### שלבים:
 
-### שלב 3: צור Shortcut ראשון
-נתחיל עם משהו פשוט - רישום האכלה של 120ml
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"נעמי קמה"**
 
----
+2. **הוסף Action: "Get Contents of URL"** (שליפת טיימר פעיל)
+   - URL: `https://baby.davidvmayer.com/api/timers/?child=1&name=Sleep`
+   - Method: **GET**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
 
-## 📝 Shortcut #1: רישום האכלה מהירה
-
-### מה זה עושה:
-לחיצה אחת → רושם האכלה של 120ml
-
-### איך לבנות:
-
-1. **פתח Shortcuts** → לחץ על **+** (למעלה מימין)
-
-2. **הוסף Action** → חפש **"Get Contents of URL"**
-
-3. **הגדר את הבקשה:**
-   ```
-   URL: http://YOUR_IP:8000/api/feedings/
-   Method: POST
-   Headers:
-     Authorization: Token YOUR_API_KEY_HERE
-     Content-Type: application/json
-   Request Body: JSON
-   ```
-
-4. **הוסף JSON Body** (לחץ על "Request Body"):
-   ```json
-   {
-     "child": 1,
-     "start": "{{Current Date}}",
-     "end": "{{Current Date}}",
-     "type": "bottle",
-     "method": "bottle",
-     "amount": 120
-   }
-   ```
-
-5. **הוסף התראה** → חפש **"Show Notification"**
-   ```
-   Title: ✅ האכלה נרשמה
-   Body: 120ml נרשמו בהצלחה
-   ```
-
-6. **שמור** → תן שם: "האכלה 120ml"
-
-### איך להשתמש:
-- **מהאפליקציה**: פתח Shortcuts → לחץ על "האכלה 120ml"
-- **מ-Widget**: הוסף Shortcuts widget למסך הבית
-- **עם Siri**: "Hey Siri, האכלה 120ml"
-
----
-
-## 📝 Shortcut #2: רישום האכלה עם כמות משתנה
-
-### מה זה עושה:
-שואל כמה ml → רושם את הכמות
-
-### איך לבנות:
-
-1. **צור Shortcut חדש**
-
-2. **הוסף "Ask for Input"**
-   ```
-   Question: כמה ml?
-   Input Type: Number
-   Default: 120
-   ```
-
-3. **הוסף "Get Contents of URL"**
-   ```
-   URL: http://YOUR_IP:8000/api/feedings/
-   Method: POST
-   Headers:
-     Authorization: Token YOUR_API_KEY_HERE
-     Content-Type: application/json
-   ```
-
-4. **JSON Body:**
-   ```json
-   {
-     "child": 1,
-     "start": "{{Current Date}}",
-     "end": "{{Current Date}}",
-     "type": "bottle",
-     "method": "bottle",
-     "amount": {{Provided Input}}
-   }
-   ```
-
-5. **הוסף התראה**
-   ```
-   Title: ✅ האכלה נרשמה
-   Body: {{Provided Input}}ml נרשמו
-   ```
-
----
-
-## 📝 Shortcut #3: התחל טיימר האכלה (מתקדם!)
-
-### 🎯 מה זה עושה:
-מתחיל טיימר של iOS → בסוף מתחבר ל-Baby Buddy ורושם אוטומטית!
-
-### 🚀 איך לבנות:
-
-**חלק א' - התחל טיימר עם Baby Buddy:**
-
-1. **צור Shortcut חדש** → שם: "התחל האכלה"
-
-2. **הוסף "Start Timer"** (טיימר של iOS)
-   ```
-   Label: האכלה
-   ```
-
-3. **הוסף "Get Contents of URL"** (אופציונלי - התחל גם טיימר ב-Baby Buddy)
-   ```
-   URL: http://YOUR_IP:8000/timers/quick/feeding/
-   Method: GET
-   Headers:
-     Cookie: sessionid=YOUR_SESSION_ID
-   ```
-
-4. **הוסף התראה**
-   ```
-   Title: 🍼 טיימר האכלה התחיל!
-   Body: לחץ "סיים האכלה" כשגמרת
-   ```
-
-**חלק ב' - סיים טיימר:**
-
-1. **צור Shortcut חדש** → שם: "סיים האכלה"
-
-2. **הוסף "Get Latest Timer"** (מטיימר של iOS)
-
-3. **הוסף "Calculate" → Duration**
-   ```
-   Get duration of Timer
-   Convert to Minutes
-   ```
-
-4. **הוסף "Ask for Input"**
-   ```
-   Question: כמה ml?
-   Input Type: Number
-   Default: 120
-   ```
-
-5. **הוסף "Get Contents of URL"**
-   ```
-   URL: http://YOUR_IP:8000/api/timers/
-   Method: POST
-   Headers:
-     Authorization: Token YOUR_API_KEY_HERE
-     Content-Type: application/json
-   ```
-
-3. **JSON Body:**
-   ```json
-   {
-     "child": 1,
-     "name": "Feeding"
-   }
-   ```
-
-4. **הוסף "Get Dictionary Value"**
-   - Key: `id`
-   - Dictionary: `Contents of URL`
-
-5. **הוסף "Set Variable"**
-   - Variable Name: `TimerID`
-   - Value: `Dictionary Value`
-
-6. **הוסף "Show Notification"**
-   ```
-   Title: ⏱ טיימר התחיל
-   Body: לחץ על "סיים האכלה" כשגמרת
-   ```
-
-**חלק ב' - סיים טיימר:**
-
-1. **צור Shortcut חדש** → שם: "סיים האכלה"
-
-2. **הוסף "Ask for Input"**
-   ```
-   Question: כמה ml?
-   Input Type: Number
-   ```
-
-3. **הוסף "Get Contents of URL"** (לקבל את הטיימר הפעיל)
-   ```
-   URL: http://YOUR_IP:8000/api/timers/
-   Method: GET
-   Headers:
-     Authorization: Token YOUR_API_KEY_HERE
-   ```
-
-4. **הוסף "Get Dictionary Value"**
+3. **הוסף Action: "Get Dictionary Value"**
    - Key: `results`
    - Dictionary: `Contents of URL`
 
-5. **הוסף "Get Item from List"**
-   - Get: `First Item`
+4. **הוסף Action: "Get Item from List"**
+   - Get: **First Item**
    - List: `Dictionary Value`
 
-6. **הוסף "Get Dictionary Value"**
+5. **הוסף Action: "Get Dictionary Value"**
    - Key: `id`
    - Dictionary: `Item from List`
 
-7. **הוסף "Get Contents of URL"** (סיים את הטיימר)
-   ```
-   URL: http://YOUR_IP:8000/api/feedings/
-   Method: POST
-   Headers:
-     Authorization: Token YOUR_API_KEY_HERE
-     Content-Type: application/json
-   ```
+6. **הוסף Action: "Get Contents of URL"** (שמירת רשומת שינה)
+   - URL: `https://baby.davidvmayer.com/api/sleep/`
+   - Method: **POST**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+     - `Content-Type` = `application/json`
+   - Request Body: **JSON**
+     - `timer` = `Dictionary Value` (Magic Variable - מהשלב הקודם)
 
-8. **JSON Body:**
-   ```json
-   {
-     "timer": {{Dictionary Value}},
-     "type": "bottle",
-     "method": "bottle",
-     "amount": {{Provided Input}}
-   }
-   ```
-
-9. **הוסף התראה**
-   ```
-   Title: ✅ האכלה הושלמה
-   Body: {{Provided Input}}ml נרשמו
-   ```
+7. **הוסף Action: "Show Notification"**
+   - Title: `נעמי קמה!`
+   - Body: `השינה נרשמה בהצלחה`
 
 ---
 
-## 📝 Shortcut #4: רישום החלפת חיתול
+## Shortcut #3: "האכלה מהירה" (120ml)
 
-### מה זה עושה:
-שואל רטוב/מוצק → רושם החלפה
+**פקודת Siri:** "Hey Siri, האכלה מהירה"
 
-### איך לבנות:
+### שלבים:
 
-1. **צור Shortcut חדש** → שם: "החלפת חיתול"
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"האכלה מהירה"**
 
-2. **הוסף "Choose from Menu"**
-   ```
-   Prompt: איזה סוג?
-   Options:
-     - רטוב
-     - מוצק
-     - שניהם
-   ```
+2. **הוסף Action: "Date"** (Current Date)
+   - בחר: **Current Date**
 
-3. **תחת "רטוב":**
-   - **הוסף "Get Contents of URL"**
-     ```
-     URL: http://YOUR_IP:8000/api/changes/
-     Method: POST
-     Headers:
-       Authorization: Token YOUR_API_KEY_HERE
-       Content-Type: application/json
-     ```
-   - **JSON Body:**
-     ```json
-     {
-       "child": 1,
-       "time": "{{Current Date}}",
-       "wet": true,
-       "solid": false
-     }
-     ```
-
-4. **תחת "מוצק":**
-   - אותו דבר אבל:
-     ```json
-     {
-       "child": 1,
-       "time": "{{Current Date}}",
-       "wet": false,
-       "solid": true
-     }
-     ```
-
-5. **תחת "שניהם":**
-   - אותו דבר אבל:
-     ```json
-     {
-       "child": 1,
-       "time": "{{Current Date}}",
-       "wet": true,
-       "solid": true
-     }
-     ```
-
-6. **הוסף התראה בסוף**
-   ```
-   Title: ✅ החלפה נרשמה
-   ```
-
----
-
-## 📝 Shortcut #5: סיכום יומי
-
-### מה זה עושה:
-מציג כמה האכלות/החלפות היו היום
-
-### איך לבנות:
-
-1. **צור Shortcut חדש** → שם: "סיכום יום"
-
-2. **הוסף "Get Current Date"**
-
-3. **הוסף "Format Date"**
+3. **הוסף Action: "Format Date"**
    - Date: `Current Date`
-   - Format: `Custom`
+   - Date Format: **Custom**
+   - Format String: `yyyy-MM-dd'T'HH:mm:ssZ`
+
+4. **הוסף Action: "Get Contents of URL"**
+   - URL: `https://baby.davidvmayer.com/api/feedings/`
+   - Method: **POST**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+     - `Content-Type` = `application/json`
+   - Request Body: **JSON**
+     - `child` = `1` (Number)
+     - `start` = `Formatted Date` (Magic Variable)
+     - `end` = `Formatted Date` (Magic Variable)
+     - `type` = `formula` (Text)
+     - `method` = `bottle` (Text)
+     - `amount` = `120` (Number)
+
+5. **הוסף Action: "Show Notification"**
+   - Title: `האכלה נרשמה`
+   - Body: `120ml formula נרשמו לנעמי`
+
+---
+
+## Shortcut #4: "האכלה" (עם בחירת כמות)
+
+**פקודת Siri:** "Hey Siri, האכלה"
+
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"האכלה"**
+
+2. **הוסף Action: "Ask for Input"**
+   - Question: `כמה ml?`
+   - Input Type: **Number**
+   - Default Answer: `120`
+
+3. **הוסף Action: "Date"** → Current Date
+
+4. **הוסף Action: "Format Date"**
+   - Date Format: **Custom**
+   - Format String: `yyyy-MM-dd'T'HH:mm:ssZ`
+
+5. **הוסף Action: "Get Contents of URL"**
+   - URL: `https://baby.davidvmayer.com/api/feedings/`
+   - Method: **POST**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+     - `Content-Type` = `application/json`
+   - Request Body: **JSON**
+     - `child` = `1` (Number)
+     - `start` = `Formatted Date` (Magic Variable)
+     - `end` = `Formatted Date` (Magic Variable)
+     - `type` = `formula` (Text)
+     - `method` = `bottle` (Text)
+     - `amount` = `Provided Input` (Magic Variable)
+
+6. **הוסף Action: "Show Notification"**
+   - Title: `האכלה נרשמה`
+   - Body: `Provided Input` + `ml נרשמו לנעמי`
+
+---
+
+## Shortcut #5: "החלפת חיתול"
+
+**פקודת Siri:** "Hey Siri, החלפת חיתול"
+
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"החלפת חיתול"**
+
+2. **הוסף Action: "Choose from Menu"**
+   - Prompt: `איזה סוג?`
+   - Options: `רטוב`, `מוצק`, `שניהם`
+
+3. **תחת "רטוב" - הוסף "Get Contents of URL":**
+   - URL: `https://baby.davidvmayer.com/api/changes/`
+   - Method: **POST**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+     - `Content-Type` = `application/json`
+   - Request Body: **JSON**
+     - `child` = `1` (Number)
+     - `time` = `Current Date` (Magic Variable)
+     - `wet` = `true` (Boolean)
+     - `solid` = `false` (Boolean)
+
+4. **תחת "מוצק" - הוסף "Get Contents of URL":**
+   - אותו דבר, רק:
+     - `wet` = `false` (Boolean)
+     - `solid` = `true` (Boolean)
+
+5. **תחת "שניהם" - הוסף "Get Contents of URL":**
+   - אותו דבר, רק:
+     - `wet` = `true` (Boolean)
+     - `solid` = `true` (Boolean)
+
+6. **אחרי ה-Menu - הוסף Action: "Show Notification"**
+   - Title: `חיתול הוחלף`
+   - Body: `נרשם לנעמי`
+
+---
+
+## Shortcut #6: "התחל זמן בטן" (Tummy Time - התחלה)
+
+**פקודת Siri:** "Hey Siri, זמן בטן"
+
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"זמן בטן"**
+
+2. **הוסף Action: "Get Contents of URL"**
+   - URL: `https://baby.davidvmayer.com/api/timers/`
+   - Method: **POST**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+     - `Content-Type` = `application/json`
+   - Request Body: **JSON**
+     - `child` = `1` (Number)
+     - `name` = `Tummy Time` (Text)
+
+3. **הוסף Action: "Show Notification"**
+   - Title: `זמן בטן התחיל!`
+   - Body: `טיימר רץ לנעמי`
+
+---
+
+## Shortcut #7: "סיים זמן בטן" (Tummy Time - סיום)
+
+**פקודת Siri:** "Hey Siri, סיים זמן בטן"
+
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"סיים זמן בטן"**
+
+2. **הוסף Action: "Get Contents of URL"** (שליפת טיימר)
+   - URL: `https://baby.davidvmayer.com/api/timers/?child=1&name=Tummy+Time`
+   - Method: **GET**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+
+3. **הוסף Action: "Get Dictionary Value"**
+   - Key: `results`
+   - Dictionary: `Contents of URL`
+
+4. **הוסף Action: "Get Item from List"**
+   - Get: **First Item**
+
+5. **הוסף Action: "Get Dictionary Value"**
+   - Key: `id`
+   - Dictionary: `Item from List`
+
+6. **הוסף Action: "Get Contents of URL"** (שמירת זמן בטן)
+   - URL: `https://baby.davidvmayer.com/api/tummy-times/`
+   - Method: **POST**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+     - `Content-Type` = `application/json`
+   - Request Body: **JSON**
+     - `timer` = `Dictionary Value` (Magic Variable)
+
+7. **הוסף Action: "Show Notification"**
+   - Title: `זמן בטן הסתיים!`
+   - Body: `נרשם לנעמי`
+
+---
+
+## Shortcut #8: "סיכום יום"
+
+**פקודת Siri:** "Hey Siri, סיכום יום נעמי"
+
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"סיכום יום נעמי"**
+
+2. **הוסף Action: "Date"** → Current Date
+
+3. **הוסף Action: "Format Date"**
+   - Date Format: **Custom**
    - Format String: `yyyy-MM-dd`
 
-4. **הוסף "Get Contents of URL"** (האכלות)
-   ```
-   URL: http://YOUR_IP:8000/api/feedings/?child=1&start__gte={{Formatted Date}}
-   Method: GET
-   Headers:
-     Authorization: Token YOUR_API_KEY_HERE
-   ```
+4. **הוסף Action: "Get Contents of URL"** (האכלות)
+   - URL: `https://baby.davidvmayer.com/api/feedings/?child=1&start_min=` + `Formatted Date`
+   - Method: **GET**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
 
-5. **הוסף "Get Dictionary Value"**
+5. **הוסף Action: "Get Dictionary Value"**
    - Key: `count`
    - Dictionary: `Contents of URL`
 
-6. **הוסף "Set Variable"**
+6. **הוסף Action: "Set Variable"**
    - Variable Name: `FeedingsCount`
 
-7. **חזור על שלבים 4-6 ל-`/api/changes/`** (החלפות)
+7. **הוסף Action: "Get Contents of URL"** (חיתולים)
+   - URL: `https://baby.davidvmayer.com/api/changes/?child=1&date_min=` + `Formatted Date`
+   - Method: **GET**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
 
-8. **הוסף "Show Result"**
-   ```
-   📊 סיכום יומי:
-   🍼 האכלות: {{FeedingsCount}}
-   🚼 החלפות: {{ChangesCount}}
-   ```
+8. **הוסף Action: "Get Dictionary Value"**
+   - Key: `count`
+
+9. **הוסף Action: "Set Variable"**
+   - Variable Name: `ChangesCount`
+
+10. **הוסף Action: "Get Contents of URL"** (שינה)
+    - URL: `https://baby.davidvmayer.com/api/sleep/?child=1&start_min=` + `Formatted Date`
+    - Method: **GET**
+    - Headers:
+      - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+
+11. **הוסף Action: "Get Dictionary Value"**
+    - Key: `count`
+
+12. **הוסף Action: "Set Variable"**
+    - Variable Name: `SleepCount`
+
+13. **הוסף Action: "Show Result"**
+    ```
+    סיכום יומי - נעמי:
+    האכלות: FeedingsCount
+    החלפות חיתול: ChangesCount
+    שינות: SleepCount
+    ```
 
 ---
 
-## 🎯 טיפים מעשיים
+## Shortcut #9: "נעמי עייפה?" (חיזוי שינה חכם)
 
-### 1. **Widget על מסך הבית**
-- הוסף Shortcuts widget
-- בחר את הקיצורים הכי נפוצים
-- גישה מהירה בלי לפתוח אפליקציה
+**פקודת Siri:** "Hey Siri, נעמי עייפה?"
 
-### 2. **Back Tap (הקשה כפולה על גב האייפון)**
-- הגדרות → Accessibility → Touch → Back Tap
-- Double Tap → בחר Shortcut
-- עכשיו הקשה כפולה על גב האייפון = רישום האכלה!
+**מה זה עושה:** שואל את האלגוריתם החכם מתי נעמי צפויה להתעייף, על סמך דפוסי השינה שלה.
 
-### 3. **Siri**
-- כל Shortcut אפשר להפעיל עם Siri
-- "Hey Siri, האכלה 120ml"
+### שלבים:
+
+1. **פתח Shortcuts** → לחץ **+** → תן שם: **"נעמי עייפה?"**
+
+2. **הוסף Action: "Get Contents of URL"**
+   - URL: `https://baby.davidvmayer.com/api/analytics/child/נעמי-מאייר/predict-sleep/`
+   - Method: **GET**
+   - Headers:
+     - `Authorization` = `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+
+3. **הוסף Action: "Get Dictionary Value"**
+   - Key: `prediction`
+   - Dictionary: `Contents of URL`
+
+4. **הוסף Action: "Get Dictionary Value"**
+   - Key: `message`
+   - Dictionary: `Dictionary Value`
+
+5. **הוסף Action: "Set Variable"**
+   - Variable Name: `PredictionMessage`
+
+6. **חזור לשלב 3 ושלוף עוד ערכים:**
+
+   **הוסף Action: "Get Dictionary Value"** (מתוך `prediction`)
+   - Key: `minutes_awake`
+   → **Set Variable**: `MinutesAwake`
+
+   **הוסף Action: "Get Dictionary Value"** (מתוך `prediction`)
+   - Key: `predicted_wake_window_minutes`
+   → **Set Variable**: `WakeWindow`
+
+   **הוסף Action: "Get Dictionary Value"** (מתוך `prediction`)
+   - Key: `confidence`
+   → **Set Variable**: `Confidence`
+
+7. **הוסף Action: "Show Result"**
+   ```
+   נעמי - חיזוי שינה:
+
+   PredictionMessage
+
+   ערה כבר: MinutesAwake דקות
+   חלון ערות צפוי: WakeWindow דקות
+   רמת ביטחון: Confidence
+   ```
+
+### גרסה מקוצרת (רק הודעה):
+
+אם אתה רוצה גרסה פשוטה שרק מציגה את ההודעה:
+
+1. **"Get Contents of URL"** (כמו למעלה)
+2. **"Get Dictionary Value"** → Key: `prediction`
+3. **"Get Dictionary Value"** → Key: `message`
+4. **"Show Result"** → `Dictionary Value`
+
+---
+
+## טיפים
+
+### Widget על מסך הבית
+1. לחץ לחוץ על מסך הבית → **+** (למעלה שמאל)
+2. חפש **Shortcuts**
+3. בחר widget בגודל שמתאים
+4. הוסף את הקיצורים הכי שימושיים
+
+### Back Tap (הקשה על גב האייפון)
+1. Settings → Accessibility → Touch → Back Tap
+2. Double Tap → בחר Shortcut (למשל "החלפת חיתול")
+3. עכשיו הקשה כפולה על גב האייפון = רישום!
+
+### Siri - כל הפקודות:
+- "Hey Siri, נעמי נרדמה"
+- "Hey Siri, נעמי קמה"
+- "Hey Siri, האכלה מהירה"
+- "Hey Siri, האכלה"
 - "Hey Siri, החלפת חיתול"
-- "Hey Siri, סיכום יום"
-
-### 4. **Automation (אוטומציה)**
-- Shortcuts → Automation → Create Personal Automation
-- דוגמאות:
-  - כל יום ב-20:00 → שלח סיכום יומי
-  - כשמגיע הביתה → שאל אם צריך לרשום משהו
-  - כשמתחבר ל-CarPlay → הצג תזכורת
-
-### 5. **Share Sheet**
-- הפעל Shortcut מכל אפליקציה
-- שתף → בחר Shortcut
-- שימושי פחות אבל אפשרי
+- "Hey Siri, זמן בטן"
+- "Hey Siri, סיים זמן בטן"
+- "Hey Siri, סיכום יום נעמי"
+- "Hey Siri, נעמי עייפה?"
 
 ---
 
-## 🔧 פתרון בעיות
-
-### "לא מצליח להתחבר"
-- ✅ בדוק שהאייפון והמחשב באותה רשת WiFi
-- ✅ השתמש בכתובת IP של המחשב (לא localhost)
-- ✅ מצא IP: `ifconfig | grep inet` (Mac) או הגדרות רשת (Windows)
+## פתרון בעיות
 
 ### "403 Forbidden"
-- ✅ בדוק את ה-API Key
-- ✅ ודא שיש רווח אחרי "Token" בheader
-- ✅ נכון: `Token abc123`
-- ✅ לא נכון: `Tokenabc123`
+- ודא שיש **רווח** אחרי "Token" ב-Header
+- נכון: `Token 013a452982f3d41cf2a9af865c71660d62365b89`
+- לא נכון: `Token013a452982f3d41cf2a9af865c71660d62365b89`
 
-### "השרת לא עונה"
-- ✅ בדוק שהשרת רץ: `ps aux | grep runserver`
-- ✅ נסה לפתוח בדפדפן באייפון: `http://YOUR_IP:8000`
+### "Current Date לא עובד בפורמט"
+- השתמש ב-"Format Date" Action עם פורמט: `yyyy-MM-dd'T'HH:mm:ssZ`
 
-### "Current Date לא עובד"
-- ✅ השתמש ב-"Current Date" מהרשימה (לא כתוב ידנית)
-- ✅ Format: ISO 8601 (`yyyy-MM-dd'T'HH:mm:ssZ`)
+### "הטיימר לא נמצא ב-'נעמי קמה'"
+- ודא שהפעלת את "נעמי נרדמה" קודם
+- אם הטיימר נמחק בטעות, צור רשומת שינה ידנית דרך האתר
 
----
-
-## 📦 Shortcuts מוכנים להורדה
-
-אם יש לך קישור ל-iCloud, אפשר לשתף Shortcuts.
-אבל בגלל שכל אחד צריך API Key משלו, עדיף לבנות בעצמך (5 דקות).
-
----
-
-## 💡 רעיונות נוספים (פשוטים)
-
-### Shortcut מהיר לכל כמות
-צור 3 shortcuts:
-- "האכלה 90" → 90ml
-- "האכלה 120" → 120ml
-- "האכלה 150" → 150ml
-
-שים אותם ב-widget, ובלחיצה אחת זה נרשם.
-
-### Shortcut עם תזכורת
-אחרי שרושם האכלה, הוסף:
-- "Wait" → 3 hours
-- "Show Notification" → "זמן להאכיל!"
-
-### Shortcut לשיתוף עם בן/בת זוג
-אחרי רישום, שלח הודעה:
-- "Send Message" → לבן/בת זוג
-- "התינוק אכל 120ml ב-{{Current Time}}"
-
----
-
-## 🎉 סיכום
-
-**מה צריך:**
-1. ✅ Baby Buddy רץ על המחשב
-2. ✅ אייפון ומחשב באותה רשת
-3. ✅ API Key
-4. ✅ 5 דקות לבנות Shortcut
-
-**מה מקבלים:**
-- 🍼 רישום האכלה בלחיצה אחת
-- 🚼 רישום החלפה בלחיצה אחת
-- 😴 טיימרים חכמים
-- 📊 סיכומים אוטומטיים
-- 🗣 שליטה קולית עם Siri
-- 📱 Widget על מסך הבית
-
-**זה הכל!** פשוט, מהיר, ועובד מצוין 🚀
+### "SSL Error" / "Certificate Error"
+- ודא שהכתובת מתחילה ב-`https://`
+- אם יש בעיית תעודה, נסה את הכתובת בדפדפן קודם

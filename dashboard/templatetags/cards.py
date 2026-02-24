@@ -869,6 +869,27 @@ def card_timer_quick_start(context, child=None):
     }
 
 
+@register.inclusion_tag("cards/sleep_prediction.html", takes_context=True)
+def card_sleep_prediction(context, child):
+    """
+    Sleep prediction based on smart wake window analysis.
+    :param child: an instance of the Child model.
+    :returns: a dictionary with sleep prediction data.
+    """
+    from core.analytics import BabyAnalytics
+
+    analytics = BabyAnalytics(child)
+    prediction = analytics.predict_next_sleep()
+    empty = prediction is None
+
+    return {
+        "type": "sleep",
+        "prediction": prediction,
+        "empty": empty,
+        "hide_empty": _hide_empty(context),
+    }
+
+
 @register.inclusion_tag("cards/tummytime_last.html", takes_context=True)
 def card_tummytime_last(context, child):
     """
