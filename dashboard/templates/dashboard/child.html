@@ -60,9 +60,9 @@
                             <!-- Sleep Status -->
                             <div class="col-12 col-md-6">
                                 <div class="status-item">
-                                    <div class="status-icon">💤</div>
+                                    <div class="status-icon" id="sleep-icon">💤</div>
                                     <div class="status-details">
-                                        <div class="text-muted mb-1" style="font-size: 0.9rem;">מצב שינה</div>
+                                        <div class="text-muted mb-1" style="font-size: 0.9rem;" id="sleep-label">מצב שינה</div>
                                         <div id="sleep-status" class="fw-bold" style="font-size: 1.3rem;"></div>
                                         <div id="sleep-prediction" class="text-muted small"></div>
                                     </div>
@@ -238,19 +238,56 @@
                 document.getElementById('last-diaper-time').textContent = 'N/A';
             }
 
-            // Sleep Status
-            if (data.last_sleep_minutes_ago !== null && data.last_sleep_minutes_ago !== undefined) {
-                document.getElementById('sleep-status').textContent = 
+            // Sleep Status - rich display
+            if (data.sleep_display) {
+                const sd = data.sleep_display;
+                const sleepStatusEl = document.getElementById('sleep-status');
+                const sleepPredEl = document.getElementById('sleep-prediction');
+                const sleepIconEl = document.getElementById('sleep-icon');
+                const sleepLabelEl = document.getElementById('sleep-label');
+
+                sleepStatusEl.textContent = sd.display_text;
+                sleepPredEl.textContent = sd.sub_text || '';
+
+                if (sd.mode === 'sleeping') {
+                    sleepIconEl.textContent = '😴';
+                    sleepLabelEl.textContent = 'שינה';
+                    sleepStatusEl.className = 'fw-bold text-info';
+                    sleepPredEl.className = 'text-muted small';
+                } else if (sd.mode === 'awake') {
+                    sleepIconEl.textContent = '👁️';
+                    sleepLabelEl.textContent = 'ערות';
+                    sleepStatusEl.className = 'fw-bold';
+                    sleepPredEl.className = 'text-muted small';
+                    // show sleep prediction as additional info
+                    if (data.next_sleep_prediction && data.next_sleep_prediction.message) {
+                        const pred = data.next_sleep_prediction;
+                        const predText = sd.sub_text ? sd.sub_text + ' · ' + pred.message : pred.message;
+                        sleepPredEl.textContent = predText;
+                        sleepPredEl.className = 'text-muted small ' + getStatusClass(pred.status);
+                    }
+                } else if (sd.mode === 'good_night') {
+                    sleepIconEl.textContent = '🌙';
+                    sleepLabelEl.textContent = 'שינה';
+                    sleepStatusEl.className = 'fw-bold text-muted';
+                    sleepPredEl.className = 'text-muted small';
+                } else if (sd.mode === 'good_morning') {
+                    sleepIconEl.textContent = '☀️';
+                    sleepLabelEl.textContent = 'שינה';
+                    sleepStatusEl.className = 'fw-bold text-success';
+                    sleepPredEl.className = 'text-muted small';
+                }
+            } else if (data.last_sleep_minutes_ago !== null && data.last_sleep_minutes_ago !== undefined) {
+                document.getElementById('sleep-status').textContent =
                     formatTimeAgo(data.last_sleep_minutes_ago);
+                if (data.next_sleep_prediction) {
+                    const sleepPred = data.next_sleep_prediction;
+                    const sleepEl = document.getElementById('sleep-prediction');
+                    sleepEl.textContent = sleepPred.message || '';
+                    sleepEl.className = 'text-muted small ' + getStatusClass(sleepPred.status);
+                }
             } else {
                 document.getElementById('sleep-status').textContent = 'N/A';
-            }
-
-            if (data.next_sleep_prediction) {
-                const sleepPred = data.next_sleep_prediction;
-                const sleepEl = document.getElementById('sleep-prediction');
-                sleepEl.textContent = sleepPred.message || '';
-                sleepEl.className = 'text-muted small ' + getStatusClass(sleepPred.status);
             }
 
             // Alerts

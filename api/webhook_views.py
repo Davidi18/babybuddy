@@ -139,6 +139,7 @@ def status_webhook(request):
     last_diaper = status.get('last_diaper')
     next_feeding = status.get('next_feeding_prediction')
     next_sleep = status.get('next_sleep_prediction')
+    sleep_display = status.get('sleep_display_status')
 
     # טקסט סטטוס קצר
     status_parts = [f"👶 {child.name()}"]
@@ -148,7 +149,9 @@ def status_webhook(request):
             f"🍼 האכלה: לפני {last_feeding['time_since_formatted']}"
         )
 
-    if last_sleep:
+    if sleep_display:
+        status_parts.append(f"💤 {sleep_display['display_text']}")
+    elif last_sleep:
         status_parts.append(
             f"💤 ער: {last_sleep['time_since_formatted']}"
         )
@@ -179,6 +182,7 @@ def status_webhook(request):
         'next_feeding_prediction': next_feeding,
         'next_sleep_status': next_sleep['status'] if next_sleep else None,
         'next_sleep_prediction': next_sleep,
+        'sleep_display': sleep_display,
         'alerts': [],
     }
 
