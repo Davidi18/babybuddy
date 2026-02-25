@@ -619,8 +619,8 @@ class BabyAnalytics:
 
         מצבים:
         - sleeping: התינוק ישן כרגע (יש טיימר שינה פעיל)
-        - awake: התינוק ער (אחרי תנומה ראשונה ביום, בין 06:00-18:00)
-        - good_morning: בוקר טוב (לפני 06:00 או לפני התנומה הראשונה)
+        - awake: התינוק ער (בין 06:00-18:00, ספירה מתאפסת ב-06:00)
+        - good_morning: בוקר טוב (לפני 06:00 בלבד)
         - good_night: לילה טוב (אחרי 18:00)
         """
         from core.models import Sleep, Timer
@@ -694,50 +694,43 @@ class BabyAnalytics:
                 "since": None,
             }
 
+        # אחרי 06:00 - תמיד מצב "ערה"
         # בדיקה אם הייתה שינה/תנומה היום (מאז 06:00)
         today_sleep = Sleep.objects.filter(
             child=self.child,
             end__gte=today_six_am,
         ).order_by("-end").first()
 
-        if not today_sleep:
-            # בוקר טוב - לפני התנומה הראשונה
-            return {
-                "mode": "good_morning",
-                "display_text": "בוקר טוב ☀️",
-                "sub_text": "",
-                "duration_minutes": None,
-                "since": None,
-            }
-
-        # ערה אחרי תנומה - כמה זמן היא ערה
-        # אם השינה האחרונה הסתיימה לפני 06:00, נספור מ-06:00
-        sleep_end = today_sleep.end
-        if sleep_end < today_six_am:
+        # חישוב זמן ערות - מהתנומה האחרונה או מ-06:00
+        if today_sleep:
+            sleep_end = today_sleep.end
+            if sleep_end < today_six_am:
+                sleep_end = today_six_am
+        else:
             sleep_end = today_six_am
+
         awake_duration = now - sleep_end
         awake_minutes = awake_duration.total_seconds() / 60
         hours = int(awake_minutes // 60)
         mins = int(awake_minutes % 60)
 
-        last_nap_duration = today_sleep.duration
-        if last_nap_duration:
-            nap_mins = int(last_nap_duration.total_seconds() / 60)
+        # תת-טקסט: מידע על תנומה אחרונה
+        sub = ""
+        if today_sleep and today_sleep.duration:
+            nap_mins = int(today_sleep.duration.total_seconds() / 60)
             nap_h = nap_mins // 60
             nap_m = nap_mins % 60
             if nap_h > 0:
                 sub = f"תנומה אחרונה: {nap_h}:{nap_m:02d}"
             else:
                 sub = f"תנומה אחרונה: {nap_m} דקות"
-        else:
-            sub = ""
 
         return {
             "mode": "awake",
             "display_text": f"ערה כבר {hours}:{mins:02d}",
             "sub_text": sub,
             "duration_minutes": round(awake_minutes, 1),
-            "since": today_sleep.end.isoformat(),
+            "since": sleep_end.isoformat(),
         }
 
     def get_current_status(self) -> Dict:
