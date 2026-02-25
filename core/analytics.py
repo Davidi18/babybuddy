@@ -365,13 +365,29 @@ class BabyAnalytics:
         שלב 3: משלב עם טווח מומלץ לפי גיל כ-fallback
         שלב 4: מחזיר חיזוי עם רמת ביטחון
         """
+        now = timezone.now()
+        local_now = timezone.localtime(now)
+        current_hour = local_now.hour
+
+        # בלילה (18:00-06:00) - אין חיזוי תנומות, זה זמן שינת לילה
+        if current_hour >= 18 or current_hour < 6:
+            return None
+
         last_sleep = self.get_last_sleep_info()
 
         if not last_sleep:
             return None
 
-        time_awake_minutes = last_sleep["time_since_minutes"]
-        current_hour = timezone.localtime().hour
+        # איפוס ספירה ב-06:00: אם השינה האחרונה הסתיימה לפני 06:00 היום,
+        # נספור ערות מ-06:00 ולא מסוף השינה
+        today_six_am = timezone.make_aware(
+            datetime.datetime.combine(local_now.date(), datetime.time(6, 0))
+        )
+        last_sleep_end = last_sleep["sleep"].end
+        if last_sleep_end < today_six_am:
+            time_awake_minutes = (now - today_six_am).total_seconds() / 60
+        else:
+            time_awake_minutes = last_sleep["time_since_minutes"]
 
         # שלב 1: חלונות ערות מהנתונים
         wake_windows = self._calculate_wake_windows(days=14)
@@ -635,16 +651,17 @@ class BabyAnalytics:
             }
 
         # התינוק ער - בדיקת שעה ותנומות היום
-        today_start = timezone.make_aware(
-            datetime.datetime.combine(local_now.date(), datetime.time.min)
+        # היום מתחיל ב-06:00 (לא בחצות) - כי זה הזמן שהספירה מתאפסת
+        today_six_am = timezone.make_aware(
+            datetime.datetime.combine(local_now.date(), datetime.time(6, 0))
         )
 
         # אחרי 18:00 - לילה טוב
         if current_hour >= 18:
-            # סיכום תנומות היום
+            # סיכום תנומות היום (מ-06:00)
             today_naps = Sleep.objects.filter(
                 child=self.child,
-                start__gte=today_start,
+                start__gte=today_six_am,
                 nap=True,
             )
             nap_count = today_naps.count()
@@ -677,10 +694,10 @@ class BabyAnalytics:
                 "since": None,
             }
 
-        # בדיקה אם הייתה תנומה היום
+        # בדיקה אם הייתה שינה/תנומה היום (מאז 06:00)
         today_sleep = Sleep.objects.filter(
             child=self.child,
-            end__gte=today_start,
+            end__gte=today_six_am,
         ).order_by("-end").first()
 
         if not today_sleep:
@@ -694,7 +711,11 @@ class BabyAnalytics:
             }
 
         # ערה אחרי תנומה - כמה זמן היא ערה
-        awake_duration = now - today_sleep.end
+        # אם השינה האחרונה הסתיימה לפני 06:00, נספור מ-06:00
+        sleep_end = today_sleep.end
+        if sleep_end < today_six_am:
+            sleep_end = today_six_am
+        awake_duration = now - sleep_end
         awake_minutes = awake_duration.total_seconds() / 60
         hours = int(awake_minutes // 60)
         mins = int(awake_minutes % 60)
