@@ -322,9 +322,11 @@ def alerts_webhook(request):
 
                 cache.set(alert_key, True, timeout=snooze_minutes * 60)
 
-    # Check sleep
+    # Check sleep (skip if baby is currently sleeping)
+    sleep_display = status.get('sleep_display_status')
+    is_currently_sleeping = sleep_display and sleep_display.get('mode') == 'sleeping'
     next_sleep = status.get('next_sleep_prediction')
-    if next_sleep:
+    if next_sleep and not is_currently_sleeping:
         minutes_awake = next_sleep.get('minutes_awake', 0)
         if minutes_awake > sleep_threshold:
             alert_key = f'alert_sleep_{child.id}'
