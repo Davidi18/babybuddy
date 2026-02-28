@@ -9,27 +9,16 @@
     {% endif %}
 {% endblock %}
 {% block title %}
-    {% with instances|length as count %}
-        {% blocktrans trimmed count counter=count %}
-            {{ count }} timer
-        {% plural %}
-            {{ count }} timers
-        {% endblocktrans %}
-    {% endwith %}
 {% endblock %}
 {% block listgroup %}
     <ul class="list-group list-group-flush">
         {% for timer in instances %}
             <li class="list-group-item">
-                <a href="{% url 'core:timer-detail' timer.id %}" class="text-decoration-none text-dark">
-                    <strong>{{ timer.title_with_child }}</strong>
-                    <p class="text-body-secondary small m-0">
-                        {% blocktrans trimmed with start=timer.start|time user=timer.user_username %}
-                            Started by {{ user }} at {{ start }}
-                        {% endblocktrans %}
-                    </p>
-                </a>
-                <div class="btn-group w-100 mt-2" role="group" aria-label="{% trans "Timer controls" %}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fs-5 fw-bold">{{ timer.name }}</span>
+                    <small class="text-muted">{{ timer.start|time }}</small>
+                </div>
+                <div class="btn-group w-100" role="group" aria-label="{% trans "Timer controls" %}">
                     {% if perms.core.change_timer %}
                         <form action="{% url 'core:timer-stop' timer.id %}" method="post" class="flex-fill">
                             {% csrf_token %}
@@ -46,10 +35,6 @@
                             </button>
                         </form>
                     {% endif %}
-                    <a href="{% url 'core:timer-detail' timer.id %}" class="btn btn-primary btn-sm flex-fill ms-1">
-                        <i class="icon-view" aria-hidden="true"></i>
-                        {% trans "View" %}
-                    </a>
                 </div>
             </li>
         {% endfor %}
