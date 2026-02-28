@@ -18,6 +18,7 @@ from rest_framework.response import Response
 
 from core.models import Child
 from core.analytics import BabyAnalytics
+from babybuddy.push import send_push_to_all_users, send_push_notification
 from .llm_messages import get_message_generator
 
 
@@ -597,3 +598,46 @@ def medication_status_webhook(request):
     }
 
     return Response(response_data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def push_notification_webhook(request):
+    """
+    Send a push notification to all users or a specific user.
+
+    POST /api/webhooks/push/
+    Body:
+    {
+        "title": "Notification title",
+        "body": "Notification body text",
+        "url": "/optional/url",
+        "user": "optional_username"
+    }
+    """
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    title = request.data.get('title', 'Baby Buddy')
+    body = request.data.get('body', '')
+    url = request.data.get('url', '/')
+    username = request.data.get('user')
+
+    if not body:
+        return Response({'error': 'body is required'}, status=400)
+
+    if username:
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'error': f'User not found: {username}'}, status=404)
+        sent = send_push_notification(user, title, body, url)
+    else:
+        sent = send_push_to_all_users(title, body, url)
+
+    return Response({
+        'success': True,
+        'sent': sent,
+        'title': title,
+        'body': body,
+    })

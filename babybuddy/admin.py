@@ -30,5 +30,16 @@ class UserAdmin(BaseUserAdmin):
     inlines = (SettingsInline,)
 
 
+class PushSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("user", "endpoint_short", "created_at")
+    list_filter = ("user",)
+    readonly_fields = ("created_at",)
+
+    def endpoint_short(self, obj):
+        return obj.endpoint[:60] + "..."
+    endpoint_short.short_description = _("Endpoint")
+
+
 admin.site.unregister(get_user_model())
 admin.site.register(get_user_model(), UserAdmin)
+admin.site.register(models.PushSubscription, PushSubscriptionAdmin)

@@ -132,4 +132,9 @@ urlpatterns = [
         webhook_views.medication_status_webhook,
         name="webhook-medications",
     ),
+    path(
+        "api/webhooks/push/",
+        webhook_views.push_notification_webhook,
+        name="webhook-push",
+    ),
 ]

@@ -56,6 +56,19 @@
         <script src="{% static "babybuddy/js/vendor.js" %}"></script>
         <script src="{% static "babybuddy/js/app.js" %}"></script>
         {% if user.is_authenticated %}<script>BabyBuddy.PullToRefresh.init()</script>{% endif %}
+        {% if user.is_authenticated %}
+        <script>
+        (function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                    console.log('Service Worker registered with scope:', reg.scope);
+                }).catch(function(err) {
+                    console.log('Service Worker registration failed:', err);
+                });
+            }
+        })();
+        </script>
+        {% endif %}
         {% block javascript %}{% endblock %}
     </body>
 </html>

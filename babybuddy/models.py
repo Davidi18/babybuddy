@@ -155,6 +155,34 @@ class Settings(models.Model):
         return None
 
 
+class PushSubscription(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="push_subscriptions",
+    )
+    endpoint = models.URLField(max_length=500, unique=True)
+    p256dh = models.CharField(max_length=200)
+    auth = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Push Subscription")
+        verbose_name_plural = _("Push Subscriptions")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.endpoint[:50]}..."
+
+    def to_subscription_info(self):
+        return {
+            "endpoint": self.endpoint,
+            "keys": {
+                "p256dh": self.p256dh,
+                "auth": self.auth,
+            },
+        }
+
+
 @receiver(post_save, sender=get_user_model())
 def create_user_settings(sender, instance, created, **kwargs):
     if created:

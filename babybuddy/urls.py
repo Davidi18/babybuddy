@@ -6,6 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path, reverse_lazy
 
 from . import views
+from . import views_push
 
 app_patterns = [
     path("login/", auth_views.LoginView.as_view(), name="login"),
@@ -45,6 +46,22 @@ app_patterns = [
     path("user/settings/", views.UserSettings.as_view(), name="user-settings"),
     path("user/add-device/", views.UserAddDevice.as_view(), name="user-add-device"),
     path("settings/", include("dbsettings.urls")),
+    path(
+        "push/vapid-key/",
+        views_push.vapid_public_key,
+        name="push-vapid-key",
+    ),
+    path(
+        "push/subscribe/",
+        views_push.push_subscribe,
+        name="push-subscribe",
+    ),
+    path(
+        "push/unsubscribe/",
+        views_push.push_unsubscribe,
+        name="push-unsubscribe",
+    ),
+    path("push/test/", views_push.push_test, name="push-test"),
 ]
 
 urlpatterns = [
