@@ -879,7 +879,14 @@ def card_sleep_prediction(context, child):
     from core.analytics import BabyAnalytics
 
     analytics = BabyAnalytics(child)
-    prediction = analytics.predict_next_sleep()
+    sleep_display = analytics.get_sleep_display_status()
+
+    # Don't show prediction while baby is sleeping - it's not relevant
+    if sleep_display and sleep_display.get("mode") == "sleeping":
+        prediction = None
+    else:
+        prediction = analytics.predict_next_sleep()
+
     empty = prediction is None
 
     return {
