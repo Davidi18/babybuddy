@@ -579,6 +579,15 @@ class Sleep(models.Model):
             )
         if self.start and self.end:
             self.duration = timezone_aware_duration(self.start, self.end)
+            # Stop any active sleep timers for this child, since we now have
+            # a completed sleep record.  This prevents the dashboard from
+            # continuing to show "sleeping" after a wake-up is recorded via
+            # a form (rather than through the timer toggle).
+            Timer.objects.filter(
+                child=self.child,
+                active=True,
+                name__in=["Sleep", "שינה"],
+            ).update(active=False)
         super(Sleep, self).save(*args, **kwargs)
 
     def clean(self):
@@ -918,10 +927,9 @@ class Medication(models.Model):
                 return days_since >= 2
             return True
 
-        # For daily frequencies, check if already given today
+        # For daily frequencies, check if already given or skipped today
         doses_today = self.doses.filter(
             time__date=today,
-            given=True
         ).count()
 
         frequency_map = {
@@ -949,11 +957,10 @@ class Medication(models.Model):
                     datetime.datetime.combine(today, datetime.time(hour, minute))
                 )
 
-                # Check if this dose was already given
+                # Check if this dose was already given or skipped
                 dose_given = self.doses.filter(
                     time__date=today,
                     time__hour=hour,
-                    given=True
                 ).exists()
 
                 if not dose_given and scheduled_time > now:
