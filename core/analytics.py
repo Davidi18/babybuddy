@@ -612,6 +612,39 @@ class BabyAnalytics:
             },
         }
 
+    def get_feeding_display_status(self) -> Dict:
+        """
+        מחזיר סטטוס האכלה - האם התינוק אוכל כרגע.
+        Returns feeding status - whether the baby is currently being fed.
+        """
+        from core.models import Timer
+
+        feeding_timer_names = ["Feeding", "האכלה"]
+        active_feeding_timer = Timer.objects.filter(
+            child=self.child,
+            active=True,
+            name__in=feeding_timer_names,
+        ).order_by("-start").first()
+
+        if active_feeding_timer:
+            now = timezone.now()
+            duration = now - active_feeding_timer.start
+            duration_minutes = duration.total_seconds() / 60
+            mins = int(duration_minutes)
+            return {
+                "mode": "feeding",
+                "display_text": f"אוכלת כבר {mins} דקות",
+                "duration_minutes": round(duration_minutes, 1),
+                "since": active_feeding_timer.start.isoformat(),
+            }
+
+        return {
+            "mode": "idle",
+            "display_text": "",
+            "duration_minutes": None,
+            "since": None,
+        }
+
     def get_sleep_display_status(self) -> Dict:
         """
         מחזיר סטטוס שינה עשיר לתצוגה בדשבורד.
@@ -752,6 +785,7 @@ class BabyAnalytics:
             "next_sleep_prediction": self.predict_next_sleep(),
             "last_diaper": self.get_last_diaper_info(),
             "sleep_display_status": self.get_sleep_display_status(),
+            "feeding_display_status": self.get_feeding_display_status(),
             "stats_7_days": {
                 "feeding": self.get_feeding_stats(days=7),
                 "sleep": self.get_sleep_stats(days=7),

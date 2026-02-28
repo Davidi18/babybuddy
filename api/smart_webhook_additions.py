@@ -95,15 +95,17 @@ def smart_alerts_webhook(request):
     
     alerts = []
     
-    # 🍼 בדיקת האכלה עם threshold מותאם
+    # 🍼 בדיקת האכלה עם threshold מותאם (דלג אם התינוק אוכל כרגע)
+    feeding_display = status.get('feeding_display_status')
+    is_currently_feeding = feeding_display and feeding_display.get('mode') == 'feeding'
     next_feeding = status.get('next_feeding_prediction')
-    if next_feeding:
+    if next_feeding and not is_currently_feeding:
         minutes_until = next_feeding.get('minutes_until_next', 0)
         if minutes_until < -feeding_threshold:  # עבר הזמן
             alert_key = f'alert_feeding_{child.id}'
             
-            # בדיקת snooze
-            if not cache.get(alert_key):
+            # בדיקת snooze (אטומי - מונע התראות כפולות)
+            if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                 alerts.append({
                     'type': 'feeding_overdue',
                     'severity': 'high',
@@ -112,18 +114,17 @@ def smart_alerts_webhook(request):
                     'minutes_overdue': abs(minutes_until),
                     'threshold_used': feeding_threshold,
                 })
-                
-                # הגדרת snooze
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
     
-    # 😴 בדיקת שינה עם threshold מותאם
+    # 😴 בדיקת שינה עם threshold מותאם (דלג אם התינוק ישן כרגע)
+    sleep_display = status.get('sleep_display_status')
+    is_currently_sleeping = sleep_display and sleep_display.get('mode') == 'sleeping'
     next_sleep = status.get('next_sleep_prediction')
-    if next_sleep:
+    if next_sleep and not is_currently_sleeping:
         minutes_awake = next_sleep.get('minutes_awake', 0)
         if minutes_awake > sleep_threshold:
             alert_key = f'alert_sleep_{child.id}'
             
-            if not cache.get(alert_key):
+            if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                 alerts.append({
                     'type': 'overtired',
                     'severity': 'high',
@@ -132,8 +133,6 @@ def smart_alerts_webhook(request):
                     'minutes_awake': minutes_awake,
                     'threshold_used': sleep_threshold,
                 })
-                
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
     
     # 🧷 בדיקת חיתול עם threshold מותאם
     last_diaper = status.get('last_diaper')
@@ -142,7 +141,7 @@ def smart_alerts_webhook(request):
         if minutes_since > diaper_threshold:
             alert_key = f'alert_diaper_{child.id}'
             
-            if not cache.get(alert_key):
+            if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                 from .llm_messages import format_time_since
                 time_text = format_time_since(last_diaper['time_since_hours'])
                 alerts.append({
@@ -153,8 +152,6 @@ def smart_alerts_webhook(request):
                     'hours_since': last_diaper['time_since_hours'],
                     'threshold_used': diaper_threshold,
                 })
-                
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
     
     # אם אין התראות
     if not alerts:

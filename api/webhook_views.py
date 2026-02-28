@@ -187,13 +187,16 @@ def status_webhook(request):
     }
 
     # התראות
-    if next_feeding and next_feeding['status'] == 'overdue':
+    feeding_display = status.get('feeding_display_status')
+    is_feeding = feeding_display and feeding_display.get('mode') == 'feeding'
+    if next_feeding and next_feeding['status'] == 'overdue' and not is_feeding:
         response_data['alerts'].append({
             'type': 'feeding_overdue',
             'message': next_feeding['message'],
         })
 
-    if next_sleep and next_sleep['status'] in ('overtired', 'getting_tired'):
+    is_sleeping = sleep_display and sleep_display.get('mode') == 'sleeping'
+    if next_sleep and next_sleep['status'] in ('overtired', 'getting_tired') and not is_sleeping:
         response_data['alerts'].append({
             'type': next_sleep['status'],
             'message': next_sleep['message'],
@@ -291,14 +294,16 @@ def alerts_webhook(request):
 
     alerts = []
 
-    # Check feeding
+    # Check feeding (skip if baby is currently being fed)
+    feeding_display = status.get('feeding_display_status')
+    is_currently_feeding = feeding_display and feeding_display.get('mode') == 'feeding'
     next_feeding = status.get('next_feeding_prediction')
-    if next_feeding:
+    if next_feeding and not is_currently_feeding:
         minutes_until = next_feeding.get('minutes_until_next', 0)
         if minutes_until < -feeding_threshold:
             alert_key = f'alert_feeding_{child.id}'
 
-            if not cache.get(alert_key):
+            if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                 alert_details = {
                     'minutes_overdue': abs(minutes_until),
                     'threshold_used': feeding_threshold,
@@ -320,16 +325,16 @@ def alerts_webhook(request):
                     'threshold_used': feeding_threshold,
                 })
 
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
-
-    # Check sleep
+    # Check sleep (skip if baby is currently sleeping)
+    sleep_display = status.get('sleep_display_status')
+    is_currently_sleeping = sleep_display and sleep_display.get('mode') == 'sleeping'
     next_sleep = status.get('next_sleep_prediction')
-    if next_sleep:
+    if next_sleep and not is_currently_sleeping:
         minutes_awake = next_sleep.get('minutes_awake', 0)
         if minutes_awake > sleep_threshold:
             alert_key = f'alert_sleep_{child.id}'
 
-            if not cache.get(alert_key):
+            if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                 alert_details = {
                     'minutes_awake': minutes_awake,
                     'threshold_used': sleep_threshold,
@@ -351,8 +356,6 @@ def alerts_webhook(request):
                     'threshold_used': sleep_threshold,
                 })
 
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
-
     # Check diaper
     last_diaper = status.get('last_diaper')
     if last_diaper:
@@ -360,7 +363,7 @@ def alerts_webhook(request):
         if minutes_since > diaper_threshold:
             alert_key = f'alert_diaper_{child.id}'
 
-            if not cache.get(alert_key):
+            if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                 alert_details = {
                     'hours_since': last_diaper['time_since_hours'],
                     'threshold_used': diaper_threshold,
@@ -381,8 +384,6 @@ def alerts_webhook(request):
                     'hours_since': last_diaper['time_since_hours'],
                     'threshold_used': diaper_threshold,
                 })
-
-                cache.set(alert_key, True, timeout=snooze_minutes * 60)
 
     # Check medications
     try:
@@ -417,7 +418,7 @@ def alerts_webhook(request):
             if minutes_until <= medication_threshold:
                 alert_key = f'alert_medication_{child.id}_{next_med.id}'
 
-                if not cache.get(alert_key):
+                if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                     alert_details = {
                         'medication': {
                             'id': next_med.id,
@@ -452,8 +453,6 @@ def alerts_webhook(request):
                         'minutes_until': minutes_until,
                         'threshold_used': medication_threshold,
                     })
-
-                    cache.set(alert_key, True, timeout=snooze_minutes * 60)
     except Exception:
         pass
 
