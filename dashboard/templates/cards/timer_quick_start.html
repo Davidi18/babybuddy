@@ -1,59 +1,6 @@
-{% extends 'cards/base.html' %}
 {% load i18n %}
-{% block header %}
-    <i class="icon-add-circle" aria-hidden="true"></i>
-    {% trans "Quick Entry" %}
-{% endblock %}
-{% block title %}
-    {% trans "Add Activity Quickly" %}
-{% endblock %}
-{% block content %}
-    <div class="mb-2">
-        {% if request.user.is_authenticated and child %}
-            <div class="row g-2 text-center">
-                <div class="col-6">
-                    <a href="{% url 'core:feeding-add' %}?child={{ child.slug }}"
-                       class="btn w-100"
-                       style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.2); color: #a5b4fc; padding: 1rem 0.5rem; border-radius: 0.75rem;">
-                        <div style="font-size: 2rem;">🍼</div>
-                        <div style="font-weight: 700;">{% trans "Feeding" %}</div>
-                    </a>
-                </div>
-                <div class="col-6">
-                    <a href="{% url 'core:diaperchange-add' %}?child={{ child.slug }}"
-                       class="btn w-100"
-                       style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 1rem 0.5rem; border-radius: 0.75rem;">
-                        <div style="font-size: 2rem;">🧷</div>
-                        <div style="font-weight: 700;">{% trans "Diaper" %}</div>
-                    </a>
-                </div>
-            </div>
-            <hr style="border-color: rgba(255,255,255,0.06); margin: 0.75rem 0;">
-            <div class="row g-2 text-center">
-                <div class="col-6">
-                    <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' child.slug %}">
-                        {% csrf_token %}
-                        <button type="submit"
-                                class="btn w-100"
-                                style="background: {% if sleep_active %}rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7;{% else %}rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);{% endif %} padding: 0.5rem 0.25rem; border-radius: 0.75rem; font-size: 0.9rem;">
-                            <div style="font-size: 1.2rem;">💤</div>
-                            <div style="font-size: 0.85rem; font-weight: 600;">{% trans "Sleep" %}</div>
-                        </button>
-                    </form>
-                </div>
-                <div class="col-6">
-                    <a href="{% url 'core:timer-add' %}"
-                       class="btn w-100"
-                       style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.5rem 0.25rem; border-radius: 0.75rem; font-size: 0.9rem;">
-                        <div style="font-size: 1.2rem;">⏱️</div>
-                        <div style="font-size: 0.85rem; font-weight: 600;">{% trans "Timer" %}</div>
-                    </a>
-                </div>
-            </div>
-        {% elif not request.user.is_authenticated %}
-            <p style="color: rgba(255,255,255,0.4);">{% trans "Please log in to use quick entry." %}</p>
-        {% else %}
-            <p style="color: rgba(255,255,255,0.4);">{% trans "Quick entry is available on child dashboards." %}</p>
-        {% endif %}
-    </div>
-{% endblock %}
+<button type="submit"
+        class="quick-btn-sleep {% if sleep_active %}active{% else %}inactive{% endif %}">
+    <span class="quick-btn-icon">💤</span>
+    <span class="quick-btn-label">{% if sleep_active %}{% trans "Stop Sleep" %}{% else %}{% trans "Sleep" %}{% endif %}</span>
+</button>

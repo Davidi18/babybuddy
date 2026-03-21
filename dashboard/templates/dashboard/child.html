@@ -11,74 +11,75 @@
     <li class="breadcrumb-item active" aria-current="page">{% trans "Dashboard" %}</li>
 {% endblock %}
 {% block content %}
-    <!-- Quick Actions -->
-    <div class="row mb-3">
-        <div class="col-12">
-            {% card_quick_actions object %}
+    <!-- Unified Quick Actions Bar -->
+    <div class="quick-bar mb-3">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'core:feeding-add' %}?child={{ object.slug }}"
+                       class="quick-btn quick-btn-feeding">
+                        <span class="quick-btn-icon">🍼</span>
+                        <span class="quick-btn-label">{% trans "Feeding" %}</span>
+                    </a>
+                    <a href="{% url 'core:diaperchange-add' %}?child={{ object.slug }}"
+                       class="quick-btn quick-btn-diaper">
+                        <span class="quick-btn-icon">🧷</span>
+                        <span class="quick-btn-label">{% trans "Diaper" %}</span>
+                    </a>
+                    <a href="{% url 'core:medicationdose-add' %}?child={{ object.slug }}"
+                       class="quick-btn quick-btn-medication">
+                        <span class="quick-btn-icon">💊</span>
+                        <span class="quick-btn-label">{% trans "Medication" %}</span>
+                    </a>
+                    <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' object.slug %}" class="d-inline">
+                        {% csrf_token %}
+                        {% card_timer_quick_start object %}
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Analytics Status Widget -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card card-dashboard">
-                <div class="card-header">
-                    <i class="icon-graph" aria-hidden="true"></i>
-                    {% trans "Overview" %}
+    <!-- Live Status Overview -->
+    <div class="card card-dashboard mb-3" id="status-card">
+        <div class="card-body p-0">
+            <div id="analytics-loading" class="text-center py-4">
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">{% trans "Loading..." %}</span>
                 </div>
-                <div class="card-body">
-                    <div id="analytics-loading" class="text-center py-3">
-                        <div class="spinner-border spinner-border-sm" role="status">
-                            <span class="visually-hidden">{% trans "Loading..." %}</span>
+            </div>
+            <div id="analytics-content" style="display:none;">
+                <div class="status-grid">
+                    <div class="status-cell" id="cell-feeding">
+                        <div class="status-emoji">🍼</div>
+                        <div class="status-info">
+                            <div class="status-label">{% trans "Feeding" %}</div>
+                            <div id="last-feeding-time" class="status-value"></div>
+                            <div id="last-feeding-type" class="status-sub"></div>
                         </div>
-                        <span class="ms-2" style="color: rgba(255,255,255,0.5);">{% trans "Loading status..." %}</span>
                     </div>
-                    <div id="analytics-content" style="display:none;">
-                        <div class="row g-3">
-                            <!-- Last Feeding -->
-                            <div class="col-12 col-md-6">
-                                <div class="status-item">
-                                    <div class="status-icon">🍼</div>
-                                    <div class="status-details">
-                                        <div class="text-muted mb-1">האכלה אחרונה</div>
-                                        <div id="last-feeding-time" class="fw-bold" style="font-size: 1.3rem;"></div>
-                                        <div id="last-feeding-type" class="text-muted small"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Last Diaper Change -->
-                            <div class="col-12 col-md-6">
-                                <div class="status-item">
-                                    <div class="status-icon">🧷</div>
-                                    <div class="status-details">
-                                        <div class="text-muted mb-1">החלפה אחרונה</div>
-                                        <div id="last-diaper-time" class="fw-bold" style="font-size: 1.3rem;"></div>
-                                        <div id="last-diaper-type" class="text-muted small"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Sleep Status -->
-                            <div class="col-12 col-md-6">
-                                <div class="status-item">
-                                    <div class="status-icon" id="sleep-icon">💤</div>
-                                    <div class="status-details">
-                                        <div class="text-muted mb-1" id="sleep-label">מצב שינה</div>
-                                        <div id="sleep-status" class="fw-bold" style="font-size: 1.3rem;"></div>
-                                        <div id="sleep-prediction" class="text-muted small"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Alerts -->
-                            <div class="col-12 col-md-6">
-                                <div class="status-item">
-                                    <div class="status-icon" id="alert-icon">ℹ️</div>
-                                    <div class="status-details">
-                                        <div class="text-muted mb-1">סטטוס</div>
-                                        <div id="alert-message" class="fw-bold text-success" style="font-size: 1.3rem;">הכל בסדר</div>
-                                        <div id="alert-time" class="text-muted small"></div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="status-cell" id="cell-diaper">
+                        <div class="status-emoji">🧷</div>
+                        <div class="status-info">
+                            <div class="status-label">{% trans "Diaper" %}</div>
+                            <div id="last-diaper-time" class="status-value"></div>
+                            <div id="last-diaper-type" class="status-sub"></div>
+                        </div>
+                    </div>
+                    <div class="status-cell" id="cell-sleep">
+                        <div class="status-emoji" id="sleep-icon">💤</div>
+                        <div class="status-info">
+                            <div class="status-label" id="sleep-label">{% trans "Sleep" %}</div>
+                            <div id="sleep-status" class="status-value"></div>
+                            <div id="sleep-prediction" class="status-sub"></div>
+                        </div>
+                    </div>
+                    <div class="status-cell" id="cell-alert">
+                        <div class="status-emoji" id="alert-icon">✅</div>
+                        <div class="status-info">
+                            <div class="status-label">{% trans "Status" %}</div>
+                            <div id="alert-message" class="status-value text-success">{% trans "All good" %}</div>
+                            <div id="alert-time" class="status-sub"></div>
                         </div>
                     </div>
                 </div>
@@ -86,25 +87,23 @@
         </div>
     </div>
 
+    <!-- Active Timers (only shown if timers exist) -->
+    <div class="row mb-3">
+        <div class="col-12">
+            {% card_timer_list object %}
+        </div>
+    </div>
+
+    <!-- Data Cards - only the useful ones -->
     <div id="dashboard-child"
          class="row g-3"
          data-masonry='{"percentPosition": true }'>
-        <div class="col-sm-6 col-lg-4">{% card_timer_list object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_feeding_last object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_medication_last object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_diaperchange_last object %}</div>
-        {% if object.feeding_mode != 'bottle_only' %}
-            <div class="col-sm-6 col-lg-4">{% card_pumping_last object %}</div>
-        {% endif %}
-        <div class="col-sm-6 col-lg-4">{% card_sleep_last object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_sleep_prediction object %}</div>
-        {% if object.feeding_mode != 'bottle_only' %}
-            <div class="col-sm-6 col-lg-4">{% card_feeding_last_method object %}</div>
-        {% endif %}
+        <div class="col-sm-6 col-lg-4">{% card_medication_last object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_recent object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_statistics object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_sleep_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_diaperchange_types object %}</div>
+        <div class="col-sm-6 col-lg-4">{% card_statistics object %}</div>
         {% if object.feeding_mode != 'bottle_only' %}
             <div class="col-sm-6 col-lg-4">{% card_breastfeeding object %}</div>
         {% endif %}
@@ -119,7 +118,6 @@
         <script type="application/javascript">BabyBuddy.Dashboard.watch('dashboard-child', false);</script>
     {% endif %}
 
-    <!-- Analytics Status Widget Script -->
     <script type="application/javascript">
     (function() {
         'use strict';
@@ -129,270 +127,275 @@
 
         function formatTimeAgo(minutes) {
             if (!minutes && minutes !== 0) return 'N/A';
-
             const hours = Math.floor(minutes / 60);
             const mins = Math.round(minutes % 60);
-
-            if (hours > 0) {
-                return `לפני ${hours}:${mins.toString().padStart(2, '0')}`;
-            }
-            return `לפני ${mins} דקות`;
-        }
-
-        function formatTimeUntil(minutes) {
-            if (!minutes && minutes !== 0) return '';
-
-            if (minutes < 0) {
-                return `לפני ${Math.abs(Math.round(minutes))} דקות`;
-            }
-
-            const hours = Math.floor(minutes / 60);
-            const mins = Math.round(minutes % 60);
-
-            if (hours > 0) {
-                return `בעוד ${hours}:${mins.toString().padStart(2, '0')}`;
-            }
-            return `בעוד ${mins} דקות`;
+            if (hours > 0) return `לפני ${hours}:${mins.toString().padStart(2, '0')}`;
+            return `לפני ${mins} דק'`;
         }
 
         function getStatusClass(status) {
-            const statusMap = {
-                'overdue': 'text-danger',
-                'overtired': 'text-danger',
-                'soon': 'text-warning',
-                'getting_tired': 'text-warning',
-                'upcoming': 'text-info',
-                'later': 'text-success',
-                'awake': 'text-success'
-            };
-            return statusMap[status] || 'text-muted';
+            return {
+                'overdue': 'text-danger', 'overtired': 'text-danger',
+                'soon': 'text-warning', 'getting_tired': 'text-warning',
+                'upcoming': 'text-info', 'later': 'text-success', 'awake': 'text-success'
+            }[status] || '';
         }
 
-        function updateAnalyticsWidget(data) {
+        function updateWidget(data) {
             document.getElementById('analytics-loading').style.display = 'none';
             document.getElementById('analytics-content').style.display = 'block';
 
-            // Last Feeding
+            // Feeding
+            const feedingTime = document.getElementById('last-feeding-time');
+            const feedingType = document.getElementById('last-feeding-type');
             if (data.last_feeding_minutes_ago !== null) {
-                document.getElementById('last-feeding-time').textContent =
-                    formatTimeAgo(data.last_feeding_minutes_ago);
-
-                let feedingInfo = data.last_feeding_type || '';
-                if (data.last_feeding_amount) {
-                    feedingInfo += feedingInfo ? ` - ${data.last_feeding_amount}` : data.last_feeding_amount;
-                }
-                document.getElementById('last-feeding-type').textContent = feedingInfo;
+                feedingTime.textContent = formatTimeAgo(data.last_feeding_minutes_ago);
+                let info = data.last_feeding_type || '';
+                if (data.last_feeding_amount) info += info ? ` · ${data.last_feeding_amount}` : data.last_feeding_amount;
+                feedingType.textContent = info;
             } else {
-                document.getElementById('last-feeding-time').textContent = 'N/A';
+                feedingTime.textContent = '---';
             }
 
-            // Last Diaper Change
+            // Diaper
+            const diaperTime = document.getElementById('last-diaper-time');
+            const diaperType = document.getElementById('last-diaper-type');
             if (data.last_diaper_minutes_ago !== null) {
-                document.getElementById('last-diaper-time').textContent =
-                    formatTimeAgo(data.last_diaper_minutes_ago);
-                document.getElementById('last-diaper-type').textContent =
-                    data.last_diaper_type || '';
+                diaperTime.textContent = formatTimeAgo(data.last_diaper_minutes_ago);
+                diaperType.textContent = data.last_diaper_type || '';
             } else {
-                document.getElementById('last-diaper-time').textContent = 'N/A';
+                diaperTime.textContent = '---';
             }
 
-            // Sleep Status
+            // Sleep
+            const sleepStatus = document.getElementById('sleep-status');
+            const sleepPred = document.getElementById('sleep-prediction');
+            const sleepIcon = document.getElementById('sleep-icon');
+            const sleepLabel = document.getElementById('sleep-label');
+
             if (data.sleep_display) {
                 const sd = data.sleep_display;
-                const sleepStatusEl = document.getElementById('sleep-status');
-                const sleepPredEl = document.getElementById('sleep-prediction');
-                const sleepIconEl = document.getElementById('sleep-icon');
-                const sleepLabelEl = document.getElementById('sleep-label');
+                sleepStatus.textContent = sd.display_text;
+                sleepPred.textContent = sd.sub_text || '';
 
-                sleepStatusEl.textContent = sd.display_text;
-                sleepPredEl.textContent = sd.sub_text || '';
+                const modes = {
+                    'sleeping':     { icon: '😴', label: 'שינה',  cls: 'text-info' },
+                    'awake':        { icon: '👁️', label: 'ערות',  cls: '' },
+                    'good_night':   { icon: '🌙', label: 'שינה',  cls: 'text-muted' },
+                    'good_morning': { icon: '☀️', label: 'שינה',  cls: 'text-success' }
+                };
+                const m = modes[sd.mode] || modes.awake;
+                sleepIcon.textContent = m.icon;
+                sleepLabel.textContent = m.label;
+                sleepStatus.className = 'status-value ' + m.cls;
 
-                if (sd.mode === 'sleeping') {
-                    sleepIconEl.textContent = '😴';
-                    sleepLabelEl.textContent = 'שינה';
-                    sleepStatusEl.className = 'fw-bold text-info';
-                    sleepPredEl.className = 'text-muted small';
-                } else if (sd.mode === 'awake') {
-                    sleepIconEl.textContent = '👁️';
-                    sleepLabelEl.textContent = 'ערות';
-                    sleepStatusEl.className = 'fw-bold';
-                    sleepPredEl.className = 'text-muted small';
-                    if (data.next_sleep_prediction && data.next_sleep_prediction.message) {
-                        const pred = data.next_sleep_prediction;
-                        const predText = sd.sub_text ? sd.sub_text + ' · ' + pred.message : pred.message;
-                        sleepPredEl.textContent = predText;
-                        sleepPredEl.className = 'text-muted small ' + getStatusClass(pred.status);
-                    }
-                } else if (sd.mode === 'good_night') {
-                    sleepIconEl.textContent = '🌙';
-                    sleepLabelEl.textContent = 'שינה';
-                    sleepStatusEl.className = 'fw-bold text-muted';
-                    sleepPredEl.className = 'text-muted small';
-                } else if (sd.mode === 'good_morning') {
-                    sleepIconEl.textContent = '☀️';
-                    sleepLabelEl.textContent = 'שינה';
-                    sleepStatusEl.className = 'fw-bold text-success';
-                    sleepPredEl.className = 'text-muted small';
+                if (sd.mode === 'awake' && data.next_sleep_prediction && data.next_sleep_prediction.message) {
+                    const pred = data.next_sleep_prediction;
+                    sleepPred.textContent = (sd.sub_text ? sd.sub_text + ' · ' : '') + pred.message;
+                    sleepPred.className = 'status-sub ' + getStatusClass(pred.status);
                 }
-            } else if (data.last_sleep_minutes_ago !== null && data.last_sleep_minutes_ago !== undefined) {
-                document.getElementById('sleep-status').textContent =
-                    formatTimeAgo(data.last_sleep_minutes_ago);
+            } else if (data.last_sleep_minutes_ago != null) {
+                sleepStatus.textContent = formatTimeAgo(data.last_sleep_minutes_ago);
                 if (data.next_sleep_prediction) {
-                    const sleepPred = data.next_sleep_prediction;
-                    const sleepEl = document.getElementById('sleep-prediction');
-                    sleepEl.textContent = sleepPred.message || '';
-                    sleepEl.className = 'text-muted small ' + getStatusClass(sleepPred.status);
+                    sleepPred.textContent = data.next_sleep_prediction.message || '';
+                    sleepPred.className = 'status-sub ' + getStatusClass(data.next_sleep_prediction.status);
                 }
             } else {
-                document.getElementById('sleep-status').textContent = 'N/A';
+                sleepStatus.textContent = '---';
             }
 
             // Alerts
+            const alertIcon = document.getElementById('alert-icon');
+            const alertMsg = document.getElementById('alert-message');
+            const alertTime = document.getElementById('alert-time');
             if (data.alerts && data.alerts.length > 0) {
-                const alert = data.alerts[0];
-                document.getElementById('alert-icon').textContent = '⚠️';
-                const alertEl = document.getElementById('alert-message');
-                alertEl.textContent = alert.message;
-                alertEl.className = 'fw-bold ' + getStatusClass(alert.type);
-                document.getElementById('alert-time').textContent = alert.time || '';
+                const a = data.alerts[0];
+                alertIcon.textContent = '⚠️';
+                alertMsg.textContent = a.message;
+                alertMsg.className = 'status-value ' + getStatusClass(a.type);
+                alertTime.textContent = a.time || '';
             } else {
-                document.getElementById('alert-icon').textContent = '✅';
-                document.getElementById('alert-message').textContent = 'הכל בסדר';
-                document.getElementById('alert-message').className = 'fw-bold text-success';
-                document.getElementById('alert-time').textContent = '';
+                alertIcon.textContent = '✅';
+                alertMsg.textContent = 'הכל בסדר';
+                alertMsg.className = 'status-value text-success';
+                alertTime.textContent = '';
             }
-
         }
 
-        function loadAnalyticsStatus() {
+        function loadStatus() {
             fetch(apiUrl, {
                 headers: {
                     'Authorization': 'Token {{ request.user.auth_token.key }}',
                     'Accept': 'application/json'
                 }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch analytics status');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    updateAnalyticsWidget(data);
-                } else {
-                    console.error('Analytics API returned error:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error loading analytics:', error);
+            .then(r => r.ok ? r.json() : Promise.reject('fetch failed'))
+            .then(data => { if (data.success) updateWidget(data); })
+            .catch(e => {
+                console.error('Analytics error:', e);
                 document.getElementById('analytics-loading').innerHTML =
-                    '<span class="text-danger">{% trans "Failed to load status" %}</span>';
+                    '<span class="text-danger" style="font-size:0.85rem;">{% trans "Failed to load status" %}</span>';
             });
         }
 
-        loadAnalyticsStatus();
-        setInterval(loadAnalyticsStatus, 5 * 60 * 1000);
+        loadStatus();
+        setInterval(loadStatus, 5 * 60 * 1000);
     })();
     </script>
 
-    <!-- Real-time Alerts System -->
+    <!-- Alerts -->
     <script type="application/javascript">
     (function() {
         'use strict';
+        const alertsUrl = `/api/webhooks/alerts/?child={{ object.slug }}`;
+        let shown = new Set();
 
-        const childSlug = '{{ object.slug }}';
-        const alertsUrl = `/api/webhooks/alerts/?child=${childSlug}`;
-        let lastAlertCheck = Date.now();
-        let shownAlerts = new Set();
-
-        function showToastAlert(alert) {
-            let toastContainer = document.getElementById('toast-container');
-            if (!toastContainer) {
-                toastContainer = document.createElement('div');
-                toastContainer.id = 'toast-container';
-                toastContainer.style.cssText = 'position: fixed; top: 70px; right: 20px; z-index: 9999;';
-                document.body.appendChild(toastContainer);
+        function showToast(alert) {
+            let c = document.getElementById('toast-container');
+            if (!c) {
+                c = document.createElement('div');
+                c.id = 'toast-container';
+                c.style.cssText = 'position:fixed;top:70px;right:20px;z-index:9999;';
+                document.body.appendChild(c);
             }
-
-            const toast = document.createElement('div');
-            const alertId = `alert-${Date.now()}-${Math.random()}`;
-            toast.id = alertId;
-
-            let bgClass = 'bg-info';
-            let textClass = 'text-dark';
-            let closeButtonClass = 'btn-close';
-
-            if (alert.type === 'overdue' || alert.type === 'overtired') {
-                bgClass = 'bg-danger';
-                textClass = 'text-white';
-                closeButtonClass = 'btn-close btn-close-white';
-            } else if (alert.type === 'soon' || alert.type === 'getting_tired') {
-                bgClass = 'bg-warning';
-                textClass = 'text-dark';
-                closeButtonClass = 'btn-close';
-            }
-
-            toast.className = `toast ${bgClass} ${textClass} mb-2`;
-            toast.setAttribute('role', 'alert');
-            toast.setAttribute('aria-live', 'assertive');
-            toast.setAttribute('aria-atomic', 'true');
-            toast.style.minWidth = '350px';
-            toast.style.fontSize = '1.1rem';
-            toast.style.borderRadius = '0.75rem';
-            toast.style.overflow = 'hidden';
-
-            toast.innerHTML = `
-                <div class="toast-header ${bgClass} ${textClass}" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1.1rem; padding: 0.75rem 1rem; border: none;">
-                    <strong class="ms-auto">${alert.icon || '⚠️'} {% trans "Alert" %}</strong>
-                    <small>${alert.time || ''}</small>
-                    <button type="button" class="${closeButtonClass}" data-bs-dismiss="toast" aria-label="Close" style="filter: invert(1) grayscale(100%) brightness(200%);"></button>
-                </div>
-                <div class="toast-body" dir="rtl" style="font-family: Assistant, sans-serif; font-size: 1rem; padding: 1rem;">
-                    ${alert.message}
-                </div>
-            `;
-
-            toastContainer.appendChild(toast);
-
-            const bsToast = new bootstrap.Toast(toast, {
-                autohide: true,
-                delay: 10000
-            });
-            bsToast.show();
-
-            toast.addEventListener('hidden.bs.toast', function() {
-                toast.remove();
-            });
-
-            shownAlerts.add(alert.message);
+            const t = document.createElement('div');
+            let bg = 'bg-info', txt = 'text-dark', closeBtn = 'btn-close';
+            if (alert.type === 'overdue' || alert.type === 'overtired') { bg = 'bg-danger'; txt = 'text-white'; closeBtn = 'btn-close btn-close-white'; }
+            else if (alert.type === 'soon' || alert.type === 'getting_tired') { bg = 'bg-warning'; }
+            t.className = `toast ${bg} ${txt} mb-2`;
+            t.setAttribute('role', 'alert');
+            t.style.cssText = 'min-width:320px;border-radius:0.75rem;overflow:hidden;';
+            t.innerHTML = `<div class="toast-header ${bg} ${txt}" dir="rtl" style="font-size:1rem;padding:0.6rem 0.8rem;border:none;"><strong class="ms-auto">${alert.icon||'⚠️'} {% trans "Alert" %}</strong><button type="button" class="${closeBtn}" data-bs-dismiss="toast"></button></div><div class="toast-body" dir="rtl" style="padding:0.8rem;">${alert.message}</div>`;
+            c.appendChild(t);
+            new bootstrap.Toast(t, { autohide: true, delay: 8000 }).show();
+            t.addEventListener('hidden.bs.toast', () => t.remove());
+            shown.add(alert.message);
         }
 
-        function checkForAlerts() {
-            fetch(alertsUrl, {
-                headers: {
-                    'Authorization': 'Token {{ request.user.auth_token.key }}',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.has_alerts && data.alerts) {
-                    data.alerts.forEach(alert => {
-                        if (!shownAlerts.has(alert.message)) {
-                            showToastAlert(alert);
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error checking alerts:', error);
-            });
+        function check() {
+            fetch(alertsUrl, { headers: { 'Authorization': 'Token {{ request.user.auth_token.key }}', 'Accept': 'application/json' } })
+            .then(r => r.json())
+            .then(d => { if (d.success && d.has_alerts && d.alerts) d.alerts.forEach(a => { if (!shown.has(a.message)) showToast(a); }); })
+            .catch(() => {});
         }
 
-        setTimeout(checkForAlerts, 2000);
-        setInterval(checkForAlerts, 5 * 60 * 1000);
-        setInterval(() => { shownAlerts.clear(); }, 30 * 60 * 1000);
+        setTimeout(check, 2000);
+        setInterval(check, 5 * 60 * 1000);
+        setInterval(() => shown.clear(), 30 * 60 * 1000);
     })();
     </script>
+
+    <style>
+    /* Quick Action Bar */
+    .quick-bar {
+        padding: 0.5rem 0;
+    }
+    .quick-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+    .quick-btn-icon { font-size: 1.1rem; }
+    .quick-btn-feeding {
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        color: #a5b4fc;
+    }
+    .quick-btn-feeding:hover { background: rgba(99, 102, 241, 0.2); color: #c7d2fe; }
+    .quick-btn-diaper {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+    }
+    .quick-btn-diaper:hover { background: rgba(239, 68, 68, 0.18); color: #fecaca; }
+    .quick-btn-medication {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        color: #fcd34d;
+    }
+    .quick-btn-medication:hover { background: rgba(245, 158, 11, 0.18); color: #fde68a; }
+    .quick-btn-sleep {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        border: none;
+    }
+    .quick-btn-sleep.inactive {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        color: #c4b5fd;
+    }
+    .quick-btn-sleep.inactive:hover { background: rgba(139, 92, 246, 0.18); color: #ddd6fe; }
+    .quick-btn-sleep.active {
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #6ee7b7;
+        animation: pulse-glow 2s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        50% { box-shadow: 0 0 8px 2px rgba(16, 185, 129, 0.15); }
+    }
+
+    /* Status Grid */
+    .status-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+    .status-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        transition: background 0.15s ease;
+    }
+    .status-cell:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.03); }
+    .status-cell:nth-last-child(-n+2) { border-bottom: none; }
+    .status-cell:hover { background: rgba(255,255,255,0.015); }
+    .status-emoji { font-size: 1.75rem; flex-shrink: 0; line-height: 1; }
+    .status-info { flex: 1; min-width: 0; }
+    .status-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: rgba(255,255,255,0.35);
+        font-weight: 600;
+        margin-bottom: 0.125rem;
+    }
+    .status-value {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.9);
+        line-height: 1.3;
+    }
+    .status-sub {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 0.0625rem;
+    }
+
+    @media (max-width: 575px) {
+        .status-grid { grid-template-columns: 1fr; }
+        .status-cell:nth-child(odd) { border-right: none; }
+        .status-cell:nth-last-child(2) { border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .quick-btn { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+        .quick-btn-icon { font-size: 1rem; }
+    }
+    </style>
 {% endblock %}
