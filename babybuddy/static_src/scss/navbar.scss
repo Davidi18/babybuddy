@@ -111,6 +111,8 @@
     animation: dropdownFade 0.15s ease;
     right: 0;
     left: auto;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
 @keyframes dropdownFade {
