@@ -3057,3 +3057,12 @@ msgstr ""
 msgid "No sleep data yet"
 msgstr "אין נתוני שינה עדיין"
 
+msgid "ago"
+msgstr "לפני"
+
+msgid "min"
+msgstr "דק׳"
+
+msgid "Failed to load status"
+msgstr "טעינת הסטטוס נכשלה"
+
