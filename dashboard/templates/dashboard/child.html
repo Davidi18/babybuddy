@@ -11,76 +11,70 @@
     <li class="breadcrumb-item active" aria-current="page">{% trans "Dashboard" %}</li>
 {% endblock %}
 {% block content %}
-    <!-- Unified Quick Actions Bar -->
+    <!-- Quick Actions Bar -->
     <div class="quick-bar mb-3">
-        <div class="row g-2 align-items-center">
-            <div class="col">
-                <div class="d-flex gap-2 flex-wrap">
-                    <a href="{% url 'core:feeding-add' %}?child={{ object.slug }}"
-                       class="quick-btn quick-btn-feeding">
-                        <span class="quick-btn-icon">🍼</span>
-                        <span class="quick-btn-label">{% trans "Feeding" %}</span>
-                    </a>
-                    <a href="{% url 'core:diaperchange-add' %}?child={{ object.slug }}"
-                       class="quick-btn quick-btn-diaper">
-                        <span class="quick-btn-icon">🧷</span>
-                        <span class="quick-btn-label">{% trans "Diaper" %}</span>
-                    </a>
-                    <a href="{% url 'core:medicationdose-add' %}?child={{ object.slug }}"
-                       class="quick-btn quick-btn-medication">
-                        <span class="quick-btn-icon">💊</span>
-                        <span class="quick-btn-label">{% trans "Medication" %}</span>
-                    </a>
-                    <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' object.slug %}" class="d-inline">
-                        {% csrf_token %}
-                        {% card_timer_quick_start object %}
-                    </form>
-                </div>
-            </div>
+        <div class="d-flex gap-2 flex-wrap justify-content-center">
+            <a href="{% url 'core:feeding-add' %}?child={{ object.slug }}"
+               class="quick-btn quick-btn-feeding">
+                <span class="quick-btn-icon">🍼</span>
+                <span class="quick-btn-label">{% trans "Feeding" %}</span>
+            </a>
+            <a href="{% url 'core:diaperchange-add' %}?child={{ object.slug }}"
+               class="quick-btn quick-btn-diaper">
+                <span class="quick-btn-icon">🧷</span>
+                <span class="quick-btn-label">{% trans "Diaper" %}</span>
+            </a>
+            <a href="{% url 'core:medicationdose-add' %}?child={{ object.slug }}"
+               class="quick-btn quick-btn-medication">
+                <span class="quick-btn-icon">💊</span>
+                <span class="quick-btn-label">{% trans "Medication" %}</span>
+            </a>
+            <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' object.slug %}" class="d-inline">
+                {% csrf_token %}
+                {% card_timer_quick_start object %}
+            </form>
         </div>
     </div>
 
     <!-- Live Status Overview -->
-    <div class="card card-dashboard mb-3" id="status-card">
-        <div class="card-body p-0">
-            <div id="analytics-loading" class="text-center py-4">
-                <div class="spinner-border spinner-border-sm" role="status">
-                    <span class="visually-hidden">{% trans "Loading..." %}</span>
-                </div>
+    <div class="status-widget mb-3" id="status-card">
+        <div id="analytics-loading" class="text-center py-4">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">{% trans "Loading..." %}</span>
             </div>
-            <div id="analytics-content" style="display:none;">
-                <div class="status-grid">
-                    <div class="status-cell" id="cell-feeding">
-                        <div class="status-emoji">🍼</div>
-                        <div class="status-info">
-                            <div class="status-label">{% trans "Feeding" %}</div>
-                            <div id="last-feeding-time" class="status-value"></div>
-                            <div id="last-feeding-type" class="status-sub"></div>
-                        </div>
+        </div>
+        <div id="analytics-content" style="display:none;">
+            <div class="status-grid">
+                <div class="status-cell" id="cell-feeding">
+                    <div class="status-emoji">🍼</div>
+                    <div class="status-info">
+                        <div class="status-label">{% trans "Feeding" %}</div>
+                        <div id="last-feeding-time" class="status-value">---</div>
+                        <div id="last-feeding-type" class="status-sub"></div>
                     </div>
-                    <div class="status-cell" id="cell-diaper">
-                        <div class="status-emoji">🧷</div>
-                        <div class="status-info">
-                            <div class="status-label">{% trans "Diaper" %}</div>
-                            <div id="last-diaper-time" class="status-value"></div>
-                            <div id="last-diaper-type" class="status-sub"></div>
-                        </div>
+                </div>
+                <div class="status-cell" id="cell-diaper">
+                    <div class="status-emoji">🧷</div>
+                    <div class="status-info">
+                        <div class="status-label">{% trans "Diaper" %}</div>
+                        <div id="last-diaper-time" class="status-value">---</div>
+                        <div id="last-diaper-type" class="status-sub"></div>
                     </div>
-                    <div class="status-cell" id="cell-sleep">
-                        <div class="status-emoji" id="sleep-icon">💤</div>
-                        <div class="status-info">
-                            <div class="status-label" id="sleep-label">{% trans "Sleep" %}</div>
-                            <div id="sleep-status" class="status-value"></div>
-                            <div id="sleep-prediction" class="status-sub"></div>
-                        </div>
+                </div>
+                <div class="status-cell" id="cell-sleep">
+                    <div class="status-emoji" id="sleep-icon">💤</div>
+                    <div class="status-info">
+                        <div class="status-label" id="sleep-label">{% trans "Sleep" %}</div>
+                        <div id="sleep-status" class="status-value">---</div>
+                        <div id="sleep-prediction" class="status-sub"></div>
                     </div>
-                    <div class="status-cell" id="cell-alert">
-                        <div class="status-emoji" id="alert-icon">✅</div>
-                        <div class="status-info">
-                            <div class="status-label">{% trans "Status" %}</div>
-                            <div id="alert-message" class="status-value text-success">{% trans "All good" %}</div>
-                            <div id="alert-time" class="status-sub"></div>
-                        </div>
+                </div>
+                <div class="status-cell" id="cell-alert">
+                    <div class="status-emoji" id="alert-icon">✅</div>
+                    <div class="status-info">
+                        <div class="status-label">{% trans "Status" %}</div>
+                        <div id="alert-message" class="status-value text-success">{% trans "All good" %}</div>
+                        <div id="alert-time" class="status-sub"></div>
                     </div>
                 </div>
             </div>
@@ -94,7 +88,7 @@
         </div>
     </div>
 
-    <!-- Data Cards - only the useful ones -->
+    <!-- Data Cards -->
     <div id="dashboard-child"
          class="row g-3"
          data-masonry='{"percentPosition": true }'>
@@ -126,19 +120,35 @@
         const apiUrl = `/api/webhooks/status/?child=${childSlug}`;
 
         const i18n = {
-            ago: '{% trans "ago" %}',
-            minutesShort: '{% trans "min" %}',
-            sleep: '{% trans "Sleep" %}',
-            awake: '{% trans "Awake" %}',
-            allGood: '{% trans "All good" %}'
+            agoPrefix: '{% filter escapejs %}{% trans "ago" %}{% endfilter %}',
+            minutesShort: '{% filter escapejs %}{% trans "min" %}{% endfilter %}',
+            sleep: '{% filter escapejs %}{% trans "Sleep" %}{% endfilter %}',
+            awake: '{% filter escapejs %}{% trans "Awake" %}{% endfilter %}',
+            allGood: '{% filter escapejs %}{% trans "All good" %}{% endfilter %}',
+            alert: '{% filter escapejs %}{% trans "Alert" %}{% endfilter %}',
+            failedToLoad: '{% filter escapejs %}{% trans "Failed to load status" %}{% endfilter %}'
         };
 
+        // Detect RTL
+        const isRTL = document.documentElement.dir === 'rtl' ||
+                       document.documentElement.lang === 'he' ||
+                       document.documentElement.lang === 'ar';
+
         function formatTimeAgo(minutes) {
-            if (!minutes && minutes !== 0) return 'N/A';
+            if (!minutes && minutes !== 0) return '---';
             const hours = Math.floor(minutes / 60);
             const mins = Math.round(minutes % 60);
-            if (hours > 0) return `${hours}:${mins.toString().padStart(2, '0')} ${i18n.ago}`;
-            return `${mins} ${i18n.minutesShort} ${i18n.ago}`;
+            let timeStr;
+            if (hours > 0) {
+                timeStr = hours + ':' + mins.toString().padStart(2, '0');
+            } else {
+                timeStr = mins + ' ' + i18n.minutesShort;
+            }
+            // For RTL languages, put "ago" before the time
+            if (isRTL) {
+                return i18n.agoPrefix + ' ' + timeStr;
+            }
+            return timeStr + ' ' + i18n.agoPrefix;
         }
 
         function getStatusClass(status) {
@@ -159,7 +169,7 @@
             if (data.last_feeding_minutes_ago !== null) {
                 feedingTime.textContent = formatTimeAgo(data.last_feeding_minutes_ago);
                 let info = data.last_feeding_type || '';
-                if (data.last_feeding_amount) info += info ? ` · ${data.last_feeding_amount}` : data.last_feeding_amount;
+                if (data.last_feeding_amount) info += info ? ' \u00b7 ' + data.last_feeding_amount : data.last_feeding_amount;
                 feedingType.textContent = info;
             } else {
                 feedingTime.textContent = '---';
@@ -187,10 +197,10 @@
                 sleepPred.textContent = sd.sub_text || '';
 
                 const modes = {
-                    'sleeping':     { icon: '😴', label: i18n.sleep,  cls: 'text-info' },
-                    'awake':        { icon: '👁️', label: i18n.awake,  cls: '' },
-                    'good_night':   { icon: '🌙', label: i18n.sleep,  cls: 'text-muted' },
-                    'good_morning': { icon: '☀️', label: i18n.sleep,  cls: 'text-success' }
+                    'sleeping':     { icon: '\ud83d\ude34', label: i18n.sleep,  cls: 'text-info' },
+                    'awake':        { icon: '\ud83d\udc41\ufe0f', label: i18n.awake,  cls: '' },
+                    'good_night':   { icon: '\ud83c\udf19', label: i18n.sleep,  cls: 'text-muted' },
+                    'good_morning': { icon: '\u2600\ufe0f', label: i18n.sleep,  cls: 'text-success' }
                 };
                 const m = modes[sd.mode] || modes.awake;
                 sleepIcon.textContent = m.icon;
@@ -199,7 +209,7 @@
 
                 if (sd.mode === 'awake' && data.next_sleep_prediction && data.next_sleep_prediction.message) {
                     const pred = data.next_sleep_prediction;
-                    sleepPred.textContent = (sd.sub_text ? sd.sub_text + ' · ' : '') + pred.message;
+                    sleepPred.textContent = (sd.sub_text ? sd.sub_text + ' \u00b7 ' : '') + pred.message;
                     sleepPred.className = 'status-sub ' + getStatusClass(pred.status);
                 }
             } else if (data.last_sleep_minutes_ago != null) {
@@ -218,15 +228,18 @@
             const alertTime = document.getElementById('alert-time');
             if (data.alerts && data.alerts.length > 0) {
                 const a = data.alerts[0];
-                alertIcon.textContent = '⚠️';
+                alertIcon.textContent = '\u26a0\ufe0f';
                 alertMsg.textContent = a.message;
                 alertMsg.className = 'status-value ' + getStatusClass(a.type);
                 alertTime.textContent = a.time || '';
+                // Highlight alert cell
+                document.getElementById('cell-alert').classList.add('status-cell-alert');
             } else {
-                alertIcon.textContent = '✅';
+                alertIcon.textContent = '\u2705';
                 alertMsg.textContent = i18n.allGood;
                 alertMsg.className = 'status-value text-success';
                 alertTime.textContent = '';
+                document.getElementById('cell-alert').classList.remove('status-cell-alert');
             }
         }
 
@@ -237,12 +250,12 @@
                     'Accept': 'application/json'
                 }
             })
-            .then(r => r.ok ? r.json() : Promise.reject('fetch failed'))
-            .then(data => { if (data.success) updateWidget(data); })
-            .catch(e => {
-                console.error('Analytics error:', e);
+            .then(function(r) { return r.ok ? r.json() : Promise.reject('fetch failed'); })
+            .then(function(data) { if (data.success) updateWidget(data); })
+            .catch(function(e) {
+                console.error('Status error:', e);
                 document.getElementById('analytics-loading').innerHTML =
-                    '<span class="text-danger" style="font-size:0.85rem;">{% trans "Failed to load status" %}</span>';
+                    '<span class="text-muted" style="font-size:0.85rem;">' + i18n.failedToLoad + '</span>';
             });
         }
 
@@ -251,46 +264,45 @@
     })();
     </script>
 
-    <!-- Alerts -->
+    <!-- Alerts Toast Notifications -->
     <script type="application/javascript">
     (function() {
         'use strict';
-        const alertsUrl = `/api/webhooks/alerts/?child={{ object.slug }}`;
-        let shown = new Set();
+        const alertsUrl = '/api/webhooks/alerts/?child={{ object.slug }}';
+        var shown = new Set();
 
         function showToast(alert) {
-            let c = document.getElementById('toast-container');
+            var c = document.getElementById('toast-container');
             if (!c) {
                 c = document.createElement('div');
                 c.id = 'toast-container';
-                c.style.cssText = 'position:fixed;top:70px;right:20px;z-index:9999;';
+                c.className = 'toast-container-custom';
                 document.body.appendChild(c);
             }
-            const t = document.createElement('div');
-            let bg = 'bg-info', txt = 'text-dark', closeBtn = 'btn-close';
+            var t = document.createElement('div');
+            var bg = 'bg-info', txt = 'text-dark', closeBtn = 'btn-close';
             if (alert.type === 'overdue' || alert.type === 'overtired') { bg = 'bg-danger'; txt = 'text-white'; closeBtn = 'btn-close btn-close-white'; }
             else if (alert.type === 'soon' || alert.type === 'getting_tired') { bg = 'bg-warning'; }
-            t.className = `toast ${bg} ${txt} mb-2`;
+            t.className = 'toast ' + bg + ' ' + txt + ' mb-2';
             t.setAttribute('role', 'alert');
-            t.style.cssText = 'min-width:320px;border-radius:0.75rem;overflow:hidden;';
-            t.innerHTML = `<div class="toast-header ${bg} ${txt}" dir="rtl" style="font-size:1rem;padding:0.6rem 0.8rem;border:none;"><strong class="ms-auto">${alert.icon||'⚠️'} {% trans "Alert" %}</strong><button type="button" class="${closeBtn}" data-bs-dismiss="toast"></button></div><div class="toast-body" dir="rtl" style="padding:0.8rem;">${alert.message}</div>`;
+            t.style.cssText = 'min-width:300px;border-radius:0.75rem;overflow:hidden;';
+            t.innerHTML = '<div class="toast-header ' + bg + ' ' + txt + '" style="font-size:1rem;padding:0.6rem 0.8rem;border:none;"><strong class="me-auto">' + (alert.icon || '\u26a0\ufe0f') + ' {% filter escapejs %}{% trans "Alert" %}{% endfilter %}</strong><button type="button" class="' + closeBtn + '" data-bs-dismiss="toast"></button></div><div class="toast-body" style="padding:0.8rem;">' + alert.message + '</div>';
             c.appendChild(t);
             new bootstrap.Toast(t, { autohide: true, delay: 8000 }).show();
-            t.addEventListener('hidden.bs.toast', () => t.remove());
+            t.addEventListener('hidden.bs.toast', function() { t.remove(); });
             shown.add(alert.message);
         }
 
         function check() {
             fetch(alertsUrl, { headers: { 'Authorization': 'Token {{ request.user.auth_token.key }}', 'Accept': 'application/json' } })
-            .then(r => r.json())
-            .then(d => { if (d.success && d.has_alerts && d.alerts) d.alerts.forEach(a => { if (!shown.has(a.message)) showToast(a); }); })
-            .catch(() => {});
+            .then(function(r) { return r.json(); })
+            .then(function(d) { if (d.success && d.has_alerts && d.alerts) d.alerts.forEach(function(a) { if (!shown.has(a.message)) showToast(a); }); })
+            .catch(function() {});
         }
 
         setTimeout(check, 2000);
         setInterval(check, 5 * 60 * 1000);
-        setInterval(() => shown.clear(), 30 * 60 * 1000);
+        setInterval(function() { shown.clear(); }, 30 * 60 * 1000);
     })();
     </script>
-
 {% endblock %}

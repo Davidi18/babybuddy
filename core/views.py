@@ -713,8 +713,7 @@ class TimerQuickToggle(LoginRequiredMixin, RedirectView):
             else:
                 redirect_url = reverse("dashboard:dashboard")
 
-        self.url = redirect_url
-        return super().post(request, *args, **kwargs)
+        return HttpResponseRedirect(redirect_url)
 
 
 class TimerRestart(PermissionRequiredMixin, RedirectView):
