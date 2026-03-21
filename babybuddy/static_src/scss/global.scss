@@ -30,7 +30,7 @@ body {
             transition: color 0.15s ease;
 
             &:hover {
-                color: #818cf8;
+                color: #89CFF0;
             }
         }
 
@@ -64,32 +64,32 @@ body {
 }
 
 .btn-primary {
-    background: #6366f1;
-    border-color: #6366f1;
+    background: #A8D8EA;
+    border-color: #A8D8EA;
 
     &:hover {
-        background: #4f46e5;
-        border-color: #4f46e5;
+        background: #7EC8E3;
+        border-color: #7EC8E3;
     }
 }
 
 .btn-success {
-    background: #10b981;
-    border-color: #10b981;
+    background: #C7EFCF;
+    border-color: #C7EFCF;
 
     &:hover {
-        background: #059669;
-        border-color: #059669;
+        background: #a3e4b0;
+        border-color: #a3e4b0;
     }
 }
 
 .btn-danger {
-    background: #ef4444;
-    border-color: #ef4444;
+    background: #FFABAB;
+    border-color: #FFABAB;
 
     &:hover {
-        background: #dc2626;
-        border-color: #dc2626;
+        background: #FF8E8E;
+        border-color: #FF8E8E;
     }
 }
 
@@ -137,15 +137,15 @@ body {
     margin: 0 0.125rem;
 
     &:hover {
-        background: rgba(99, 102, 241, 0.15);
-        border-color: rgba(99, 102, 241, 0.3);
-        color: #a5b4fc;
+        background: rgba(168, 216, 234, 0.15);
+        border-color: rgba(168, 216, 234, 0.3);
+        color: #89CFF0;
     }
 }
 
 .page-item.active .page-link {
-    background: #6366f1;
-    border-color: #6366f1;
+    background: #A8D8EA;
+    border-color: #A8D8EA;
 }
 
 // ===== Cards =====
@@ -178,7 +178,7 @@ body {
         transition: color 0.15s ease;
 
         &:hover {
-            color: #818cf8;
+            color: #89CFF0;
         }
     }
 
@@ -228,7 +228,7 @@ body {
     }
 
     &.table-hover tbody tr:hover {
-        --bs-table-hover-bg: rgba(99, 102, 241, 0.05);
+        --bs-table-hover-bg: rgba(168, 216, 234, 0.05);
         --bs-table-hover-color: rgba(255, 255, 255, 0.95);
     }
 
@@ -315,8 +315,8 @@ h1 {
         transition: all 0.15s ease;
 
         &:hover {
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
+            background: rgba(168, 216, 234, 0.15);
+            color: #89CFF0;
         }
     }
 }
@@ -394,13 +394,13 @@ h1 {
 
 // ===== Spinner =====
 .spinner-border {
-    border-color: rgba(99, 102, 241, 0.3);
-    border-right-color: #6366f1;
+    border-color: rgba(168, 216, 234, 0.3);
+    border-right-color: #A8D8EA;
 }
 
 // ===== Selection highlight =====
 ::selection {
-    background: rgba(99, 102, 241, 0.3);
+    background: rgba(168, 216, 234, 0.3);
     color: #fff;
 }
 

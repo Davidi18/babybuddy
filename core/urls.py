@@ -81,7 +81,7 @@ urlpatterns = [
     path("timers/add/quick/", views.TimerAddQuick.as_view(), name="timer-add-quick"),
     path("timers/quick/<str:timer_type>/", views.TimerQuickStart.as_view(), name="timer-quick-start"),
     path(
-        "timers/quick-toggle/<str:timer_type>/<slug:child_slug>/",
+        "timers/quick-toggle/<str:timer_type>/<str:child_slug>/",
         views.TimerQuickToggle.as_view(),
         name="timer-quick-toggle",
     ),

@@ -65,11 +65,11 @@
 
 // Card type color accents (left border)
 .card-diaperchange {
-    border-left: 3px solid #ef4444;
+    border-left: 3px solid #FFABAB;
 
     .card-header, .card-header a {
-        background: rgba(239, 68, 68, 0.08);
-        color: #fca5a5;
+        background: rgba(255, 171, 171, 0.08);
+        color: #FFD4D4;
     }
 
     .card-body {
@@ -85,11 +85,11 @@
 
 .card-feeding,
 .card-pumping {
-    border-left: 3px solid #6366f1;
+    border-left: 3px solid #A8D8EA;
 
     .card-header, .card-header a {
-        background: rgba(99, 102, 241, 0.08);
-        color: #a5b4fc;
+        background: rgba(168, 216, 234, 0.08);
+        color: #89CFF0;
     }
 
     .card-body {
@@ -108,11 +108,11 @@
 }
 
 .card-sleep {
-    border-left: 3px solid #8b5cf6;
+    border-left: 3px solid #FFDAB9;
 
     .card-header, .card-header a {
-        background: rgba(139, 92, 246, 0.08);
-        color: #c4b5fd;
+        background: rgba(255, 218, 185, 0.08);
+        color: #FFE8D6;
     }
 }
 
@@ -138,11 +138,11 @@
 }
 
 .card-tummytime {
-    border-left: 3px solid #10b981;
+    border-left: 3px solid #C7EFCF;
 
     .card-header, .card-header a {
-        background: rgba(16, 185, 129, 0.08);
-        color: #6ee7b7;
+        background: rgba(199, 239, 207, 0.08);
+        color: #a3e4b0;
     }
 
     .card-body {
@@ -151,11 +151,11 @@
 }
 
 .card-medicationdose {
-    border-left: 3px solid #f59e0b;
+    border-left: 3px solid #FFF4B8;
 
     .card-header, .card-header a {
-        background: rgba(245, 158, 11, 0.08);
-        color: #fcd34d;
+        background: rgba(255, 244, 184, 0.08);
+        color: #FFF0A0;
     }
 
     .card-body {
@@ -164,10 +164,10 @@
 }
 
 .card-quick_actions {
-    border-left: 3px solid #10b981;
+    border-left: 3px solid #C7EFCF;
 
     .card-header, .card-header a {
-        background: rgba(16, 185, 129, 0.08);
-        color: #6ee7b7;
+        background: rgba(199, 239, 207, 0.08);
+        color: #a3e4b0;
     }
 }
