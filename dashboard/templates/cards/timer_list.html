@@ -53,6 +53,10 @@
     </ul>
     <script>
     (function() {
+        // Add active glow class to timer card
+        var timerCard = document.querySelector('.card-timer');
+        if (timerCard) timerCard.classList.add('card-timer-active');
+
         function updateTimers() {
             document.querySelectorAll('.timer-elapsed').forEach(function(el) {
                 var start = new Date(el.dataset.start);
