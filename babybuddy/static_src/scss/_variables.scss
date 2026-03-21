@@ -19,15 +19,15 @@ $gray-800: #1f2937;
 $gray-900: #111827;
 $black: #000;
 
-// Modern color palette - vibrant yet soft
-$primary: #6366f1;    // Indigo - modern primary
-$danger: #ef4444;     // Red
+// Soft pastel color palette
+$primary: #A8D8EA;    // Soft pastel cyan
+$danger: #FFABAB;     // Pastel pink-red
 $error: $danger;
-$secondary: #8b5cf6;  // Violet
-$warning: #f59e0b;    // Amber
-$success: #10b981;    // Emerald
-$debug: #06b6d4;      // Cyan
-$info: #3b82f6;       // Blue
+$secondary: #FFDAB9;  // Pastel peach
+$warning: #FFF4B8;    // Pale pastel yellow
+$success: #C7EFCF;    // Pastel mint green
+$debug: #B4E4FF;      // Pastel blue
+$info: #B4E4FF;       // Pastel blue
 $light: $gray-100;
 $dark: $gray-800;
 
@@ -53,7 +53,7 @@ $border-radius-lg: 1rem;
 
 // Links
 
-$link-color: #818cf8;
+$link-color: #89CFF0;
 $link-decoration: none;
 $link-hover-color: color.adjust($link-color, $lightness: 10%);
 
@@ -67,7 +67,7 @@ $card-border-color: rgba(255, 255, 255, 0.06);
 $table-cell-padding-y: 0.875rem;
 $table-cell-padding-x: 0.875rem;
 $table-striped-bg: rgba(255, 255, 255, 0.02);
-$table-hover-bg: rgba(99, 102, 241, 0.05);
+$table-hover-bg: rgba(168, 216, 234, 0.08);
 
 // Buttons
 $btn-border-radius: 0.625rem;

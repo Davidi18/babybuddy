@@ -25,7 +25,7 @@
     }
 
     img {
-        filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.3));
+        filter: drop-shadow(0 2px 8px rgba(168, 216, 234, 0.4));
         border-radius: 10px;
     }
 }
@@ -36,7 +36,7 @@
 }
 
 .brand-highlight {
-    color: #818cf8;
+    color: #89CFF0;
     font-weight: 800;
 }
 
@@ -51,17 +51,17 @@
     transition: color 0.2s ease;
 
     &:hover {
-        color: #818cf8;
+        color: #89CFF0;
     }
 }
 
 // ===== Quick Add Button =====
 .quick-add-btn {
-    color: #10b981 !important;
+    color: #C7EFCF !important;
     transition: all 0.2s ease;
 
     &:hover {
-        color: #34d399 !important;
+        color: #a3e4b0 !important;
         transform: rotate(90deg);
     }
 }
@@ -94,8 +94,8 @@
 
     &.active,
     &:active {
-        background: rgba(99, 102, 241, 0.15);
-        color: #818cf8;
+        background: rgba(168, 216, 234, 0.15);
+        color: #89CFF0;
     }
 }
 
@@ -145,8 +145,8 @@
     }
 
     &:hover {
-        background: rgba(99, 102, 241, 0.12);
-        color: #a5b4fc;
+        background: rgba(168, 216, 234, 0.12);
+        color: #89CFF0;
 
         i {
             opacity: 1;
@@ -154,8 +154,8 @@
     }
 
     &.active {
-        background: rgba(99, 102, 241, 0.2);
-        color: #a5b4fc;
+        background: rgba(168, 216, 234, 0.2);
+        color: #89CFF0;
         font-weight: 600;
     }
 
@@ -195,7 +195,7 @@
     }
 
     &:focus {
-        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+        box-shadow: 0 0 0 2px rgba(168, 216, 234, 0.3);
     }
 }
 
@@ -242,7 +242,7 @@
         color: rgba(255, 255, 255, 0.75);
 
         &:hover {
-            color: #a5b4fc;
+            color: #89CFF0;
         }
     }
 }
