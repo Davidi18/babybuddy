@@ -14,21 +14,9 @@
                     <span class="brand-highlight">Baby</span><span class="brand-secondary">Buddy</span>
                 </span>
             </a>
-            <div class="d-lg-none d-md-none d-flex me-auto p-0 ms-2">
-                <div>
-                <a class="mobile-nav-icon"
-                   href="{% url 'dashboard:dashboard' %}"
-                   aria-expanded="false"><i class="icon-dashboard" aria-hidden="true"></i>
-            </a>
-            &nbsp;
-        </div>
-        <div>
-        <a class="mobile-nav-icon"
-           href="{% url 'core:timeline' %}"
-           aria-expanded="false"><i class="icon-timeline" aria-hidden="true"></i>
-    </a>
-    &nbsp;
-</div>
+            <div class="d-lg-none d-md-none d-flex align-items-center me-auto p-0 ms-1 gap-2">
+                <a class="mobile-nav-icon" href="{% url 'dashboard:dashboard' %}"><i class="icon-dashboard" aria-hidden="true"></i></a>
+                <a class="mobile-nav-icon" href="{% url 'core:timeline' %}"><i class="icon-timeline" aria-hidden="true"></i></a>
 </div>
 <div class="d-lg-none d-md-none d-flex ms-auto p-0 me-2">
     {% quick_timer_nav %}
