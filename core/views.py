@@ -645,9 +645,13 @@ class TimerQuickToggle(LoginRequiredMixin, RedirectView):
                 name__in=timer_names,
             ).order_by("-start").first()
 
+        # Max reasonable duration for a sleep timer (14 hours).
+        # Timers running longer than this were likely forgotten.
+        MAX_REASONABLE_SLEEP_HOURS = 14
+
         if active_timer is None:
             # Start a new timer.
-            instance = models.Timer.objects.create(
+            models.Timer.objects.create(
                 user=request.user,
                 name=str(timer_name),
                 child=child,
@@ -658,33 +662,48 @@ class TimerQuickToggle(LoginRequiredMixin, RedirectView):
                 _("{timer_name} timer started!").format(timer_name=timer_name),
             )
         else:
-            # Stop existing timer and create the corresponding model entry.
             end_time = timezone.now()
+            duration = end_time - active_timer.start
+            duration_hours = duration.total_seconds() / 3600
 
-            if timer_type == "sleep":
-                models.Sleep.objects.create(
+            if timer_type == "sleep" and duration_hours > MAX_REASONABLE_SLEEP_HOURS:
+                # Timer ran unreasonably long - it was forgotten.
+                # Discard the old timer and start a fresh one.
+                active_timer.active = False
+                active_timer.save()
+                active_timer.stop()
+
+                models.Timer.objects.create(
+                    user=request.user,
+                    name=str(timer_name),
                     child=child,
-                    start=active_timer.start,
-                    end=end_time,
-                    nap=False,
+                    start=timezone.now(),
                 )
-            elif timer_type == "tummy-time":
-                models.TummyTime.objects.create(
-                    child=child,
-                    start=active_timer.start,
-                    end=end_time,
-                    milestone="",
+                messages.warning(
+                    request,
+                    _("Previous sleep timer was running for {hours}h and was discarded. New timer started.").format(
+                        hours=int(duration_hours)
+                    ),
                 )
+            else:
+                # Normal stop - create the corresponding entry.
+                if timer_type == "sleep":
+                    models.Sleep.objects.create(
+                        child=child,
+                        start=active_timer.start,
+                        end=end_time,
+                        nap=False,
+                    )
 
-            # Mark timer inactive and remove it.
-            active_timer.active = False
-            active_timer.save()
-            active_timer.stop()
+                # Mark timer inactive and remove it.
+                active_timer.active = False
+                active_timer.save()
+                active_timer.stop()
 
-            messages.success(
-                request,
-                _("{timer_name} recorded.").format(timer_name=timer_name),
-            )
+                messages.success(
+                    request,
+                    _("{timer_name} recorded.").format(timer_name=timer_name),
+                )
 
         # Redirect back to the child's dashboard or to the referrer.
         redirect_url = request.META.get("HTTP_REFERER")

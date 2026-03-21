@@ -10,20 +10,20 @@
                      class="d-inline-block"
                      alt=""
                      style="margin-top: -2px;">
-                <span class="d-none d-lg-inline-block ms-2">
-                    <span class="text-primary">Baby</span> Buddy
+                <span class="d-none d-lg-inline-block ms-2 brand-text">
+                    <span class="brand-highlight">Baby</span><span class="brand-secondary">Buddy</span>
                 </span>
             </a>
             <div class="d-lg-none d-md-none d-flex me-auto p-0 ms-2">
                 <div>
-                <a class="text-body-secondary"
+                <a class="mobile-nav-icon"
                    href="{% url 'dashboard:dashboard' %}"
                    aria-expanded="false"><i class="icon-2x icon-dashboard" aria-hidden="true"></i>
             </a>
             &nbsp;
         </div>
         <div>
-        <a class="text-body-secondary"
+        <a class="mobile-nav-icon"
            href="{% url 'core:timeline' %}"
            aria-expanded="false"><i class="icon-2x icon-timeline" aria-hidden="true"></i>
     </a>
@@ -33,7 +33,7 @@
 <div class="d-lg-none d-md-none d-flex ms-auto p-0 me-2">
     {% quick_timer_nav %}
     <div class="dropdown show nav-quick-add">
-    <a class="text-success"
+    <a class="quick-add-btn"
        href="#"
        role="button"
        id="nav-quick-add-link"
@@ -41,9 +41,8 @@
        aria-haspopup="true"
        aria-expanded="false"><i class="icon-2x icon-add" aria-hidden="true"></i>
 </a>
-<div class="dropdown-menu dropdown-menu-end bg-dark shadow"
-     aria-labelledby="nav-quick-add-link"
-     style="border: 1px solid rgba(255,255,255,0.1); min-width: 200px;">
+<div class="dropdown-menu dropdown-menu-end"
+     aria-labelledby="nav-quick-add-link">
     {% if perms.core.add_diaperchange %}
         <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:diaperchange-add' %}">
             <i class="icon-diaperchange" aria-hidden="true"></i>
@@ -82,12 +81,6 @@
         <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:sleep-add' %}">
             <i class="icon-sleep" aria-hidden="true"></i>
             {% trans "Sleep" %}
-        </a>
-    {% endif %}
-    {% if  perms.core.add_tummytime %}
-        <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:tummytime-add' %}">
-            <i class="icon-tummytime" aria-hidden="true"></i>
-            {% trans "Tummy Time" %}
         </a>
     {% endif %}
 </div>
@@ -301,18 +294,6 @@
 {% trans "Sleep entry" %}
 </a>
 {% endif %}
-{% if perms.core.view_tummytime %}
-<a class="dropdown-item{% if request.path == '/tummy-time/' %} active{% endif %}"
-   href="{% url 'core:tummytime-list' %}"><i class="icon-tummytime" aria-hidden="true"></i>
-{% trans "Tummy Time" %}
-</a>
-{% endif %}
-{% if perms.core.add_tummytime %}
-<a class="dropdown-item ps-5{% if request.path == '/tummy-time/add/' %} active{% endif %}"
-   href="{% url 'core:tummytime-add' %}"><i class="icon-add" aria-hidden="true"></i>
-{% trans "Tummy Time entry" %}
-</a>
-{% endif %}
 </div>
 </li>
 {% if perms.core.view_timer %}
@@ -371,45 +352,4 @@
 </div>
 </div>
 </nav>
-
-<style>
-/* Mobile quick-add menu styling */
-#nav-quick-add-link + .dropdown-menu.bg-dark .dropdown-item {
-    color: rgba(255, 255, 255, 0.85);
-    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-}
-
-#nav-quick-add-link + .dropdown-menu.bg-dark .dropdown-item:hover,
-#nav-quick-add-link + .dropdown-menu.bg-dark .dropdown-item:focus {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 1);
-}
-
-#nav-quick-add-link + .dropdown-menu.bg-dark .dropdown-item i {
-    opacity: 0.7;
-    margin-right: 0.5rem;
-}
-
-#nav-quick-add-link + .dropdown-menu.bg-dark .dropdown-item:hover i {
-    opacity: 1;
-}
-
-/* RTL dropdown positioning and z-index fixes */
-[dir="rtl"] #nav-quick-add-link + .dropdown-menu.bg-dark {
-    left: 0.5rem !important;
-    right: auto !important;
-    max-width: calc(100vw - 1rem);
-}
-
-.dropdown-menu {
-    z-index: 1060 !important;
-}
-
-/* Fix quick-add menu in RTL */
-[dir="ltr"] #nav-quick-add-link + .dropdown-menu.bg-dark {
-    right: 0.5rem !important;
-    left: auto !important;
-    max-width: calc(100vw - 1rem);
-}
-</style>
 {% endblock %}

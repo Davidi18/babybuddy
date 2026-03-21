@@ -372,7 +372,7 @@ class NoteForm(CoreModelForm, TaggableModelForm):
 class SleepForm(CoreModelForm, TaggableModelForm):
     fieldsets = [
         {
-            "fields": ["child", "start", "end", "nap"],
+            "fields": ["child", "start", "end"],
             "layout": "required",
         },
         {"fields": ["notes", "tags"], "layout": "advanced"},
@@ -380,7 +380,7 @@ class SleepForm(CoreModelForm, TaggableModelForm):
 
     class Meta:
         model = models.Sleep
-        fields = ["child", "start", "end", "nap", "notes", "tags"]
+        fields = ["child", "start", "end", "notes", "tags"]
         widgets = {
             "child": ChildRadioSelect,
             "start": DateTimeInput(),

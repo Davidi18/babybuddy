@@ -1,29 +1,50 @@
 @use 'sass:map';
 
+// Modern Dashboard Card Styles
+
 %card-header-text {
-    font-size: $h4-font-size;
-    font-weight: $headings-font-weight;
-    line-height: $headings-line-height;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .card-dashboard {
-    margin-bottom: $spacer;
+    margin-bottom: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
 
     .card-header {
         @extend %card-header-text;
         margin-bottom: 0;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        padding: 0.75rem 1rem;
     }
 
     .card-body {
+        padding: 1rem;
+
         .card-title {
-            @extend %card-header-text;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .card-text {
-            color: $text-muted;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
         }
 
-        // Offset horizontal padding in dashboard cards with a carousel.
         .carousel {
             margin-left: -$card-spacer-x;
             margin-right: -$card-spacer-x;
@@ -34,41 +55,46 @@
 
     .list-group {
         .list-group-item {
-            color: $white;
+            color: rgba(255, 255, 255, 0.7);
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.04);
+            font-size: 0.85rem;
         }
     }
 }
 
+// Card type color accents (left border)
 .card-diaperchange {
-    border-color: map.get($theme-colors, 'danger');
+    border-left: 3px solid #ef4444;
 
     .card-header, .card-header a {
-        background-color: map.get($theme-colors, 'danger');
-        color: map.get($theme-colors, 'light');
+        background: rgba(239, 68, 68, 0.08);
+        color: #fca5a5;
     }
 
     .card-body {
-        color: map.get($theme-colors, 'danger');
+        color: rgba(255, 255, 255, 0.85);
     }
 
     .progress {
         height: $progress-height * 2;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 0.5rem;
     }
 }
 
 .card-feeding,
 .card-pumping {
-    border-color: map.get($theme-colors, 'primary');
+    border-left: 3px solid #6366f1;
 
     .card-header, .card-header a {
-        background-color: map.get($theme-colors, 'primary');
-        color: map.get($theme-colors, 'light');
+        background: rgba(99, 102, 241, 0.08);
+        color: #a5b4fc;
     }
 
     .card-body {
-        color: map.get($theme-colors, 'primary');
+        color: rgba(255, 255, 255, 0.85);
 
-        // Last feeding method header in card.
         .last-feeding-method {
             font-size: 2em;
         }
@@ -76,32 +102,34 @@
 
     .progress {
         height: $progress-height * 2;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 0.5rem;
     }
 }
 
 .card-sleep {
-    border-color: map.get($theme-colors, 'secondary');
+    border-left: 3px solid #8b5cf6;
 
     .card-header, .card-header a {
-        background-color: map.get($theme-colors, 'secondary');
-        color: map.get($theme-colors, 'light');
+        background: rgba(139, 92, 246, 0.08);
+        color: #c4b5fd;
     }
 }
 
 .card-statistics, .card-timer {
-    border-color: map.get($theme-colors, 'light');
+    border-left: 3px solid rgba(255, 255, 255, 0.2);
 
     .card-header {
-        background-color: map.get($theme-colors, 'light');
-        color: map.get($theme-colors, 'dark');
+        background: rgba(255, 255, 255, 0.03);
+        color: rgba(255, 255, 255, 0.7);
 
         a {
-            color: map.get($theme-colors, 'dark');
+            color: rgba(255, 255, 255, 0.7);
         }
     }
 
     .card-body {
-        color: map.get($theme-colors, 'light');
+        color: rgba(255, 255, 255, 0.85);
 
         .container {
             padding: 0;
@@ -110,14 +138,36 @@
 }
 
 .card-tummytime {
-    border-color: map.get($theme-colors, 'success');
+    border-left: 3px solid #10b981;
 
     .card-header, .card-header a {
-        background-color: map.get($theme-colors, 'success');
-        color: map.get($theme-colors, 'light');
+        background: rgba(16, 185, 129, 0.08);
+        color: #6ee7b7;
     }
 
     .card-body {
-        color: map.get($theme-colors, 'success');
+        color: rgba(255, 255, 255, 0.85);
+    }
+}
+
+.card-medicationdose {
+    border-left: 3px solid #f59e0b;
+
+    .card-header, .card-header a {
+        background: rgba(245, 158, 11, 0.08);
+        color: #fcd34d;
+    }
+
+    .card-body {
+        color: rgba(255, 255, 255, 0.85);
+    }
+}
+
+.card-quick_actions {
+    border-left: 3px solid #10b981;
+
+    .card-header, .card-header a {
+        background: rgba(16, 185, 129, 0.08);
+        color: #6ee7b7;
     }
 }

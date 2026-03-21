@@ -1,6 +1,6 @@
 @use 'sass:color';
 
-// Theme variables.
+// Theme variables - Modern Design System
 
 // Typography
 $font-family-sans-serif: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -8,26 +8,26 @@ $font-family-sans-serif: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe 
 // Color system
 
 $white: #fff;
-$gray-100: #f8f9fa;
-$gray-200: #e9ecef;
-$gray-300: #dee2e6;
-$gray-400: #ced4da;
-$gray-500: #adb5bd;
-$gray-600: #6c757d;
-$gray-700: #495057;
-$gray-800: #343a40;
-$gray-900: #212529;
+$gray-100: #f0f2f5;
+$gray-200: #e4e6eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
 $black: #000;
 
-// 🎨 פלטת צבעים פסטל רכה ונעימה לעיניים
-$primary: #A8D8EA;    // תכלת פסטל רך
-$danger: #FFABAB;     // ורוד-אדום פסטל
+// Modern color palette - vibrant yet soft
+$primary: #6366f1;    // Indigo - modern primary
+$danger: #ef4444;     // Red
 $error: $danger;
-$secondary: #FFDAB9;  // אפרסק פסטל
-$warning: #FFF4B8;    // צהוב פסטל עדין
-$success: #C7EFCF;    // ירוק מנטה פסטל
-$debug: #D4F1F4;      // תכלת בהיר מאוד
-$info: #B4E4FF;       // כחול תכלת פסטל
+$secondary: #8b5cf6;  // Violet
+$warning: #f59e0b;    // Amber
+$success: #10b981;    // Emerald
+$debug: #06b6d4;      // Cyan
+$info: #3b82f6;       // Blue
 $light: $gray-100;
 $dark: $gray-800;
 
@@ -42,18 +42,35 @@ $carousel-dark-control-icon-filter: none;
 
 // Components
 
-$border-color: $gray-200;
-$component-active-color: $gray-400;
+$border-color: rgba(255, 255, 255, 0.08);
+$component-active-color: $white;
 $component-active-bg: $primary;
+
+// Border radius - more rounded for modern feel
+$border-radius: 0.75rem;
+$border-radius-sm: 0.5rem;
+$border-radius-lg: 1rem;
 
 // Links
 
-$link-color: $info;
+$link-color: #818cf8;
 $link-decoration: none;
-$link-hover-color: color.adjust($link-color, $lightness: -15%);
+$link-hover-color: color.adjust($link-color, $lightness: 10%);
+
+// Cards
+$card-border-radius: 1rem;
+$card-bg: rgba(255, 255, 255, 0.03);
+$card-border-color: rgba(255, 255, 255, 0.06);
 
 // Tables
 
-$table-cell-padding-y: 0.75rem;
-$table-cell-padding-x: 0.75rem;
-$table-striped-bg: $dark;
+$table-cell-padding-y: 0.875rem;
+$table-cell-padding-x: 0.875rem;
+$table-striped-bg: rgba(255, 255, 255, 0.02);
+$table-hover-bg: rgba(99, 102, 241, 0.05);
+
+// Buttons
+$btn-border-radius: 0.625rem;
+$btn-padding-y: 0.5rem;
+$btn-padding-x: 1.25rem;
+$btn-font-weight: 600;

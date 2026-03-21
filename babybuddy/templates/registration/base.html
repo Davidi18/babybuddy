@@ -2,21 +2,123 @@
 {% load static widget_tweaks %}
 {% block breadcrumb_nav %}{% endblock %}
 {% block page %}
-    <div id="view-{{ request.resolver_match.view_name }}" class="container">
-        <div class="text-center pt-3">
-            <img src="{% static "babybuddy/logo/icon-brand.png" %}"
-                 width="65"
-                 height="65"
-                 class="d-inline-block align-top"
-                 alt="">
-            <h1 class="d-none d-md-inline-block display-4 ms-2">
-                <span class="text-primary">Baby</span> Buddy
-            </h1>
-        </a>
+    <div id="view-{{ request.resolver_match.view_name }}" class="login-container">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <img src="{% static "babybuddy/logo/icon-brand.png" %}"
+                     width="60"
+                     height="60"
+                     class="d-inline-block mb-3"
+                     alt=""
+                     style="filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3)); border-radius: 14px;">
+                <h1 class="login-title">
+                    <span style="color: #818cf8;">Baby</span><span style="color: rgba(255,255,255,0.9);">Buddy</span>
+                </h1>
+            </div>
+            {% include 'babybuddy/messages.html' %}
+            {% block content %}{% endblock %}
+        </div>
     </div>
-    <div class="p-4 rounded text-light">
-        {% include 'babybuddy/messages.html' %}
-        {% block content %}{% endblock %}
-    </div>
-</div>
+
+    <style>
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        background: #0f1117;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 1.25rem;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0;
+    }
+
+    .login-form .input-group {
+        border-radius: 0.625rem;
+        overflow: hidden;
+    }
+
+    .login-form .input-group-text {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .login-form .form-control {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: none;
+        color: rgba(255, 255, 255, 0.9);
+        padding: 0.75rem 1rem;
+    }
+
+    .login-form .form-control:focus {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .login-form .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .login-form .btn-primary {
+        background: #6366f1;
+        border-color: #6366f1;
+        padding: 0.75rem;
+        font-weight: 700;
+        font-size: 1rem;
+        border-radius: 0.625rem;
+        transition: all 0.15s ease;
+    }
+
+    .login-form .btn-primary:hover {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        transform: translateY(-1px);
+    }
+
+    .bg-faded {
+        margin-top: 1rem;
+        background: transparent !important;
+    }
+
+    .bg-faded a {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.85rem;
+        transition: color 0.15s ease;
+    }
+
+    .bg-faded a:hover {
+        color: #818cf8;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    .fade-in:nth-child(1) { animation-delay: 0.05s; }
+    .fade-in:nth-child(2) { animation-delay: 0.1s; }
+    .fade-in:nth-child(3) { animation-delay: 0.15s; }
+    </style>
 {% endblock %}
