@@ -125,18 +125,11 @@
         border-bottom: none;
     }
 
-    &:hover {
-        background: rgba(255, 255, 255, 0.02);
-    }
 }
 
 // Alert cell highlighting
 .status-cell-alert {
     background: rgba(255, 171, 171, 0.04);
-
-    &:hover {
-        background: rgba(255, 171, 171, 0.06);
-    }
 }
 
 .status-emoji {
@@ -173,6 +166,9 @@
     color: rgba(255, 255, 255, 0.45);
     margin-top: 0.125rem;
     line-height: 1.3;
+    text-decoration: none;
+    pointer-events: none;
+    cursor: default;
 }
 
 // ===== Active Timer Card =====
