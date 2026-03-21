@@ -352,6 +352,11 @@ h1 {
         }
     }
 
+    .breadcrumb-item + .breadcrumb-item::before {
+        // Flip separator for RTL: use backslash instead of forward slash
+        content: "\\" !important;
+    }
+
     .dropdown-menu {
         right: 0 !important;
         left: auto !important;
