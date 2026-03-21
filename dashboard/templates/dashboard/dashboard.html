@@ -13,26 +13,28 @@
             {% card_timer_list %}
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12">
-            <div class="row">
+            <div class="row g-3">
                 {% for object in objects %}
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-2 mb-4">
-                        <div class="card">
-                            <a class="text-center" href="{% url 'core:child' object.slug %}">
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="card child-card">
+                            <a class="text-center d-block p-3" href="{% url 'core:child' object.slug %}">
                                 {% if object.picture %}
                                     {% thumbnail '300x300' object.picture as thumb %}
-                                        <img src="{{ thumb.url }}" class="child-photo img-fluid" />
+                                        <img src="{{ thumb.url }}" class="child-photo" />
                                     {% else %}
                                         <img src="{% static 'babybuddy/img/core/child-placeholder.png' %}"
-                                             class="child-photo img-fluid" />
+                                             class="child-photo" />
                                     {% endif %}
                                 </a>
-                                <div class="card-body text-center">
-                                    <h4 class="card-title">{{ object }}</h4>
+                                <div class="card-body text-center pt-0">
+                                    <h4 class="card-title mb-1" style="font-size: 1.25rem; font-weight: 700;">{{ object }}</h4>
                                     <div class="card-text">
-                                        <p>
-                                            {% trans "Born" %} <span class="text-secondary">{{ object.birth_date }}</span>
+                                        <p class="mb-2" style="font-size: 0.85rem;">
+                                            <span style="color: rgba(255,255,255,0.4);">{% trans "Born" %}</span>
+                                            <span style="color: rgba(255,255,255,0.7);">{{ object.birth_date }}</span>
                                             <br />
-                                            {% trans "Age" %} <span class="text-secondary">{{ object.birth_date|timesince }}</span>
+                                            <span style="color: rgba(255,255,255,0.4);">{% trans "Age" %}</span>
+                                            <span style="color: #818cf8; font-weight: 600;">{{ object.birth_date|timesince }}</span>
                                         </p>
                                         {% include 'dashboard/child_button_group.html' %}
                                     </div>

@@ -459,23 +459,6 @@ def card_statistics(context, child):
             }
         )
 
-    naps = _nap_statistics(child)
-    if naps:
-        stats.append(
-            {
-                "type": "duration",
-                "stat": naps["average"],
-                "title": _("Average nap duration"),
-            }
-        )
-        stats.append(
-            {
-                "type": "float",
-                "stat": naps["avg_per_day"],
-                "title": _("Average naps per day"),
-            }
-        )
-
     sleep = _sleep_statistics(child)
     if sleep:
         stats.append(
