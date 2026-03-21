@@ -125,12 +125,20 @@
         const childSlug = '{{ object.slug }}';
         const apiUrl = `/api/webhooks/status/?child=${childSlug}`;
 
+        const i18n = {
+            ago: '{% trans "ago" %}',
+            minutesShort: '{% trans "min" %}',
+            sleep: '{% trans "Sleep" %}',
+            awake: '{% trans "Awake" %}',
+            allGood: '{% trans "All good" %}'
+        };
+
         function formatTimeAgo(minutes) {
             if (!minutes && minutes !== 0) return 'N/A';
             const hours = Math.floor(minutes / 60);
             const mins = Math.round(minutes % 60);
-            if (hours > 0) return `לפני ${hours}:${mins.toString().padStart(2, '0')}`;
-            return `לפני ${mins} דק'`;
+            if (hours > 0) return `${hours}:${mins.toString().padStart(2, '0')} ${i18n.ago}`;
+            return `${mins} ${i18n.minutesShort} ${i18n.ago}`;
         }
 
         function getStatusClass(status) {
@@ -179,10 +187,10 @@
                 sleepPred.textContent = sd.sub_text || '';
 
                 const modes = {
-                    'sleeping':     { icon: '😴', label: 'שינה',  cls: 'text-info' },
-                    'awake':        { icon: '👁️', label: 'ערות',  cls: '' },
-                    'good_night':   { icon: '🌙', label: 'שינה',  cls: 'text-muted' },
-                    'good_morning': { icon: '☀️', label: 'שינה',  cls: 'text-success' }
+                    'sleeping':     { icon: '😴', label: i18n.sleep,  cls: 'text-info' },
+                    'awake':        { icon: '👁️', label: i18n.awake,  cls: '' },
+                    'good_night':   { icon: '🌙', label: i18n.sleep,  cls: 'text-muted' },
+                    'good_morning': { icon: '☀️', label: i18n.sleep,  cls: 'text-success' }
                 };
                 const m = modes[sd.mode] || modes.awake;
                 sleepIcon.textContent = m.icon;
@@ -216,7 +224,7 @@
                 alertTime.textContent = a.time || '';
             } else {
                 alertIcon.textContent = '✅';
-                alertMsg.textContent = 'הכל בסדר';
+                alertMsg.textContent = i18n.allGood;
                 alertMsg.className = 'status-value text-success';
                 alertTime.textContent = '';
             }

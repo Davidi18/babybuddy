@@ -15,28 +15,59 @@
         {% for timer in instances %}
             <li class="list-group-item">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fs-5 fw-bold">{{ timer.name }}</span>
-                    <small class="text-muted">{{ timer.start|time }}</small>
+                    <span class="fs-5 fw-bold">
+                        {% if timer.name %}{{ timer.name }}{% else %}{% trans "Timer" %}{% endif %}
+                        {% if timer.child %}
+                            <small class="text-muted">({{ timer.child }})</small>
+                        {% endif %}
+                    </span>
+                    <span class="badge bg-info timer-elapsed" data-start="{{ timer.start|date:'c' }}">
+                        {{ timer.start|timesince }}
+                    </span>
                 </div>
-                <div class="btn-group w-100" role="group" aria-label="{% trans "Timer controls" %}">
-                    {% if perms.core.change_timer %}
-                        <form action="{% url 'core:timer-stop' timer.id %}" method="post" class="flex-fill">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm w-100">
-                                <i class="icon-stop" aria-hidden="true"></i>
-                                {% trans "Stop" %}
-                            </button>
-                        </form>
-                        <form action="{% url 'core:timer-restart' timer.id %}" method="post" class="flex-fill ms-1">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-secondary btn-sm w-100">
-                                <i class="icon-refresh" aria-hidden="true"></i>
-                                {% trans "Restart" %}
-                            </button>
-                        </form>
-                    {% endif %}
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        {% trans "Started" %}: {{ timer.start|time:"H:i" }}
+                    </small>
+                    <div class="btn-group" role="group" aria-label="{% trans "Timer controls" %}">
+                        {% if perms.core.change_timer %}
+                            <form action="{% url 'core:timer-stop' timer.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="icon-stop" aria-hidden="true"></i>
+                                    {% trans "Stop" %}
+                                </button>
+                            </form>
+                            <form action="{% url 'core:timer-restart' timer.id %}" method="post" class="ms-1">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary btn-sm">
+                                    <i class="icon-refresh" aria-hidden="true"></i>
+                                    {% trans "Restart" %}
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
             </li>
         {% endfor %}
     </ul>
+    <script>
+    (function() {
+        function updateTimers() {
+            document.querySelectorAll('.timer-elapsed').forEach(function(el) {
+                var start = new Date(el.dataset.start);
+                var now = new Date();
+                var diff = Math.floor((now - start) / 1000);
+                var h = Math.floor(diff / 3600);
+                var m = Math.floor((diff % 3600) / 60);
+                var s = diff % 60;
+                el.textContent = (h > 0 ? h + ':' : '') +
+                    (h > 0 ? String(m).padStart(2, '0') : m) + ':' +
+                    String(s).padStart(2, '0');
+            });
+        }
+        updateTimers();
+        setInterval(updateTimers, 1000);
+    })();
+    </script>
 {% endblock %}
