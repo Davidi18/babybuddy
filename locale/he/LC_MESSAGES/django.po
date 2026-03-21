@@ -3031,3 +3031,29 @@ msgstr "מנות תרופה היום"
 msgid "Medication doses (past 7 days)"
 msgstr "מנות תרופה (7 הימים האחרונים)"
 
+msgid "Sleep Prediction"
+msgstr "תחזית שינה"
+
+msgid "Awake for"
+msgstr "ערה כבר"
+
+msgid "Predicted wake window"
+msgstr "חלון ערות צפוי"
+
+msgid "High confidence"
+msgstr "רמת ודאות גבוהה"
+
+msgid "Medium confidence"
+msgstr "רמת ודאות בינונית"
+
+msgid "Age-based estimate"
+msgstr "הערכה לפי גיל"
+
+msgid ""
+"Based on %(samples)s sleep records"
+msgstr ""
+"מבוסס על %(samples)s רישומי שינה"
+
+msgid "No sleep data yet"
+msgstr "אין נתוני שינה עדיין"
+

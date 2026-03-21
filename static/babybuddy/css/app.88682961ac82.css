@@ -12996,9 +12996,15 @@ h1, .h1 {
 .status-cell:nth-last-child(-n+2) {
   border-bottom: none;
 }
+.status-cell:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
 
 .status-cell-alert {
   background: rgba(255, 171, 171, 0.04);
+}
+.status-cell-alert:hover {
+  background: rgba(255, 171, 171, 0.06);
 }
 
 .status-emoji {
@@ -13035,9 +13041,6 @@ h1, .h1 {
   color: rgba(255, 255, 255, 0.45);
   margin-top: 0.125rem;
   line-height: 1.3;
-  text-decoration: none;
-  pointer-events: none;
-  cursor: default;
 }
 
 .card-timer-active {
