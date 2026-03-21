@@ -218,20 +218,25 @@
 // ===== Mobile Styles =====
 @media (max-width: 768px) {
     .navbar {
-        padding: 0.25rem 0.5rem;
+        padding: 0.15rem 0.5rem;
     }
 
     .navbar-brand {
         img {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
         }
     }
 
     .mobile-nav-icon {
         i {
-            font-size: 1.4em;
+            font-size: 1.2em;
         }
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.85rem;
     }
 
     .navbar-collapse {

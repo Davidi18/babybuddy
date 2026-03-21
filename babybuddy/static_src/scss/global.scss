@@ -166,8 +166,8 @@ body {
 .card-header {
     background: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    padding: 0.75rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
@@ -190,11 +190,11 @@ body {
 /* stylelint-enable no-descending-specificity */
 
 .card-body {
-    padding: 1rem;
+    padding: 1.25rem;
 }
 
 .card-title {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     color: rgba(255, 255, 255, 0.9);
 
     strong {
@@ -204,27 +204,29 @@ body {
 
 .card-text {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
+    font-size: 1.05rem;
 }
 
 // ===== Tables =====
 .table {
     --bs-table-bg: transparent;
     --bs-table-color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
 
     thead th {
-        font-size: 0.75rem;
+        font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: rgba(255, 255, 255, 0.45);
         font-weight: 600;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        padding: 0.75rem;
+        padding: 0.875rem;
     }
 
     tbody td, tbody th {
         border-color: rgba(255, 255, 255, 0.03);
         vertical-align: middle;
+        padding: 0.875rem;
     }
 
     &.table-hover tbody tr:hover {
@@ -279,7 +281,7 @@ body {
 
 // ===== Headings (page titles) =====
 h1 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.95);
     margin-bottom: 1.25rem;
@@ -291,7 +293,8 @@ h1 {
     background: transparent;
     border-color: rgba(255, 255, 255, 0.04);
     color: rgba(255, 255, 255, 0.7);
-    font-size: 0.875rem;
+    font-size: 1.05rem;
+    padding: 0.875rem 1.25rem;
 }
 
 // ===== Child Photo =====
