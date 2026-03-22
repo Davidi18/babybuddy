@@ -6,7 +6,7 @@
 body {
     background: #0f1117;
     min-height: 100vh;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
 }
 
 // ===== Breadcrumbs =====
@@ -168,7 +168,7 @@ body {
     background: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     padding: 0.875rem 1.25rem;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
@@ -195,7 +195,7 @@ body {
 }
 
 .card-title {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     color: rgba(255, 255, 255, 0.9);
 
     strong {
@@ -205,17 +205,17 @@ body {
 
 .card-text {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
 }
 
 // ===== Tables =====
 .table {
     --bs-table-bg: transparent;
     --bs-table-color: rgba(255, 255, 255, 0.8);
-    font-size: 1rem;
+    font-size: 1.1rem;
 
     thead th {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: rgba(255, 255, 255, 0.45);
@@ -294,7 +294,7 @@ h1 {
     background: transparent;
     border-color: rgba(255, 255, 255, 0.04);
     color: rgba(255, 255, 255, 0.7);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     padding: 1rem 1.25rem;
 }
 

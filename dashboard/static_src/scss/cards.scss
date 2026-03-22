@@ -3,7 +3,7 @@
 // Modern Dashboard Card Styles
 
 %card-header-text {
-    font-size: 0.85rem;
+    font-size: 1.05rem;
     font-weight: 600;
     line-height: 1.4;
     text-transform: uppercase;
@@ -28,21 +28,21 @@
         margin-bottom: 0;
         background: rgba(255, 255, 255, 0.02);
         border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1.25rem;
     }
 
     .card-body {
-        padding: 1rem;
+        padding: 1.25rem;
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: rgba(255, 255, 255, 0.9);
         }
 
         .card-text {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 1.1rem;
         }
 
         .carousel {
@@ -58,7 +58,8 @@
             color: rgba(255, 255, 255, 0.7);
             background: transparent;
             border-color: rgba(255, 255, 255, 0.04);
-            font-size: 0.85rem;
+            font-size: 1.05rem;
+            padding: 1rem 1.25rem;
         }
     }
 }
