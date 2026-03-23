@@ -24,15 +24,6 @@
                 <span class="quick-btn-icon">🧷</span>
                 <span class="quick-btn-label">{% trans "Diaper" %}</span>
             </a>
-            <a href="{% url 'core:medicationdose-add' %}?child={{ object.slug }}"
-               class="quick-btn quick-btn-medication">
-                <span class="quick-btn-icon">💊</span>
-                <span class="quick-btn-label">{% trans "Medication" %}</span>
-            </a>
-            <form method="post" action="{% url 'core:timer-quick-toggle' 'sleep' object.slug %}" class="d-inline">
-                {% csrf_token %}
-                {% card_timer_quick_start object %}
-            </form>
         </div>
     </div>
 
@@ -93,7 +84,6 @@
          class="row g-3"
          data-masonry='{"percentPosition": true }'>
         <div class="col-sm-6 col-lg-4">{% card_sleep_prediction object %}</div>
-        <div class="col-sm-6 col-lg-4">{% card_medication_last object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_sleep_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_diaperchange_types object %}</div>

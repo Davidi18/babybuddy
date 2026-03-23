@@ -11856,19 +11856,22 @@ textarea.form-control-lg {
 
 .submit-primary {
   display: block;
-  border-radius: 0;
-  width: 100%;
-  padding: 1rem;
+  width: calc(100% - 2rem);
+  max-width: 600px;
+  padding: 1.15rem;
   position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1030;
-  background: #A8D8EA;
-  border-color: #A8D8EA;
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #A8D8EA, #89CFF0);
+  border-color: transparent;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(137, 207, 240, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: #0f1117;
 }
 
 .pill-container {
@@ -11891,11 +11894,16 @@ textarea.form-control-lg {
 
 @media (min-width: 768px) {
   .submit-primary {
-    display: inline-block;
-    border-radius: 0.625rem;
+    display: block;
     width: auto;
-    padding: 0.5rem 1.5rem;
-    position: relative;
+    min-width: 300px;
+    max-width: 400px;
+    padding: 0.875rem 2rem;
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 1rem;
   }
 }
 @media (max-width: 767.98px) {
@@ -11909,6 +11917,7 @@ textarea.form-control-lg {
 
 .advanced-fields {
   padding-right: 0;
+  display: none;
 }
 
 .form-control,
@@ -11962,7 +11971,7 @@ textarea.form-control-lg {
 }
 
 body {
-  background: #0f1117;
+  background: #1a1d23;
   min-height: 100vh;
   font-size: 1.15rem;
 }
@@ -12131,7 +12140,7 @@ body {
 }
 
 .ptr--ptr {
-  background: #111827;
+  background: #1a1d23;
 }
 .ptr--ptr .ptr--text, .ptr--ptr .ptr--icon {
   color: rgba(255, 255, 255, 0.8) !important;
@@ -12405,7 +12414,7 @@ h1, .h1 {
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 .navbar.bg-dark {
-  background: rgba(17, 24, 39, 0.95) !important;
+  background: rgba(26, 29, 35, 0.97) !important;
 }
 
 .navbar-brand {
@@ -12442,9 +12451,10 @@ h1, .h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 0.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.625rem;
+  font-size: 1.3rem;
 }
 .mobile-nav-icon:hover, .mobile-nav-icon:active {
   color: #89CFF0;
@@ -12457,9 +12467,10 @@ h1, .h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 0.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.625rem;
+  font-size: 1.3rem;
 }
 .quick-add-btn:hover {
   color: #a3e4b0 !important;
@@ -12617,20 +12628,20 @@ h1, .h1 {
     height: 28px;
   }
   .mobile-nav-icon {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
   }
   .mobile-nav-icon i {
-    font-size: 1.35em;
+    font-size: 1.5em;
   }
   .quick-add-btn {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
   }
   .quick-add-btn i,
   .text-success i,
   .btn.text-success i {
-    font-size: 1.35em;
+    font-size: 1.5em;
   }
   .navbar-toggler {
     padding: 0.25rem 0.4rem;
@@ -13224,6 +13235,73 @@ h1, .h1 {
   cursor: default;
 }
 
+.sleep-timer-display {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(137, 207, 240, 0.08), rgba(199, 239, 207, 0.05));
+  border: 2px solid rgba(137, 207, 240, 0.3);
+  border-radius: 1.5rem;
+  animation: sleep-display-glow 3s ease-in-out infinite;
+}
+
+.sleep-timer-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.sleep-timer-time {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #89CFF0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-shadow: 0 0 30px rgba(137, 207, 240, 0.3);
+}
+
+.sleep-timer-label {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.sleep-timer-started {
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 400;
+}
+
+.sleep-timer-actions {
+  margin-top: 1rem;
+}
+.sleep-timer-actions .btn {
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+}
+
+@keyframes sleep-display-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(137, 207, 240, 0.08), 0 0 40px rgba(137, 207, 240, 0.04);
+    border-color: rgba(137, 207, 240, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(137, 207, 240, 0.15), 0 0 60px rgba(137, 207, 240, 0.08);
+    border-color: rgba(137, 207, 240, 0.5);
+  }
+}
+@media (max-width: 575px) {
+  .sleep-timer-time {
+    font-size: 3rem;
+  }
+  .sleep-timer-display {
+    padding: 1.5rem 1rem;
+  }
+  .sleep-timer-icon {
+    font-size: 2.5rem;
+  }
+}
 .card-timer-active {
   border-color: rgba(137, 207, 240, 0.4) !important;
   border-width: 2px !important;
@@ -13328,7 +13406,7 @@ h1, .h1 {
     left: 0;
     right: 0;
     z-index: 1050;
-    background: rgba(15, 17, 23, 0.97);
+    background: rgba(26, 29, 35, 0.97);
     backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     padding: 0.5rem 0.75rem;
@@ -13343,35 +13421,21 @@ h1, .h1 {
   .quick-btn {
     flex: 1;
     justify-content: center;
-    padding: 0.6rem 0.25rem;
-    font-size: 0.95rem;
-    gap: 0.35rem;
-    border-radius: 0.75rem;
+    padding: 1rem 0.5rem;
+    font-size: 1.1rem;
+    gap: 0.5rem;
+    border-radius: 1rem;
     flex-direction: column;
     text-align: center;
+    min-height: 4.5rem;
   }
   .quick-btn-icon {
-    font-size: 1.4rem;
+    font-size: 2rem;
   }
   .quick-btn-label {
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     letter-spacing: 0.02em;
-  }
-  .quick-btn-sleep {
-    flex: 1;
-    justify-content: center;
-    padding: 0.6rem 0.25rem;
-    font-size: 0.95rem;
-    gap: 0.35rem;
-    border-radius: 0.75rem;
-    flex-direction: column;
-    text-align: center;
-  }
-  .quick-btn-sleep.active {
-    font-size: 0.95rem;
-    padding: 0.6rem 0.25rem;
-    border-width: 2px;
   }
   .container-fluid, .container-sm, .container-md, .container-lg, .container-xl, .container-xxl {
     padding-bottom: 5.5rem;
