@@ -11971,7 +11971,7 @@ textarea.form-control-lg {
 }
 
 body {
-  background: #1a1d23;
+  background: #1c1f26;
   min-height: 100vh;
   font-size: 1.15rem;
 }
@@ -12140,7 +12140,7 @@ body {
 }
 
 .ptr--ptr {
-  background: #1a1d23;
+  background: #1c1f26;
 }
 .ptr--ptr .ptr--text, .ptr--ptr .ptr--icon {
   color: rgba(255, 255, 255, 0.8) !important;
@@ -12151,7 +12151,7 @@ body {
 }
 
 .modal-content {
-  background: #1f2937;
+  background: #22262e;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 1rem;
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
@@ -12414,7 +12414,7 @@ h1, .h1 {
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 .navbar.bg-dark {
-  background: rgba(26, 29, 35, 0.97) !important;
+  background: rgba(28, 31, 38, 0.97) !important;
 }
 
 .navbar-brand {
@@ -12512,7 +12512,7 @@ h1, .h1 {
   padding: 0.5rem;
   margin-top: 0.375rem;
   backdrop-filter: blur(24px);
-  background: rgba(17, 24, 39, 0.98);
+  background: rgba(28, 31, 38, 0.98);
   animation: dropdownFade 0.2s ease;
   right: 0;
   left: auto;
@@ -13406,7 +13406,7 @@ h1, .h1 {
     left: 0;
     right: 0;
     z-index: 1050;
-    background: rgba(26, 29, 35, 0.97);
+    background: rgba(28, 31, 38, 0.97);
     backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     padding: 0.5rem 0.75rem;
