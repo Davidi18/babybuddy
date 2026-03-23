@@ -1,7 +1,132 @@
 {% load i18n %}
 {% if instances %}
+<style>
+    .sleep-timer-display {
+        text-align: center;
+        padding: 2.5rem 2rem;
+        background: linear-gradient(135deg, rgba(137, 207, 240, 0.12), rgba(168, 130, 255, 0.08));
+        border: 2px solid rgba(137, 207, 240, 0.35);
+        border-radius: 1.5rem;
+        animation: sleepGlow 3s ease-in-out infinite, sleepPulse 4s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+    }
+    .sleep-timer-display::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 30% 40%, rgba(137, 207, 240, 0.08) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 60%, rgba(168, 130, 255, 0.06) 0%, transparent 50%);
+        animation: sleepShimmer 6s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .sleep-timer-icon {
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+        animation: sleepFloat 3s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
+    }
+    .sleep-timer-time {
+        font-size: 5.5rem !important;
+        font-weight: 800 !important;
+        color: #89CFF0 !important;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.02em;
+        line-height: 1.1;
+        text-shadow: 0 0 40px rgba(137, 207, 240, 0.4), 0 0 80px rgba(137, 207, 240, 0.15);
+        background: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        min-width: auto !important;
+        position: relative;
+        z-index: 1;
+    }
+    .sleep-timer-label {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.75rem;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+    }
+    .sleep-timer-started {
+        color: rgba(255, 255, 255, 0.3);
+        font-weight: 400;
+    }
+    .sleep-timer-actions {
+        margin-top: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    .sleep-timer-actions .btn {
+        padding: 0.625rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 0.75rem;
+    }
+    .sleep-zzz {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0;
+        animation: sleepZzz 4s ease-out infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .sleep-zzz:nth-child(1) { left: 15%; top: 30%; animation-delay: 0s; }
+    .sleep-zzz:nth-child(2) { right: 20%; top: 20%; animation-delay: 1.3s; font-size: 1.2rem; }
+    .sleep-zzz:nth-child(3) { left: 25%; bottom: 25%; animation-delay: 2.6s; font-size: 1rem; }
+
+    @keyframes sleepGlow {
+        0%, 100% {
+            box-shadow: 0 0 30px rgba(137, 207, 240, 0.1), 0 0 60px rgba(137, 207, 240, 0.05);
+            border-color: rgba(137, 207, 240, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 50px rgba(137, 207, 240, 0.25), 0 0 100px rgba(137, 207, 240, 0.1), 0 0 150px rgba(168, 130, 255, 0.05);
+            border-color: rgba(137, 207, 240, 0.55);
+        }
+    }
+    @keyframes sleepPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.008); }
+    }
+    @keyframes sleepFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+    }
+    @keyframes sleepShimmer {
+        0%, 100% { transform: rotate(0deg); opacity: 0.6; }
+        50% { transform: rotate(5deg); opacity: 1; }
+    }
+    @keyframes sleepZzz {
+        0% { opacity: 0; transform: translateY(0) scale(0.8); }
+        20% { opacity: 0.4; }
+        80% { opacity: 0; }
+        100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+    }
+
+    @media (max-width: 575px) {
+        .sleep-timer-time {
+            font-size: 4rem !important;
+        }
+        .sleep-timer-display {
+            padding: 2rem 1rem;
+        }
+        .sleep-timer-icon {
+            font-size: 3rem;
+        }
+    }
+</style>
 {% for timer in instances %}
-<div class="sleep-timer-display mb-3" data-start="{{ timer.start|date:'c' }}">
+<div class="sleep-timer-display mb-3">
+    <span class="sleep-zzz">z</span>
+    <span class="sleep-zzz">z</span>
+    <span class="sleep-zzz">z</span>
     <div class="sleep-timer-icon">😴</div>
     <div class="sleep-timer-time timer-elapsed" data-start="{{ timer.start|date:'c' }}">
         {{ timer.start|timesince }}
@@ -10,7 +135,7 @@
         {% if timer.name %}{{ timer.name }}{% else %}{% trans "Sleeping" %}{% endif %}
         <span class="sleep-timer-started">{% trans "since" %} {{ timer.start|time:"H:i" }}</span>
     </div>
-    <div class="sleep-timer-actions mt-2">
+    <div class="sleep-timer-actions">
         {% if perms.core.change_timer %}
             <form action="{% url 'core:timer-stop' timer.id %}" method="post" class="d-inline">
                 {% csrf_token %}
