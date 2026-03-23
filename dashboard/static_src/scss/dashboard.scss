@@ -190,33 +190,38 @@
 // ===== Sleep Timer - Large Prominent Display =====
 .sleep-timer-display {
     text-align: center;
-    padding: 2rem 1.5rem;
-    background: linear-gradient(135deg, rgba(137, 207, 240, 0.08), rgba(199, 239, 207, 0.05));
-    border: 2px solid rgba(137, 207, 240, 0.3);
+    padding: 2.5rem 2rem;
+    background: linear-gradient(135deg, rgba(137, 207, 240, 0.1), rgba(199, 239, 207, 0.06));
+    border: 2px solid rgba(137, 207, 240, 0.35);
     border-radius: 1.5rem;
     animation: sleep-display-glow 3s ease-in-out infinite;
 }
 
 .sleep-timer-icon {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+    font-size: 4rem;
+    margin-bottom: 0.75rem;
     line-height: 1;
 }
 
 .sleep-timer-time {
-    font-size: 4rem;
-    font-weight: 800;
-    color: #89CFF0;
+    font-size: 5.5rem !important;
+    font-weight: 800 !important;
+    color: #89CFF0 !important;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
     line-height: 1.1;
-    text-shadow: 0 0 30px rgba(137, 207, 240, 0.3);
+    text-shadow: 0 0 40px rgba(137, 207, 240, 0.35);
+    background: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: auto !important;
 }
 
 .sleep-timer-label {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     color: rgba(255, 255, 255, 0.6);
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
     font-weight: 600;
 }
 
@@ -226,37 +231,37 @@
 }
 
 .sleep-timer-actions {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
 
     .btn {
-        padding: 0.5rem 1.5rem;
-        font-size: 1rem;
+        padding: 0.625rem 2rem;
+        font-size: 1.1rem;
         border-radius: 0.75rem;
     }
 }
 
 @keyframes sleep-display-glow {
     0%, 100% {
-        box-shadow: 0 0 20px rgba(137, 207, 240, 0.08), 0 0 40px rgba(137, 207, 240, 0.04);
-        border-color: rgba(137, 207, 240, 0.3);
+        box-shadow: 0 0 25px rgba(137, 207, 240, 0.1), 0 0 50px rgba(137, 207, 240, 0.05);
+        border-color: rgba(137, 207, 240, 0.35);
     }
     50% {
-        box-shadow: 0 0 30px rgba(137, 207, 240, 0.15), 0 0 60px rgba(137, 207, 240, 0.08);
-        border-color: rgba(137, 207, 240, 0.5);
+        box-shadow: 0 0 40px rgba(137, 207, 240, 0.2), 0 0 80px rgba(137, 207, 240, 0.1);
+        border-color: rgba(137, 207, 240, 0.55);
     }
 }
 
 @media (max-width: 575px) {
     .sleep-timer-time {
-        font-size: 3rem;
+        font-size: 4rem !important;
     }
 
     .sleep-timer-display {
-        padding: 1.5rem 1rem;
+        padding: 2rem 1rem;
     }
 
     .sleep-timer-icon {
-        font-size: 2.5rem;
+        font-size: 3rem;
     }
 }
 
