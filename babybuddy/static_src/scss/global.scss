@@ -4,7 +4,7 @@
 
 // ===== Body =====
 body {
-    background: #0f1117;
+    background: #1c1f26;
     min-height: 100vh;
     font-size: 1.15rem;
 }
@@ -191,7 +191,7 @@ body {
 
 // ===== PullToRefresh =====
 .ptr--ptr {
-    background: #111827;
+    background: #1c1f26;
     .ptr--text, .ptr--icon {
         color: rgba(255, 255, 255, 0.8) !important;
     }
@@ -204,7 +204,7 @@ body {
 
 // ===== Modals =====
 .modal-content {
-    background: #1f2937;
+    background: #22262e;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 1rem;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);

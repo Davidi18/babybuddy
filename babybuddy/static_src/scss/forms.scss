@@ -22,22 +22,25 @@
     pointer-events: none;
 }
 
-// Full width submit on mobile
+// Full width submit - floating and prominent
 .submit-primary {
     display: block;
-    border-radius: 0;
-    width: 100%;
-    padding: 1rem;
+    width: calc(100% - 2rem);
+    max-width: 600px;
+    padding: 1.15rem;
     position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 1030;
-    background: #A8D8EA;
-    border-color: #A8D8EA;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: -0.01em;
+    background: linear-gradient(135deg, #A8D8EA, #89CFF0);
+    border-color: transparent;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 0.02em;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(137, 207, 240, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: #0f1117;
 }
 
 .pill-container {
@@ -63,11 +66,16 @@
 
 @include media-breakpoint-up(md) {
     .submit-primary {
-        display: inline-block;
-        border-radius: $btn-border-radius;
+        display: block;
         width: auto;
-        padding: 0.5rem 1.5rem;
-        position: relative;
+        min-width: 300px;
+        max-width: 400px;
+        padding: 0.875rem 2rem;
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 1rem;
     }
 }
 
@@ -83,6 +91,7 @@
 
 .advanced-fields {
     padding-right: 0;
+    display: none;
 }
 
 // Modern form inputs

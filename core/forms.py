@@ -166,12 +166,13 @@ class BMIForm(CoreModelForm, TaggableModelForm):
 
 class BottleFeedingForm(CoreModelForm, TaggableModelForm):
     fieldsets = [
-        {"fields": ["child", "type", "start", "amount"], "layout": "required"},
+        {"fields": ["child", "start", "amount"], "layout": "required"},
         {"fields": ["notes", "tags"], "layout": "advanced"},
     ]
 
     def save(self, commit=True):
         instance = super(BottleFeedingForm, self).save(commit=False)
+        instance.type = "formula"
         instance.method = "bottle"
         instance.end = instance.start
         if commit:
@@ -181,11 +182,10 @@ class BottleFeedingForm(CoreModelForm, TaggableModelForm):
 
     class Meta:
         model = models.Feeding
-        fields = ["child", "start", "type", "amount", "notes", "tags"]
+        fields = ["child", "start", "amount", "notes", "tags"]
         widgets = {
             "child": ChildRadioSelect,
             "start": DateTimeInput(),
-            "type": PillRadioSelect(),
             "notes": forms.Textarea(attrs={"rows": 5}),
         }
 
@@ -248,57 +248,29 @@ class DiaperChangeForm(CoreModelForm, TaggableModelForm):
 
 class FeedingForm(CoreModelForm, TaggableModelForm):
     fieldsets = [
-        {"fields": ["child", "start", "end", "type", "method"], "layout": "required"},
+        {"fields": ["child", "start", "end"], "layout": "required"},
         {"fields": ["amount"]},
         {"fields": ["notes", "tags"], "layout": "advanced"},
     ]
 
     class Meta:
         model = models.Feeding
-        fields = ["child", "start", "end", "type", "method", "amount", "notes", "tags"]
+        fields = ["child", "start", "end", "amount", "notes", "tags"]
         widgets = {
             "child": ChildRadioSelect,
             "start": DateTimeInput(),
             "end": DateTimeInput(),
-            "type": PillRadioSelect(),
-            "method": PillRadioSelect(),
             "notes": forms.Textarea(attrs={"rows": 5}),
         }
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-        # Get child from instance or initial data
-        child = None
-        if self.instance and self.instance.pk:
-            child = self.instance.child
-        elif 'child' in self.initial:
-            child_value = self.initial['child']
-            # Check if it's already a Child instance or needs to be fetched
-            if isinstance(child_value, models.Child):
-                child = child_value
-            else:
-                try:
-                    child = models.Child.objects.get(pk=child_value)
-                except (models.Child.DoesNotExist, ValueError, TypeError):
-                    pass
-        
-        # Adjust form based on feeding mode
-        if child and child.feeding_mode == 'bottle_only':
-            # Remove breastfeeding method field
-            if 'method' in self.fields:
-                del self.fields['method']
-            # Update fieldsets to remove method
-            self.fieldsets = [
-                {"fields": ["child", "start", "end", "type"], "layout": "required"},
-                {"fields": ["amount"]},
-                {"fields": ["notes", "tags"], "layout": "advanced"},
-            ]
-            # Make amount required for bottle feeding
-            self.fields['amount'].required = True
-        elif child and child.feeding_mode == 'breast_only':
-            # For breastfeeding only, keep method but make amount optional
-            pass
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.type = "formula"
+        instance.method = "bottle"
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class HeadCircumferenceForm(CoreModelForm, TaggableModelForm):
