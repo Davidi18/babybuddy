@@ -44,6 +44,24 @@ $("form").on("submit", function () {
   $(this).on("submit", preventDoubleSubmit);
 });
 
+/**
+ * Auto-dismiss toast notifications
+ */
+(function () {
+  var overlay = document.getElementById("bb-toast-overlay");
+  if (!overlay) return;
+
+  function dismiss() {
+    overlay.classList.add("bb-toast-hiding");
+    setTimeout(function () {
+      overlay.remove();
+    }, 350);
+  }
+
+  overlay.addEventListener("click", dismiss);
+  setTimeout(dismiss, 2500);
+})();
+
 BabyBuddy.RememberAdvancedToggle = function (ptr) {
   localStorage.setItem("advancedForm", event.newState);
 };

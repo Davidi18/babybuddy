@@ -418,7 +418,99 @@ h1 {
     padding: 0.25em 0.6em;
 }
 
-// ===== Alerts =====
+// ===== Toast Notifications =====
+@keyframes bb-toast-in {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes bb-toast-out {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+}
+
+.bb-toast-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+    animation: bb-toast-in 0.3s ease forwards;
+
+    &.bb-toast-hiding {
+        animation: bb-toast-out 0.35s ease forwards;
+        pointer-events: none;
+    }
+}
+
+.bb-toast {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 2.5rem;
+    border-radius: 1.5rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #0f1117;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+    max-width: 90vw;
+    text-align: center;
+}
+
+.bb-toast-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.bb-toast-text {
+    line-height: 1.4;
+}
+
+.bb-toast-success {
+    background: linear-gradient(135deg, #C7EFCF, #a3e4b0);
+}
+
+.bb-toast-warning {
+    background: linear-gradient(135deg, #FFF3CD, #FFE69C);
+}
+
+.bb-toast-error,
+.bb-toast-danger {
+    background: linear-gradient(135deg, #FFABAB, #FF8A8A);
+}
+
+.bb-toast-info {
+    background: linear-gradient(135deg, #A8D8EA, #89CFF0);
+}
+
+// ===== Alerts (form errors) =====
 .alert {
     border-radius: 0.75rem;
     border: none;

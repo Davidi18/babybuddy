@@ -378,16 +378,8 @@ class BabyAnalytics:
         if not last_sleep:
             return None
 
-        # איפוס ספירה ב-06:00: אם השינה האחרונה הסתיימה לפני 06:00 היום,
-        # נספור ערות מ-06:00 ולא מסוף השינה
-        today_six_am = timezone.make_aware(
-            datetime.datetime.combine(local_now.date(), datetime.time(6, 0))
-        )
-        last_sleep_end = last_sleep["sleep"].end
-        if last_sleep_end < today_six_am:
-            time_awake_minutes = (now - today_six_am).total_seconds() / 60
-        else:
-            time_awake_minutes = last_sleep["time_since_minutes"]
+        # ספירת ערות מאז סוף השינה האחרונה (לפי נתונים אמיתיים)
+        time_awake_minutes = last_sleep["time_since_minutes"]
 
         # שלב 1: חלונות ערות מהנתונים
         wake_windows = self._calculate_wake_windows(days=14)
@@ -670,107 +662,88 @@ class BabyAnalytics:
             name__in=sleep_timer_names,
         ).order_by("-start").first()
 
+        # האם הילדה ישנה כרגע (יש טיימר שינה פעיל)?
         if active_sleep_timer:
             sleep_duration = now - active_sleep_timer.start
             sleep_minutes = sleep_duration.total_seconds() / 60
             hours = int(sleep_minutes // 60)
             mins = int(sleep_minutes % 60)
+
+            # כפתור בוקר טוב: מציגים בין 04:00-08:00 כשהתינוקת ישנה
+            show_gm = 4 <= current_hour < 8
+
             return {
                 "mode": "sleeping",
                 "display_text": f"ישנה כבר {hours}:{mins:02d}",
                 "sub_text": f"נרדמה ב-{timezone.localtime(active_sleep_timer.start).strftime('%H:%M')}",
                 "duration_minutes": round(sleep_minutes, 1),
                 "since": active_sleep_timer.start.isoformat(),
+                "show_goodmorning_btn": show_gm,
+                "show_goodnight_btn": False,
             }
 
-        # התינוק ער - בדיקת שעה ותנומות היום
-        # היום מתחיל ב-06:00 (לא בחצות) - כי זה הזמן שהספירה מתאפסת
-        today_six_am = timezone.make_aware(
-            datetime.datetime.combine(local_now.date(), datetime.time(6, 0))
-        )
+        # מחפשים את השינה האחרונה (ב-24 שעות אחרונות)
+        last_sleep = Sleep.objects.filter(
+            child=self.child,
+            end__gte=now - datetime.timedelta(hours=24),
+        ).order_by("-end").first()
 
-        # אחרי 18:00 - לילה טוב
-        if current_hour >= 18:
-            # סיכום תנומות היום (מ-06:00)
-            today_naps = Sleep.objects.filter(
-                child=self.child,
-                start__gte=today_six_am,
-                nap=True,
-            )
-            nap_count = today_naps.count()
-            total_nap_minutes = sum(
-                s.duration.total_seconds() / 60
-                for s in today_naps
-                if s.duration
-            )
-            if nap_count > 0:
-                hours = int(total_nap_minutes // 60)
-                mins = int(total_nap_minutes % 60)
-                sub = f"היום: {nap_count} תנומות, סה״כ {hours}:{mins:02d}"
+        if last_sleep:
+            # ערה - כמה זמן מאז שהתעוררה
+            awake_duration = now - last_sleep.end
+            awake_minutes = awake_duration.total_seconds() / 60
+            hours = int(awake_minutes // 60)
+            mins = int(awake_minutes % 60)
+
+            last_nap_duration = last_sleep.duration
+            if last_nap_duration:
+                nap_mins = int(last_nap_duration.total_seconds() / 60)
+                nap_h = nap_mins // 60
+                nap_m = nap_mins % 60
+                if nap_h > 0:
+                    sub = f"תנומה אחרונה: {nap_h}:{nap_m:02d}"
+                else:
+                    sub = f"תנומה אחרונה: {nap_m} דקות"
             else:
                 sub = ""
+
+            # כפתור לילה טוב: מציגים בין 17:00-21:00 כשהתינוקת ערה
+            show_gn = 17 <= current_hour < 21
+
+            return {
+                "mode": "awake",
+                "display_text": f"ערה כבר {hours}:{mins:02d}",
+                "sub_text": sub,
+                "duration_minutes": round(awake_minutes, 1),
+                "since": last_sleep.end.isoformat(),
+                "show_goodmorning_btn": False,
+                "show_goodnight_btn": show_gn,
+            }
+
+        # אין שינה ב-24 שעות אחרונות - fallback לפי שעה
+        # כפתור לילה טוב: בין 17:00-21:00, כפתור בוקר טוב: בין 04:00-08:00
+        show_gn = 17 <= current_hour < 21
+        show_gm = 4 <= current_hour < 8
+
+        if current_hour >= 18 or current_hour < 6:
             return {
                 "mode": "good_night",
                 "display_text": "לילה טוב 🌙",
-                "sub_text": sub,
-                "duration_minutes": None,
-                "since": None,
-            }
-
-        # לפני 06:00 - בוקר טוב (עוד לילה)
-        if current_hour < 6:
-            return {
-                "mode": "good_morning",
-                "display_text": "בוקר טוב ☀️",
                 "sub_text": "",
                 "duration_minutes": None,
                 "since": None,
+                "show_goodmorning_btn": show_gm,
+                "show_goodnight_btn": False,
             }
-
-        # בדיקה אם הייתה שינה/תנומה היום (מאז 06:00)
-        today_sleep = Sleep.objects.filter(
-            child=self.child,
-            end__gte=today_six_am,
-        ).order_by("-end").first()
-
-        if not today_sleep:
-            # בוקר טוב - לפני התנומה הראשונה
-            return {
-                "mode": "good_morning",
-                "display_text": "בוקר טוב ☀️",
-                "sub_text": "",
-                "duration_minutes": None,
-                "since": None,
-            }
-
-        # ערה אחרי תנומה - כמה זמן היא ערה
-        # אם השינה האחרונה הסתיימה לפני 06:00, נספור מ-06:00
-        sleep_end = today_sleep.end
-        if sleep_end < today_six_am:
-            sleep_end = today_six_am
-        awake_duration = now - sleep_end
-        awake_minutes = awake_duration.total_seconds() / 60
-        hours = int(awake_minutes // 60)
-        mins = int(awake_minutes % 60)
-
-        last_nap_duration = today_sleep.duration
-        if last_nap_duration:
-            nap_mins = int(last_nap_duration.total_seconds() / 60)
-            nap_h = nap_mins // 60
-            nap_m = nap_mins % 60
-            if nap_h > 0:
-                sub = f"תנומה אחרונה: {nap_h}:{nap_m:02d}"
-            else:
-                sub = f"תנומה אחרונה: {nap_m} דקות"
-        else:
-            sub = ""
 
         return {
-            "mode": "awake",
-            "display_text": f"ערה כבר {hours}:{mins:02d}",
-            "sub_text": sub,
-            "duration_minutes": round(awake_minutes, 1),
-            "since": today_sleep.end.isoformat(),
+            "mode": "good_morning",
+            "display_text": "בוקר טוב ☀️",
+            "sub_text": "",
+            "duration_minutes": None,
+            "since": None,
+            "show_goodmorning_btn": False,
+            "show_goodnight_btn": show_gn,
         }
 
     def get_current_status(self) -> Dict:
