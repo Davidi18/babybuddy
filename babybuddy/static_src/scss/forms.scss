@@ -22,7 +22,19 @@
     pointer-events: none;
 }
 
-// Full width submit - floating and prominent
+// Floating save button – animated glow
+@keyframes submit-glow {
+    0%,
+    100% {
+        box-shadow: 0 8px 32px rgba(137, 207, 240, 0.45),
+            0 0 0 0 rgba(137, 207, 240, 0.35);
+    }
+    50% {
+        box-shadow: 0 8px 40px rgba(137, 207, 240, 0.6),
+            0 0 20px 4px rgba(137, 207, 240, 0.25);
+    }
+}
+
 .submit-primary {
     display: block;
     width: calc(100% - 1.5rem);
@@ -31,17 +43,34 @@
     position: fixed;
     bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(0);
     z-index: 1030;
-    background: linear-gradient(135deg, #A8D8EA, #89CFF0);
-    border-color: transparent;
+    background: linear-gradient(135deg, #7ec8e3 0%, #a8d8ea 40%, #c3aed6 100%);
+    background-size: 200% 200%;
+    border: none;
     font-weight: 800;
     font-size: 1.6rem;
-    letter-spacing: 0.02em;
-    border-radius: 1.25rem;
-    box-shadow: 0 8px 30px rgba(137, 207, 240, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.04em;
+    border-radius: 1.5rem;
     color: #0f1117;
     min-height: 80px;
+    animation: submit-glow 2.5s ease-in-out infinite;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease;
+
+    &:hover,
+    &:focus-visible {
+        transform: translateX(-50%) translateY(-3px);
+        box-shadow: 0 12px 44px rgba(137, 207, 240, 0.65),
+            0 0 24px 6px rgba(137, 207, 240, 0.3);
+        background-position: 100% 100%;
+        animation: none;
+    }
+
+    &:active {
+        transform: translateX(-50%) translateY(1px);
+        box-shadow: 0 4px 18px rgba(137, 207, 240, 0.4);
+        animation: none;
+    }
 }
 
 .pill-container {
@@ -67,18 +96,14 @@
 
 @include media-breakpoint-up(md) {
     .submit-primary {
-        display: block;
         width: auto;
         min-width: 350px;
         max-width: 450px;
-        padding: 1.1rem 2.5rem;
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        border-radius: 1.25rem;
-        font-size: 1.3rem;
-        min-height: 60px;
+        padding: 1.25rem 3rem;
+        bottom: 2.5rem;
+        border-radius: 1.5rem;
+        font-size: 1.35rem;
+        min-height: 64px;
     }
 }
 
