@@ -662,17 +662,24 @@ class BabyAnalytics:
             name__in=sleep_timer_names,
         ).order_by("-start").first()
 
+        # האם הילדה ישנה כרגע (יש טיימר שינה פעיל)?
         if active_sleep_timer:
             sleep_duration = now - active_sleep_timer.start
             sleep_minutes = sleep_duration.total_seconds() / 60
             hours = int(sleep_minutes // 60)
             mins = int(sleep_minutes % 60)
+
+            # כפתור בוקר טוב: מציגים בין 04:00-08:00 כשהתינוקת ישנה
+            show_gm = 4 <= current_hour < 8
+
             return {
                 "mode": "sleeping",
                 "display_text": f"ישנה כבר {hours}:{mins:02d}",
                 "sub_text": f"נרדמה ב-{timezone.localtime(active_sleep_timer.start).strftime('%H:%M')}",
                 "duration_minutes": round(sleep_minutes, 1),
                 "since": active_sleep_timer.start.isoformat(),
+                "show_goodmorning_btn": show_gm,
+                "show_goodnight_btn": False,
             }
 
         # מחפשים את השינה האחרונה (ב-24 שעות אחרונות)
@@ -700,15 +707,24 @@ class BabyAnalytics:
             else:
                 sub = ""
 
+            # כפתור לילה טוב: מציגים בין 17:00-21:00 כשהתינוקת ערה
+            show_gn = 17 <= current_hour < 21
+
             return {
                 "mode": "awake",
                 "display_text": f"ערה כבר {hours}:{mins:02d}",
                 "sub_text": sub,
                 "duration_minutes": round(awake_minutes, 1),
                 "since": last_sleep.end.isoformat(),
+                "show_goodmorning_btn": False,
+                "show_goodnight_btn": show_gn,
             }
 
-        # אין שינה ב-24 שעות אחרונות - בוקר טוב / לילה טוב לפי שעה
+        # אין שינה ב-24 שעות אחרונות - fallback לפי שעה
+        # כפתור לילה טוב: בין 17:00-21:00, כפתור בוקר טוב: בין 04:00-08:00
+        show_gn = 17 <= current_hour < 21
+        show_gm = 4 <= current_hour < 8
+
         if current_hour >= 18 or current_hour < 6:
             return {
                 "mode": "good_night",
@@ -716,6 +732,8 @@ class BabyAnalytics:
                 "sub_text": "",
                 "duration_minutes": None,
                 "since": None,
+                "show_goodmorning_btn": show_gm,
+                "show_goodnight_btn": False,
             }
 
         return {
@@ -724,6 +742,8 @@ class BabyAnalytics:
             "sub_text": "",
             "duration_minutes": None,
             "since": None,
+            "show_goodmorning_btn": False,
+            "show_goodnight_btn": show_gn,
         }
 
     def get_current_status(self) -> Dict:

@@ -27,6 +27,23 @@
         </div>
     </div>
 
+    <!-- Good Night / Good Morning Buttons -->
+    <div id="sleep-mode-buttons" style="display:none;">
+        <form method="post"
+              action="{% url 'core:timer-quick-toggle' timer_type='sleep' child_slug=object.slug %}"
+              id="sleep-mode-form">
+            {% csrf_token %}
+            <button type="submit" class="quick-btn-sleep-mode" id="btn-goodnight" style="display:none;">
+                <span class="sleep-mode-icon">🌙</span>
+                <span class="sleep-mode-label">לילה טוב</span>
+            </button>
+            <button type="submit" class="quick-btn-sleep-mode quick-btn-morning" id="btn-goodmorning" style="display:none;">
+                <span class="sleep-mode-icon">☀️</span>
+                <span class="sleep-mode-label">בוקר טוב</span>
+            </button>
+        </form>
+    </div>
+
     <!-- Live Status Overview -->
     <div class="status-widget mb-3" id="status-card">
         <div id="analytics-loading" class="text-center py-4">
@@ -210,6 +227,21 @@
                 }
             } else {
                 sleepStatus.textContent = '---';
+            }
+
+            // Good Night / Good Morning buttons
+            const sleepModeContainer = document.getElementById('sleep-mode-buttons');
+            const btnGoodnight = document.getElementById('btn-goodnight');
+            const btnGoodmorning = document.getElementById('btn-goodmorning');
+            if (data.sleep_display) {
+                const sd = data.sleep_display;
+                const showGN = sd.show_goodnight_btn || false;
+                const showGM = sd.show_goodmorning_btn || false;
+                btnGoodnight.style.display = showGN ? '' : 'none';
+                btnGoodmorning.style.display = showGM ? '' : 'none';
+                sleepModeContainer.style.display = (showGN || showGM) ? '' : 'none';
+            } else {
+                sleepModeContainer.style.display = 'none';
             }
 
             // Alerts
