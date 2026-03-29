@@ -692,7 +692,6 @@ class TimerQuickToggle(LoginRequiredMixin, RedirectView):
                         child=child,
                         start=active_timer.start,
                         end=end_time,
-                        nap=False,
                     )
 
                 # Mark timer inactive and remove it.
