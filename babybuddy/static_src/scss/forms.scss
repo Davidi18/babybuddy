@@ -25,23 +25,23 @@
 // Full width submit - floating and prominent
 .submit-primary {
     display: block;
-    width: calc(100% - 2rem);
+    width: calc(100% - 1.5rem);
     max-width: 600px;
-    padding: 1.25rem;
+    padding: 1.75rem 2rem;
     position: fixed;
-    bottom: 1.25rem;
+    bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     z-index: 1030;
     background: linear-gradient(135deg, #A8D8EA, #89CFF0);
     border-color: transparent;
     font-weight: 800;
-    font-size: 1.35rem;
+    font-size: 1.6rem;
     letter-spacing: 0.02em;
     border-radius: 1.25rem;
-    box-shadow: 0 6px 25px rgba(137, 207, 240, 0.45), 0 3px 10px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 30px rgba(137, 207, 240, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
     color: #0f1117;
-    min-height: 60px;
+    min-height: 80px;
 }
 
 .pill-container {
