@@ -1945,22 +1945,22 @@ msgstr[1] "%(seconds)s שניות"
 #: core/views.py:35
 #, python-format
 msgid "%(model)s entry for %(child)s added!"
-msgstr "%(model)s נוסף עבור %(child)s!"
+msgstr "רשומת %(model)s עבור %(child)s נוספה בהצלחה!"
 
 #: core/views.py:37 core/views.py:313
 #, python-format
 msgid "%(model)s entry added!"
-msgstr "%(model)s נוסף!"
+msgstr "רשומת %(model)s נוספה בהצלחה!"
 
 #: core/views.py:63 core/views.py:321
 #, python-format
 msgid "%(model)s entry for %(child)s updated."
-msgstr "%(model)s עבור %(child)s התעדכן."
+msgstr "רשומת %(model)s עבור %(child)s עודכנה."
 
 #: core/views.py:65
 #, python-format
 msgid "%(model)s entry updated."
-msgstr "%(model)s התעדכן."
+msgstr "רשומת %(model)s עודכנה."
 
 #: core/views.py:71 core/views.py:146
 #, python-format
@@ -1968,20 +1968,19 @@ msgid "%(model)s entry deleted."
 msgstr "רשומת %(model)s נמחקה."
 
 #: core/views.py:115
-#, fuzzy, python-format
-#| msgid "%(first_name)s %(last_name)s added!"
+#, python-format
 msgid "%(first_name)s %(last_name)s added!"
-msgstr "%(first_name) %(last_name) נוסף!"
+msgstr "%(first_name)s %(last_name)s נוסף!"
 
 #: core/views.py:433
 #, python-format
 msgid "%(model)s reading added!"
-msgstr "%(model)s קריאה נוסף!"
+msgstr "רשומת %(model)s נוספה בהצלחה!"
 
 #: core/views.py:441
 #, python-format
 msgid "%(model)s reading for %(child)s updated."
-msgstr "%(model)s קריאה עבור %(child)s התעדכן."
+msgstr "רשומת %(model)s עבור %(child)s עודכנה."
 
 #: dashboard/templates/cards/breastfeeding.html:4
 msgid "Breastfeeding"
