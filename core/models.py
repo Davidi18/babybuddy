@@ -572,11 +572,29 @@ class Sleep(models.Model):
 
     def save(self, *args, **kwargs):
         if self.nap is None:
-            self.nap = (
+            start_time = timezone.localtime(self.start).time()
+            in_nap_hours = (
                 Sleep.settings.nap_start_min
-                <= timezone.localtime(self.start).time()
+                <= start_time
                 <= Sleep.settings.nap_start_max
             )
+            # Check duration: sleep longer than 3 hours that starts in the
+            # evening (after nap_start_max) or early morning is night sleep.
+            # Short sleeps during nap hours are naps.
+            if self.start and self.end:
+                duration_hours = (self.end - self.start).total_seconds() / 3600
+                if in_nap_hours and duration_hours <= 3:
+                    self.nap = True
+                elif in_nap_hours and duration_hours > 3:
+                    # Long sleep during day - still a nap if it started
+                    # well within daytime hours (08:00-16:00)
+                    self.nap = (
+                        datetime.time(8, 0) <= start_time <= datetime.time(16, 0)
+                    )
+                else:
+                    self.nap = False
+            else:
+                self.nap = in_nap_hours
         if self.start and self.end:
             self.duration = timezone_aware_duration(self.start, self.end)
             # Stop any active sleep timers for this child, since we now have
