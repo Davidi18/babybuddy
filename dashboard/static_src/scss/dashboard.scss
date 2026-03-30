@@ -112,64 +112,93 @@
 }
 
 // ===== Good Night / Good Morning Buttons =====
+@keyframes sleep-mode-glow-night {
+    0%, 100% {
+        box-shadow: 0 8px 32px rgba(74, 63, 138, 0.4), 0 0 0 0 rgba(74, 63, 138, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 40px rgba(74, 63, 138, 0.6), 0 0 20px 4px rgba(74, 63, 138, 0.2);
+    }
+}
+
+@keyframes sleep-mode-glow-morning {
+    0%, 100% {
+        box-shadow: 0 8px 32px rgba(252, 182, 159, 0.4), 0 0 0 0 rgba(252, 182, 159, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 40px rgba(252, 182, 159, 0.6), 0 0 20px 4px rgba(252, 182, 159, 0.2);
+    }
+}
+
 #sleep-mode-buttons {
-    text-align: center;
-    margin-bottom: 1rem;
+    position: fixed;
+    bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1030;
+    width: calc(100% - 1.5rem);
+    max-width: 600px;
 }
 
 .quick-btn-sleep-mode {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.75rem;
-    width: calc(100% - 1rem);
-    max-width: 500px;
-    padding: 1.25rem 2rem;
+    gap: 1rem;
+    width: 100%;
+    padding: 1.5rem 2rem;
     border: none;
-    border-radius: 1.25rem;
-    font-size: 1.4rem;
+    border-radius: 1.5rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
     justify-content: center;
+    min-height: 80px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 
     // Default: Good Night style
-    background: linear-gradient(135deg, #2d2b55, #4a3f8a);
+    background: linear-gradient(135deg, #1a1840, #2d2b55, #4a3f8a);
+    background-size: 200% 200%;
     color: #e8e0ff;
-    box-shadow: 0 6px 24px rgba(74, 63, 138, 0.4);
+    animation: sleep-mode-glow-night 2.5s ease-in-out infinite;
 
     &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 32px rgba(74, 63, 138, 0.55);
+        transform: translateY(-3px);
+        animation: none;
+        box-shadow: 0 12px 44px rgba(74, 63, 138, 0.6), 0 0 24px 6px rgba(74, 63, 138, 0.25);
     }
 
     &:active {
         transform: translateY(1px);
-        box-shadow: 0 3px 12px rgba(74, 63, 138, 0.3);
+        animation: none;
+        box-shadow: 0 4px 16px rgba(74, 63, 138, 0.3);
     }
 }
 
 // Good Morning style override
 .quick-btn-morning {
-    background: linear-gradient(135deg, #ffecd2, #fcb69f);
+    background: linear-gradient(135deg, #ffecd2, #fcb69f, #ff9a76);
+    background-size: 200% 200%;
     color: #5a3e2b;
-    box-shadow: 0 6px 24px rgba(252, 182, 159, 0.4);
+    animation: sleep-mode-glow-morning 2.5s ease-in-out infinite;
 
     &:hover {
-        box-shadow: 0 8px 32px rgba(252, 182, 159, 0.55);
+        animation: none;
+        box-shadow: 0 12px 44px rgba(252, 182, 159, 0.6), 0 0 24px 6px rgba(252, 182, 159, 0.25);
     }
 
     &:active {
-        box-shadow: 0 3px 12px rgba(252, 182, 159, 0.3);
+        animation: none;
+        box-shadow: 0 4px 16px rgba(252, 182, 159, 0.3);
     }
 }
 
 .sleep-mode-icon {
-    font-size: 2rem;
+    font-size: 2.2rem;
 }
 
 .sleep-mode-label {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
 }
 
 // ===== Status Widget =====
