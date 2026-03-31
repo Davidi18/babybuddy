@@ -688,10 +688,12 @@ class TimerQuickToggle(LoginRequiredMixin, RedirectView):
             else:
                 # Normal stop - create the corresponding entry.
                 if timer_type == "sleep":
+                    is_night = request.POST.get("night_sleep") == "1"
                     models.Sleep.objects.create(
                         child=child,
                         start=active_timer.start,
                         end=end_time,
+                        nap=False if is_night else None,
                     )
 
                 # Mark timer inactive and remove it.
