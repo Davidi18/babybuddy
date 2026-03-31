@@ -33,6 +33,7 @@
               action="{% url 'core:timer-quick-toggle' timer_type='sleep' child_slug=object.slug %}"
               id="sleep-mode-form">
             {% csrf_token %}
+            <input type="hidden" name="night_sleep" value="1">
             <button type="submit" class="quick-btn-sleep-mode" id="btn-goodnight" style="display:none;">
                 <span class="sleep-mode-icon">🌙</span>
                 <span class="sleep-mode-label">לילה טוב</span>
