@@ -27,21 +27,25 @@
         </div>
     </div>
 
-    <!-- Good Night / Good Morning Buttons -->
-    <div id="sleep-mode-buttons" style="display:none;">
+    <!-- Good Night / Good Morning Card -->
+    <div id="sleep-mode-card" class="sleep-mode-card mb-3" style="display:none;">
         <form method="post"
               action="{% url 'core:timer-quick-toggle' timer_type='sleep' child_slug=object.slug %}"
               id="sleep-mode-form">
             {% csrf_token %}
             <input type="hidden" name="night_sleep" value="1">
-            <button type="submit" class="quick-btn-sleep-mode" id="btn-goodnight" style="display:none;">
-                <span class="sleep-mode-icon">🌙</span>
-                <span class="sleep-mode-label">לילה טוב</span>
-            </button>
-            <button type="submit" class="quick-btn-sleep-mode quick-btn-morning" id="btn-goodmorning" style="display:none;">
-                <span class="sleep-mode-icon">☀️</span>
-                <span class="sleep-mode-label">בוקר טוב</span>
-            </button>
+            <div id="sleep-mode-card-night" style="display:none;">
+                <div class="sleep-mode-summary" id="night-summary"></div>
+                <button type="submit" class="sleep-mode-btn sleep-mode-btn-night">
+                    <span>🌙</span> לילה טוב
+                </button>
+            </div>
+            <div id="sleep-mode-card-morning" style="display:none;">
+                <div class="sleep-mode-summary" id="morning-summary"></div>
+                <button type="submit" class="sleep-mode-btn sleep-mode-btn-morning">
+                    <span>☀️</span> בוקר טוב
+                </button>
+            </div>
         </form>
     </div>
 
@@ -230,19 +234,42 @@
                 sleepStatus.textContent = '---';
             }
 
-            // Good Night / Good Morning buttons
-            const sleepModeContainer = document.getElementById('sleep-mode-buttons');
-            const btnGoodnight = document.getElementById('btn-goodnight');
-            const btnGoodmorning = document.getElementById('btn-goodmorning');
+            // Good Night / Good Morning card
+            var sleepCard = document.getElementById('sleep-mode-card');
+            var cardNight = document.getElementById('sleep-mode-card-night');
+            var cardMorning = document.getElementById('sleep-mode-card-morning');
             if (data.sleep_display) {
-                const sd = data.sleep_display;
-                const showGN = sd.show_goodnight_btn || false;
-                const showGM = sd.show_goodmorning_btn || false;
-                btnGoodnight.style.display = showGN ? '' : 'none';
-                btnGoodmorning.style.display = showGM ? '' : 'none';
-                sleepModeContainer.style.display = (showGN || showGM) ? '' : 'none';
+                var sd = data.sleep_display;
+                var showGN = sd.show_goodnight_btn || false;
+                var showGM = sd.show_goodmorning_btn || false;
+                cardNight.style.display = showGN ? '' : 'none';
+                cardMorning.style.display = showGM ? '' : 'none';
+                sleepCard.style.display = (showGN || showGM) ? '' : 'none';
+
+                if (showGN && data.day_summary) {
+                    var ds = data.day_summary;
+                    var parts = [];
+                    if (ds.feedings && ds.feedings.count > 0) {
+                        var amt = ds.feedings.total_amount ? ' \u00b7 ' + ds.feedings.total_amount + 'ml' : '';
+                        parts.push('\ud83c\udf7c ' + ds.feedings.count + ' \u05d4\u05d0\u05db\u05dc\u05d5\u05ea' + amt);
+                    }
+                    if (ds.sleep && ds.sleep.naps > 0) {
+                        var h = Math.floor(ds.sleep.total_duration_minutes / 60);
+                        var m = Math.round(ds.sleep.total_duration_minutes % 60);
+                        parts.push('\ud83d\udca4 ' + ds.sleep.naps + ' \u05ea\u05e0\u05d5\u05de\u05d5\u05ea, ' + h + ':' + m.toString().padStart(2, '0'));
+                    }
+                    if (ds.diapers && ds.diapers.count > 0) {
+                        parts.push('\ud83e\uddf7 ' + ds.diapers.count + ' \u05d4\u05d7\u05dc\u05e4\u05d5\u05ea');
+                    }
+                    document.getElementById('night-summary').textContent = parts.join('  \u00b7  ') || '';
+                }
+                if (showGM && sd.duration_minutes) {
+                    var sleepH = Math.floor(sd.duration_minutes / 60);
+                    var sleepM = Math.round(sd.duration_minutes % 60);
+                    document.getElementById('morning-summary').textContent = '\ud83d\udca4 \u05e9\u05e0\u05ea \u05dc\u05d9\u05dc\u05d4: ' + sleepH + ':' + sleepM.toString().padStart(2, '0');
+                }
             } else {
-                sleepModeContainer.style.display = 'none';
+                sleepCard.style.display = 'none';
             }
 
             // Alerts

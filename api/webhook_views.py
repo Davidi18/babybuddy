@@ -172,17 +172,27 @@ def status_webhook(request):
         'last_feeding_minutes_ago': (
             last_feeding['time_since_minutes'] if last_feeding else None
         ),
+        'last_feeding_type': (
+            last_feeding.get('type') if last_feeding else None
+        ),
+        'last_feeding_amount': (
+            last_feeding.get('amount_formatted') if last_feeding else None
+        ),
         'last_sleep_minutes_ago': (
             last_sleep['time_since_minutes'] if last_sleep else None
         ),
         'last_diaper_minutes_ago': (
             last_diaper['time_since_minutes'] if last_diaper else None
         ),
+        'last_diaper_type': (
+            last_diaper.get('type') if last_diaper else None
+        ),
         'next_feeding_status': next_feeding['status'] if next_feeding else None,
         'next_feeding_prediction': next_feeding,
         'next_sleep_status': next_sleep['status'] if next_sleep else None,
         'next_sleep_prediction': next_sleep,
         'sleep_display': sleep_display,
+        'day_summary': analytics.get_daily_summary(),
         'alerts': [],
     }
 
