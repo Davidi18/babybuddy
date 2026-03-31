@@ -18,8 +18,9 @@ venv/
 # Python files.
 *.pyc
 
-# App static file directories.
+# App static file directories (source, not compiled output).
 /*/static
+!/babybuddy/static
 
 # Django media root directory.
 /media
