@@ -422,22 +422,22 @@ h1 {
 @keyframes bb-toast-in {
     0% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.85);
+        transform: scale(0.85);
     }
     100% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform: scale(1);
     }
 }
 
 @keyframes bb-toast-out {
     0% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform: scale(1);
     }
     100% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.85);
+        transform: scale(0.85);
     }
 }
 
@@ -459,10 +459,6 @@ h1 {
 }
 
 .bb-toast {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     gap: 1rem;

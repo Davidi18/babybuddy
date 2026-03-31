@@ -11869,8 +11869,10 @@ textarea.form-control-lg {
   padding: 1.75rem 2rem;
   position: fixed;
   bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%) translateY(0);
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   z-index: 1030;
   background: linear-gradient(135deg, #7ec8e3 0%, #a8d8ea 40%, #c3aed6 100%);
   background-size: 200% 200%;
@@ -11885,13 +11887,13 @@ textarea.form-control-lg {
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease;
 }
 .submit-primary:hover, .submit-primary:focus-visible {
-  transform: translateX(-50%) translateY(-3px);
+  transform: translateY(-3px);
   box-shadow: 0 12px 44px rgba(137, 207, 240, 0.65), 0 0 24px 6px rgba(137, 207, 240, 0.3);
   background-position: 100% 100%;
   animation: none;
 }
 .submit-primary:active {
-  transform: translateX(-50%) translateY(1px);
+  transform: translateY(1px);
   box-shadow: 0 4px 18px rgba(137, 207, 240, 0.4);
   animation: none;
 }
@@ -12362,21 +12364,21 @@ h1, .h1 {
 @keyframes bb-toast-in {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.85);
+    transform: scale(0.85);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
 }
 @keyframes bb-toast-out {
   0% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.85);
+    transform: scale(0.85);
   }
 }
 .bb-toast-overlay {
@@ -12396,10 +12398,6 @@ h1, .h1 {
 }
 
 .bb-toast {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 1rem;
