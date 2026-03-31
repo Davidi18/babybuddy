@@ -669,8 +669,9 @@ class BabyAnalytics:
             hours = int(sleep_minutes // 60)
             mins = int(sleep_minutes % 60)
 
-            # כפתור בוקר טוב: מציגים בין 04:00-08:00 כשהתינוקת ישנה
-            show_gm = 4 <= current_hour < 8
+            # כפתור בוקר טוב: רק בין 04:00-08:00 ורק אם השינה ארוכה (4+ שעות = שינת לילה)
+            is_long_sleep = sleep_minutes >= 240
+            show_gm = 4 <= current_hour < 8 and is_long_sleep
 
             return {
                 "mode": "sleeping",
