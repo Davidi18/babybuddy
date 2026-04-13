@@ -99,13 +99,22 @@ class BabyAnalytics:
         hours = time_since.total_seconds() / 3600
         minutes = (time_since.total_seconds() % 3600) / 60
 
+        amount = last_feeding.amount
+        if amount is not None:
+            amount_formatted = (
+                f"{int(amount)}ml" if amount == int(amount) else f"{amount}ml"
+            )
+        else:
+            amount_formatted = None
+
         return {
             "feeding": last_feeding,
             "time_since_minutes": time_since.total_seconds() / 60,
             "time_since_hours": hours,
             "time_since_formatted": format_time_since(hours),
             "type": last_feeding.type,
-            "amount": last_feeding.amount,
+            "amount": amount,
+            "amount_formatted": amount_formatted,
         }
 
     def predict_next_feeding(self) -> Optional[Dict]:
