@@ -237,13 +237,13 @@
             // Good Night / Good Morning quick button
             var sleepForm = document.getElementById('sleep-mode-form');
             var sleepBtn = document.getElementById('sleep-mode-quick-btn');
-            var sleepIcon = document.getElementById('sleep-mode-icon');
+            var sleepModeIcon = document.getElementById('sleep-mode-icon');
             var sleepModeLabel = document.getElementById('sleep-mode-label');
             var sleepSummary = document.getElementById('sleep-mode-summary');
             if (data.sleep_display) {
-                var sd = data.sleep_display;
-                var showGN = sd.show_goodnight_btn || false;
-                var showGM = sd.show_goodmorning_btn || false;
+                var btnData = data.sleep_display;
+                var showGN = btnData.show_goodnight_btn || false;
+                var showGM = btnData.show_goodmorning_btn || false;
                 if (showGN || showGM) {
                     sleepForm.classList.add('visible');
                     sleepForm.style.display = '';
@@ -254,7 +254,7 @@
 
                 if (showGN) {
                     sleepBtn.className = 'quick-btn quick-btn-sleep-mode quick-btn-night';
-                    sleepIcon.textContent = '\ud83c\udf19';
+                    sleepModeIcon.textContent = '\ud83c\udf19';
                     sleepModeLabel.textContent = '\u05dc\u05d9\u05dc\u05d4 \u05d8\u05d5\u05d1';
                     // Build summary
                     if (data.day_summary) {
@@ -276,11 +276,11 @@
                     }
                 } else if (showGM) {
                     sleepBtn.className = 'quick-btn quick-btn-sleep-mode quick-btn-morning';
-                    sleepIcon.textContent = '\u2600\ufe0f';
+                    sleepModeIcon.textContent = '\u2600\ufe0f';
                     sleepModeLabel.textContent = '\u05d1\u05d5\u05e7\u05e8 \u05d8\u05d5\u05d1';
-                    if (sd.duration_minutes) {
-                        var sleepH = Math.floor(sd.duration_minutes / 60);
-                        var sleepM = Math.round(sd.duration_minutes % 60);
+                    if (btnData.duration_minutes) {
+                        var sleepH = Math.floor(btnData.duration_minutes / 60);
+                        var sleepM = Math.round(btnData.duration_minutes % 60);
                         sleepSummary.textContent = '\ud83d\udca4 ' + sleepH + ':' + sleepM.toString().padStart(2, '0');
                     } else {
                         sleepSummary.textContent = '';
