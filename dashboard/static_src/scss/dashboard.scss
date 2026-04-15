@@ -430,6 +430,107 @@
     top: 70px;
     right: 20px;
     z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: calc(100vw - 40px);
+}
+
+// ===== Custom Toast =====
+.custom-toast {
+    min-width: 320px;
+    max-width: 380px;
+    background: linear-gradient(135deg, rgba(28, 31, 38, 0.98), rgba(38, 41, 50, 0.98));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.95rem;
+    position: relative;
+
+    // Left accent bar
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 4px;
+        background: rgba(137, 207, 240, 0.7);
+    }
+
+    &.toast-danger {
+        border-color: rgba(255, 138, 138, 0.3);
+        &::before { background: linear-gradient(180deg, #ff8a8a, #ff5a5a); }
+    }
+
+    &.toast-warning {
+        border-color: rgba(255, 209, 102, 0.3);
+        &::before { background: linear-gradient(180deg, #ffd166, #ffb347); }
+    }
+
+    &.toast-info {
+        border-color: rgba(137, 207, 240, 0.3);
+        &::before { background: linear-gradient(180deg, #89CFF0, #5BA8D0); }
+    }
+}
+
+.custom-toast-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem 0.5rem 1rem;
+    padding-left: 1.25rem; // extra space for accent bar
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.custom-toast-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.custom-toast-title {
+    flex: 1;
+    font-weight: 700;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.01em;
+}
+
+.custom-toast-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0 0.25rem;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease;
+
+    &:hover {
+        color: rgba(255, 255, 255, 0.95);
+        transform: scale(1.1);
+    }
+}
+
+.custom-toast-body {
+    padding: 0.75rem 1rem 0.85rem 1.25rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.85);
+
+    strong {
+        color: #fff;
+        font-weight: 700;
+    }
+
+    em {
+        font-style: normal;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.92em;
+    }
 }
 
 // ===== RTL Adjustments =====
@@ -442,6 +543,23 @@
     .toast-container-custom {
         right: auto;
         left: 20px;
+    }
+
+    .custom-toast {
+        &::before {
+            left: auto;
+            right: 0;
+        }
+    }
+
+    .custom-toast-header {
+        padding-left: 1rem;
+        padding-right: 1.25rem;
+    }
+
+    .custom-toast-body {
+        padding-left: 1rem;
+        padding-right: 1.25rem;
     }
 }
 
@@ -536,6 +654,20 @@
     .status-amount-badge {
         font-size: 0.85rem;
         padding: 0.05rem 0.4rem;
+    }
+
+    .toast-container-custom {
+        top: auto;
+        bottom: 5.5rem; // above sticky quick-bar
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    .custom-toast {
+        min-width: 0;
+        max-width: none;
+        width: 100%;
     }
 
     // Add padding at the bottom to prevent content hidden behind sticky bar

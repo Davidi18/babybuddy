@@ -340,6 +340,24 @@
         const alertsUrl = '/api/webhooks/alerts/?child={{ object.slug }}';
         var shown = new Set();
 
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatMessage(str) {
+            // First escape HTML to prevent XSS, then convert WhatsApp markdown
+            var safe = escapeHtml(str);
+            // *bold* → <strong>
+            safe = safe.replace(/\*([^*\n]+?)\*/g, '<strong>$1</strong>');
+            // _italic_ → <em>
+            safe = safe.replace(/_([^_\n]+?)_/g, '<em>$1</em>');
+            // Convert newlines to <br>
+            safe = safe.replace(/\n/g, '<br>');
+            return safe;
+        }
+
         function showToast(alert) {
             var c = document.getElementById('toast-container');
             if (!c) {
@@ -349,13 +367,23 @@
                 document.body.appendChild(c);
             }
             var t = document.createElement('div');
-            var bg = 'bg-info', txt = 'text-dark', closeBtn = 'btn-close';
-            if (alert.type === 'overdue' || alert.type === 'overtired') { bg = 'bg-danger'; txt = 'text-white'; closeBtn = 'btn-close btn-close-white'; }
-            else if (alert.type === 'soon' || alert.type === 'getting_tired') { bg = 'bg-warning'; }
-            t.className = 'toast ' + bg + ' ' + txt + ' mb-2';
+            var typeClass = 'toast-info';
+            if (alert.type === 'overdue' || alert.type === 'overtired' || alert.type === 'feeding_overdue') {
+                typeClass = 'toast-danger';
+            } else if (alert.type === 'soon' || alert.type === 'getting_tired' || alert.type === 'diaper_overdue') {
+                typeClass = 'toast-warning';
+            }
+            t.className = 'toast custom-toast ' + typeClass;
             t.setAttribute('role', 'alert');
-            t.style.cssText = 'min-width:300px;border-radius:0.75rem;overflow:hidden;';
-            t.innerHTML = '<div class="toast-header ' + bg + ' ' + txt + '" style="font-size:1rem;padding:0.6rem 0.8rem;border:none;"><strong class="me-auto">' + (alert.icon || '\u26a0\ufe0f') + ' {% filter escapejs %}{% trans "Alert" %}{% endfilter %}</strong><button type="button" class="' + closeBtn + '" data-bs-dismiss="toast"></button></div><div class="toast-body" style="padding:0.8rem;">' + alert.message + '</div>';
+            var icon = alert.icon || '\u26a0\ufe0f';
+            var title = alert.title || '{% filter escapejs %}{% trans "Alert" %}{% endfilter %}';
+            t.innerHTML =
+                '<div class="custom-toast-header">' +
+                    '<span class="custom-toast-icon">' + escapeHtml(icon) + '</span>' +
+                    '<span class="custom-toast-title">' + escapeHtml(title) + '</span>' +
+                    '<button type="button" class="custom-toast-close" data-bs-dismiss="toast" aria-label="Close">&times;</button>' +
+                '</div>' +
+                '<div class="custom-toast-body">' + formatMessage(alert.message) + '</div>';
             c.appendChild(t);
             new bootstrap.Toast(t, { autohide: true, delay: 8000 }).show();
             t.addEventListener('hidden.bs.toast', function() { t.remove(); });
