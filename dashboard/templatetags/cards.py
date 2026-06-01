@@ -269,6 +269,49 @@ def card_feeding_last_method(context, child):
     }
 
 
+@register.inclusion_tag("cards/feeding_prediction.html", takes_context=True)
+def card_feeding_prediction(context, child):
+    """
+    Predicts when the next milk/formula feeding is likely to be needed, based on
+    recent feeding intervals. Solid food tastings are excluded so they do not
+    distort the interval between feedings.
+    :param child: an instance of the Child model.
+    :returns: a dictionary with the feeding prediction.
+    """
+    from core.analytics import BabyAnalytics
+
+    prediction = BabyAnalytics(child).predict_next_feeding(exclude_solids=True)
+
+    return {
+        "type": "feeding",
+        "prediction": prediction,
+        "empty": prediction is None,
+        "hide_empty": _hide_empty(context),
+    }
+
+
+@register.inclusion_tag("cards/feeding_day.html", takes_context=True)
+def card_feeding_day(context, child):
+    """
+    Today's total milk/formula intake and feeding count, compared against the
+    daily average of the previous 7 days. Solid food tastings are excluded so
+    millilitres of milk are not mixed with solid amounts.
+    :param child: an instance of the Child model.
+    :returns: a dictionary with today's feeding summary.
+    """
+    from core.analytics import BabyAnalytics
+
+    summary = BabyAnalytics(child).get_feeding_day_summary(exclude_solids=True)
+    empty = summary["today_count"] == 0 and not summary["has_baseline"]
+
+    return {
+        "type": "feeding",
+        "summary": summary,
+        "empty": empty,
+        "hide_empty": _hide_empty(context),
+    }
+
+
 @register.inclusion_tag("cards/pumping_last.html", takes_context=True)
 def card_pumping_last(context, child):
     """

@@ -195,6 +195,72 @@ class TemplateTagsTestCase(TestCase):
             data["feedings"][2].method, models.Feeding.objects.first().method
         )
 
+    def test_card_feeding_prediction(self):
+        # With no recent feedings there is not enough data to predict.
+        models.Feeding.objects.filter(child=self.child).delete()
+        data = cards.card_feeding_prediction(self.context, self.child)
+        self.assertEqual(data["type"], "feeding")
+        self.assertIsNone(data["prediction"])
+        self.assertTrue(data["empty"])
+
+        # Two recent milk feedings establish an interval, so a prediction
+        # becomes available.
+        now = timezone.now()
+        models.Feeding.objects.create(
+            child=self.child,
+            start=now - timezone.timedelta(hours=4),
+            end=now - timezone.timedelta(hours=4),
+            type="formula",
+            method="bottle",
+            amount=100,
+        )
+        models.Feeding.objects.create(
+            child=self.child,
+            start=now - timezone.timedelta(hours=1),
+            end=now - timezone.timedelta(hours=1),
+            type="formula",
+            method="bottle",
+            amount=100,
+        )
+        data = cards.card_feeding_prediction(self.context, self.child)
+        self.assertIsNotNone(data["prediction"])
+        self.assertIn("status", data["prediction"])
+        self.assertFalse(data["empty"])
+
+    def test_card_feeding_day(self):
+        models.Feeding.objects.filter(child=self.child).delete()
+        now = timezone.localtime()
+        models.Feeding.objects.create(
+            child=self.child,
+            start=now - timezone.timedelta(hours=2),
+            end=now - timezone.timedelta(hours=2),
+            type="formula",
+            method="bottle",
+            amount=80,
+        )
+        models.Feeding.objects.create(
+            child=self.child,
+            start=now - timezone.timedelta(hours=1),
+            end=now - timezone.timedelta(hours=1),
+            type="formula",
+            method="bottle",
+            amount=120,
+        )
+        # A solid food tasting today must be ignored, not summed into the total.
+        models.Feeding.objects.create(
+            child=self.child,
+            start=now - timezone.timedelta(minutes=30),
+            end=now - timezone.timedelta(minutes=30),
+            type="solid food",
+            method="parent fed",
+            amount=999,
+        )
+        data = cards.card_feeding_day(self.context, self.child)
+        self.assertEqual(data["type"], "feeding")
+        self.assertEqual(data["summary"]["today_amount"], 200)
+        self.assertEqual(data["summary"]["today_count"], 2)
+        self.assertFalse(data["empty"])
+
     def test_card_pumping_last(self):
         data = cards.card_pumping_last(self.context, self.child)
         self.assertEqual(data["type"], "pumping")

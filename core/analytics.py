@@ -27,17 +27,21 @@ class BabyAnalytics:
 
     # ==================== Feeding Analytics ====================
 
-    def get_feeding_stats(self, days: int = 7) -> Dict:
+    def get_feeding_stats(self, days: int = 7, exclude_solids: bool = False) -> Dict:
         """
         מחזיר סטטיסטיקות על האכלות בימים האחרונים
         Returns feeding statistics for the last N days
+
+        :param exclude_solids: when True, solid food tastings are ignored so
+            that milk/formula intervals and amounts are not distorted.
         """
         from core.models import Feeding
 
         cutoff = timezone.now() - timedelta(days=days)
-        feedings = Feeding.objects.filter(
-            child=self.child, start__gte=cutoff
-        ).order_by("start")
+        feedings = Feeding.objects.filter(child=self.child, start__gte=cutoff)
+        if exclude_solids:
+            feedings = feedings.exclude(type="solid food")
+        feedings = feedings.order_by("start")
 
         if not feedings.exists():
             return {
@@ -81,16 +85,20 @@ class BabyAnalytics:
             "period_days": days,
         }
 
-    def get_last_feeding_info(self) -> Optional[Dict]:
+    def get_last_feeding_info(self, exclude_solids: bool = False) -> Optional[Dict]:
         """
         מחזיר מידע על האכלה אחרונה וכמה זמן עבר מאז
         Returns info about last feeding and time elapsed
+
+        :param exclude_solids: when True, solid food tastings are ignored so
+            the "last feeding" reflects the last milk/formula feeding.
         """
         from core.models import Feeding
 
-        last_feeding = (
-            Feeding.objects.filter(child=self.child).order_by("-end").first()
-        )
+        last_feeding_qs = Feeding.objects.filter(child=self.child)
+        if exclude_solids:
+            last_feeding_qs = last_feeding_qs.exclude(type="solid food")
+        last_feeding = last_feeding_qs.order_by("-end").first()
 
         if not last_feeding:
             return None
@@ -117,13 +125,16 @@ class BabyAnalytics:
             "amount_formatted": amount_formatted,
         }
 
-    def predict_next_feeding(self) -> Optional[Dict]:
+    def predict_next_feeding(self, exclude_solids: bool = False) -> Optional[Dict]:
         """
         מנבא מתי תהיה ההאכלה הבאה בהתבסס על דפוסים
         Predicts when the next feeding will be based on patterns
+
+        :param exclude_solids: when True, solid food tastings are ignored so the
+            prediction is based purely on milk/formula feedings.
         """
-        stats = self.get_feeding_stats(days=7)
-        last_feeding = self.get_last_feeding_info()
+        stats = self.get_feeding_stats(days=7, exclude_solids=exclude_solids)
+        last_feeding = self.get_last_feeding_info(exclude_solids=exclude_solids)
 
         if not last_feeding or stats["count"] < 2:
             return None
@@ -159,6 +170,72 @@ class BabyAnalytics:
             "estimated_time": next_feeding_time,
             "average_interval_minutes": avg_interval_minutes,
             "confidence": "high" if stats["count"] >= 10 else "medium",
+        }
+
+    def get_feeding_day_summary(self, exclude_solids: bool = True) -> Dict:
+        """
+        מסכם את האכלות היום ומשווה לממוצע היומי של 7 הימים הקודמים
+        Summarizes today's feedings and compares them to the daily average of
+        the previous 7 days.
+
+        :param exclude_solids: when True, solid food tastings are ignored so
+            milk/formula amounts are not mixed with solids (whose "amount" is
+            not comparable to millilitres of milk).
+        """
+        from core.models import Feeding
+
+        now = timezone.localtime()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = today_start - timedelta(days=7)
+
+        base_qs = Feeding.objects.filter(child=self.child)
+        if exclude_solids:
+            base_qs = base_qs.exclude(type="solid food")
+
+        # A feeding counts on the day it finished, matching the behaviour of the
+        # existing "Recent Feedings" card (which groups by ``end``).
+        today_qs = base_qs.filter(end__gte=today_start, end__lte=now)
+        today = today_qs.aggregate(total=Sum("amount"), count=Count("id"))
+        today_amount = today["total"] or 0
+        today_count = today["count"] or 0
+
+        # Previous 7 full days are the comparison baseline.
+        prev_qs = base_qs.filter(end__gte=week_start, end__lt=today_start)
+        prev = prev_qs.aggregate(total=Sum("amount"), count=Count("id"))
+        prev_total = prev["total"] or 0
+        prev_count = prev["count"] or 0
+
+        # Divide only by days that actually have data so a short history (e.g. a
+        # newborn with two days of records) or an occasional empty day does not
+        # drag the average down. Dates are localized for a correct day boundary.
+        days_with_data = {
+            timezone.localtime(end).date()
+            for end in prev_qs.values_list("end", flat=True)
+        }
+        divisor = len(days_with_data) or 1
+
+        avg_amount = prev_total / divisor
+        avg_count = prev_count / divisor
+
+        # Status compares today's running total to the daily average. It only
+        # flags "high" once today meets/exceeds the average and never raises a
+        # "low" alarm on its own, because earlier in the day the cumulative
+        # total is naturally below the full-day average.
+        if avg_amount and today_amount >= avg_amount:
+            status = "high"
+        elif avg_amount and today_amount >= avg_amount * 0.5:
+            status = "normal"
+        else:
+            status = "low"
+
+        return {
+            "today_amount": round(today_amount, 1),
+            "today_count": today_count,
+            "average_amount": round(avg_amount, 1),
+            "average_count": round(avg_count, 1),
+            "baseline_days": len(days_with_data),
+            "has_baseline": len(days_with_data) > 0,
+            "status": status,
         }
 
     # ==================== Sleep Analytics ====================
