@@ -230,6 +230,7 @@ class TemplateTagsTestCase(TestCase):
     def test_card_feeding_day(self):
         models.Feeding.objects.filter(child=self.child).delete()
         now = timezone.localtime()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         models.Feeding.objects.create(
             child=self.child,
             start=now - timezone.timedelta(hours=2),
@@ -255,10 +256,29 @@ class TemplateTagsTestCase(TestCase):
             method="parent fed",
             amount=999,
         )
+        # Baseline: a small early feeding on each of the two previous days. By
+        # this time of day the baby had typically eaten only 50ml, so today's
+        # 200ml puts the pace above average.
+        for days_ago in (1, 2):
+            early = today_start - timezone.timedelta(days=days_ago) + timezone.timedelta(
+                minutes=5
+            )
+            models.Feeding.objects.create(
+                child=self.child,
+                start=early,
+                end=early,
+                type="formula",
+                method="bottle",
+                amount=50,
+            )
+
         data = cards.card_feeding_day(self.context, self.child)
         self.assertEqual(data["type"], "feeding")
         self.assertEqual(data["summary"]["today_amount"], 200)
         self.assertEqual(data["summary"]["today_count"], 2)
+        self.assertTrue(data["summary"]["has_baseline"])
+        self.assertEqual(data["summary"]["expected_amount_by_now"], 50)
+        self.assertEqual(data["summary"]["pace_status"], "above")
         self.assertFalse(data["empty"])
 
     def test_card_pumping_last(self):
