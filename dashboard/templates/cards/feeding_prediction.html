@@ -1,0 +1,34 @@
+{% extends 'cards/base.html' %}
+{% load duration i18n %}
+{% block header %}
+    <a href="{% url "core:feeding-list" %}">{% trans "Next Feeding" %}</a>
+{% endblock %}
+{% block title %}
+    {% if prediction %}
+        {% if prediction.status == "overdue" %}
+            <span class="text-danger">{{ prediction.message }}</span>
+        {% elif prediction.status == "soon" %}
+            <span class="text-warning">{{ prediction.message }}</span>
+        {% elif prediction.status == "upcoming" %}
+            <span class="text-info">{{ prediction.message }}</span>
+        {% else %}
+            <span class="text-success">{{ prediction.message }}</span>
+        {% endif %}
+    {% else %}
+        {% trans "Not enough data yet" %}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    {% if prediction %}
+        <small class="text-body-secondary">
+            {% blocktrans trimmed with interval=prediction.average_interval_minutes|floatformat:0 %}
+                Average interval: {{ interval }} min
+            {% endblocktrans %}
+            {% if prediction.confidence == "high" %}
+                <span class="badge bg-success ms-1">{% trans "High confidence" %}</span>
+            {% else %}
+                <span class="badge bg-warning ms-1">{% trans "Medium confidence" %}</span>
+            {% endif %}
+        </small>
+    {% endif %}
+{% endblock %}
