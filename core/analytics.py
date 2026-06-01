@@ -217,25 +217,45 @@ class BabyAnalytics:
         avg_amount = prev_total / divisor
         avg_count = prev_count / divisor
 
-        # Status compares today's running total to the daily average. It only
-        # flags "high" once today meets/exceeds the average and never raises a
-        # "low" alarm on its own, because earlier in the day the cumulative
-        # total is naturally below the full-day average.
-        if avg_amount and today_amount >= avg_amount:
-            status = "high"
-        elif avg_amount and today_amount >= avg_amount * 0.5:
-            status = "normal"
+        # Time-of-day aware comparison: how much was, on average, already eaten by
+        # this time of day on the baseline days. This avoids the naive "today vs
+        # full-day average", which would always look low in the morning.
+        seconds_into_day = (now - today_start).total_seconds()
+        amount_by_now_per_day = {}
+        for end, amount in prev_qs.values_list("end", "amount"):
+            local_end = timezone.localtime(end)
+            day_start = local_end.replace(hour=0, minute=0, second=0, microsecond=0)
+            if (local_end - day_start).total_seconds() <= seconds_into_day:
+                amount_by_now_per_day[local_end.date()] = amount_by_now_per_day.get(
+                    local_end.date(), 0
+                ) + (amount or 0)
+        expected_amount_by_now = (
+            sum(amount_by_now_per_day.values()) / divisor if days_with_data else 0
+        )
+
+        # Pace status compares today's running total to what was typically eaten
+        # by this time of day. It is only meaningful once a baseline exists and
+        # something is usually eaten by now, so early-morning hours stay neutral.
+        if not days_with_data or expected_amount_by_now <= 0:
+            pace_status = "normal"
         else:
-            status = "low"
+            ratio = today_amount / expected_amount_by_now
+            if ratio >= 1.0:
+                pace_status = "above"
+            elif ratio >= 0.7:
+                pace_status = "normal"
+            else:
+                pace_status = "below"
 
         return {
             "today_amount": round(today_amount, 1),
             "today_count": today_count,
             "average_amount": round(avg_amount, 1),
             "average_count": round(avg_count, 1),
+            "expected_amount_by_now": round(expected_amount_by_now, 1),
             "baseline_days": len(days_with_data),
             "has_baseline": len(days_with_data) > 0,
-            "status": status,
+            "pace_status": pace_status,
         }
 
     # ==================== Sleep Analytics ====================

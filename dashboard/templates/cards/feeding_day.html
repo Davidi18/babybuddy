@@ -1,34 +1,31 @@
 {% extends 'cards/base.html' %}
 {% load duration i18n %}
 {% block header %}
-    <a href="{% url "core:feeding-list" %}">{% trans "Feeding Today" %}</a>
+    <a href="{% url "core:feeding-list" %}">מול הממוצע</a>
 {% endblock %}
 {% block title %}
-    <div class="last-feeding-method text-center">
-        {% if summary.status == "high" %}
-            <span class="text-success">{{ summary.today_amount|floatformat }}</span>
-        {% else %}
-            {{ summary.today_amount|floatformat }}
-        {% endif %}
-    </div>
-    <div class="text-center small">
-        {% if summary.today_count > 0 %}
-            {% blocktrans trimmed count counter=summary.today_count %}
-                {{ counter }} feeding
-            {% plural %}
-                {{ counter }} feedings
-            {% endblocktrans %}
-        {% else %}
-            {% trans "No feedings yet today" %}
-        {% endif %}
-    </div>
+    {% if summary.has_baseline %}
+        <div class="text-center">
+            {% if summary.pace_status == "above" %}
+                <span class="text-success">מעל הממוצע 📈</span>
+            {% elif summary.pace_status == "below" %}
+                <span class="text-warning">מתחת לממוצע 📉</span>
+            {% else %}
+                <span class="text-info">בקצב הרגיל</span>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="text-center">אין עדיין מספיק נתונים</div>
+    {% endif %}
 {% endblock %}
 {% block content %}
     {% if summary.has_baseline %}
+        <div class="text-center small">
+            היום: {{ summary.today_amount|floatformat }} מ״ל
+            · צפוי עד עכשיו: ~{{ summary.expected_amount_by_now|floatformat }} מ״ל
+        </div>
         <div class="text-center small text-body-secondary">
-            {% blocktrans trimmed with amount=summary.average_amount|floatformat feeds=summary.average_count|floatformat %}
-                7-day average: {{ amount }} in {{ feeds }} feedings/day
-            {% endblocktrans %}
+            ממוצע יומי מלא: {{ summary.average_amount|floatformat }} מ״ל · {{ summary.average_count|floatformat }} האכלות
         </div>
     {% endif %}
 {% endblock %}

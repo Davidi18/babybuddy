@@ -1,7 +1,7 @@
 {% extends 'cards/base.html' %}
 {% load duration i18n %}
 {% block header %}
-    <a href="{% url "core:feeding-list" %}">{% trans "Next Feeding" %}</a>
+    <a href="{% url "core:feeding-list" %}">האכלה הבאה</a>
 {% endblock %}
 {% block title %}
     {% if prediction %}
@@ -15,19 +15,17 @@
             <span class="text-success">{{ prediction.message }}</span>
         {% endif %}
     {% else %}
-        {% trans "Not enough data yet" %}
+        אין עדיין מספיק נתונים
     {% endif %}
 {% endblock %}
 {% block content %}
     {% if prediction %}
         <small class="text-body-secondary">
-            {% blocktrans trimmed with interval=prediction.average_interval_minutes|floatformat:0 %}
-                Average interval: {{ interval }} min
-            {% endblocktrans %}
+            מרווח ממוצע בין האכלות: {{ prediction.average_interval_minutes|floatformat:0 }} דקות
             {% if prediction.confidence == "high" %}
-                <span class="badge bg-success ms-1">{% trans "High confidence" %}</span>
+                <span class="badge bg-success ms-1">דיוק גבוה</span>
             {% else %}
-                <span class="badge bg-warning ms-1">{% trans "Medium confidence" %}</span>
+                <span class="badge bg-warning ms-1">דיוק בינוני</span>
             {% endif %}
         </small>
     {% endif %}
