@@ -1,34 +1,21 @@
 {% extends 'cards/base.html' %}
 {% load duration i18n %}
 {% block header %}
-    <a href="{% url "core:feeding-list" %}">{% trans "Feeding Today" %}</a>
+    <a href="{% url "core:feeding-list" %}">השוואה לממוצע</a>
 {% endblock %}
 {% block title %}
-    <div class="last-feeding-method text-center">
-        {% if summary.status == "high" %}
-            <span class="text-success">{{ summary.today_amount|floatformat }}</span>
-        {% else %}
-            {{ summary.today_amount|floatformat }}
-        {% endif %}
-    </div>
-    <div class="text-center small">
-        {% if summary.today_count > 0 %}
-            {% blocktrans trimmed count counter=summary.today_count %}
-                {{ counter }} feeding
-            {% plural %}
-                {{ counter }} feedings
-            {% endblocktrans %}
-        {% else %}
-            {% trans "No feedings yet today" %}
-        {% endif %}
+    <div class="text-center">
+        היום: {{ summary.today_count }} האכלות
     </div>
 {% endblock %}
 {% block content %}
-    {% if summary.has_baseline %}
-        <div class="text-center small text-body-secondary">
-            {% blocktrans trimmed with amount=summary.average_amount|floatformat feeds=summary.average_count|floatformat %}
-                7-day average: {{ amount }} in {{ feeds }} feedings/day
-            {% endblocktrans %}
-        </div>
-    {% endif %}
+    <div class="text-center small text-body-secondary">
+        {% if summary.has_baseline %}
+            ממוצע 7 ימים: {{ summary.average_count|floatformat }} האכלות ביום
+            <br>
+            ({{ summary.average_amount|floatformat }} מ״ל ביום)
+        {% else %}
+            אין עדיין מספיק נתונים להשוואה
+        {% endif %}
+    </div>
 {% endblock %}
