@@ -58,6 +58,7 @@
                             <span id="last-feeding-amount" class="status-amount-badge"></span>
                         </div>
                         <div id="last-feeding-type" class="status-sub"></div>
+                        <div id="last-feeding-prev" class="status-prev"></div>
                     </div>
                 </div>
                 <div class="status-cell" id="cell-diaper">
@@ -134,6 +135,7 @@
             awake: '{% filter escapejs %}{% trans "Awake" %}{% endfilter %}',
             allGood: '{% filter escapejs %}{% trans "All good" %}{% endfilter %}',
             alert: '{% filter escapejs %}{% trans "Alert" %}{% endfilter %}',
+            previous: '{% filter escapejs %}{% trans "Previous" %}{% endfilter %}',
             failedToLoad: '{% filter escapejs %}{% trans "Failed to load status" %}{% endfilter %}'
         };
 
@@ -175,6 +177,7 @@
             const feedingTime = document.getElementById('last-feeding-time');
             const feedingType = document.getElementById('last-feeding-type');
             const feedingAmount = document.getElementById('last-feeding-amount');
+            const feedingPrev = document.getElementById('last-feeding-prev');
             if (data.last_feeding_minutes_ago !== null) {
                 feedingTime.textContent = formatTimeAgo(data.last_feeding_minutes_ago);
                 feedingType.textContent = data.last_feeding_type || '';
@@ -187,6 +190,22 @@
             } else {
                 feedingTime.textContent = '---';
                 feedingAmount.style.display = 'none';
+            }
+
+            // Previous feeding (small, secondary line): amount + time ago
+            if (feedingPrev) {
+                if (data.previous_feeding_minutes_ago != null) {
+                    var prevParts = [];
+                    if (data.previous_feeding_amount) {
+                        prevParts.push(data.previous_feeding_amount);
+                    }
+                    prevParts.push(formatTimeAgo(data.previous_feeding_minutes_ago));
+                    feedingPrev.textContent = i18n.previous + ': ' + prevParts.join(' · ');
+                    feedingPrev.style.display = '';
+                } else {
+                    feedingPrev.textContent = '';
+                    feedingPrev.style.display = 'none';
+                }
             }
 
             // Diaper

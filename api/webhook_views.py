@@ -135,6 +135,7 @@ def status_webhook(request):
 
     # מצב נוכחי בפורמט פשוט
     last_feeding = status.get('last_feeding')
+    previous_feeding = analytics.get_previous_feeding_info()
     last_sleep = status.get('last_sleep')
     last_diaper = status.get('last_diaper')
     next_feeding = status.get('next_feeding_prediction')
@@ -177,6 +178,12 @@ def status_webhook(request):
         ),
         'last_feeding_amount': (
             last_feeding.get('amount_formatted') if last_feeding else None
+        ),
+        'previous_feeding_minutes_ago': (
+            previous_feeding['time_since_minutes'] if previous_feeding else None
+        ),
+        'previous_feeding_amount': (
+            previous_feeding.get('amount_formatted') if previous_feeding else None
         ),
         'last_sleep_minutes_ago': (
             last_sleep['time_since_minutes'] if last_sleep else None
