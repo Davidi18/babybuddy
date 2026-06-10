@@ -13438,6 +13438,15 @@ h1, .h1 {
   cursor: default;
 }
 
+.status-prev {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 0.15rem;
+  line-height: 1.3;
+  pointer-events: none;
+  cursor: default;
+}
+
 .sleep-timer-display {
   text-align: center;
   padding: 2.5rem 2rem;
@@ -13717,6 +13726,9 @@ h1, .h1 {
   }
   .status-sub {
     font-size: 0.85rem;
+  }
+  .status-prev {
+    font-size: 0.75rem;
   }
   .quick-bar {
     position: fixed;

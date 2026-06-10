@@ -125,6 +125,46 @@ class BabyAnalytics:
             "amount_formatted": amount_formatted,
         }
 
+    def get_previous_feeding_info(self, exclude_solids: bool = False) -> Optional[Dict]:
+        """
+        מחזיר מידע על ההאכלה שלפני האחרונה (כמה וכמה זמן עבר מאז)
+        Returns info about the feeding before the last one (amount + time elapsed)
+
+        :param exclude_solids: when True, solid food tastings are ignored.
+        """
+        from core.models import Feeding
+
+        previous_qs = Feeding.objects.filter(child=self.child)
+        if exclude_solids:
+            previous_qs = previous_qs.exclude(type="solid food")
+        # Second most recent feeding (index 1).
+        previous_matches = list(previous_qs.order_by("-end")[1:2])
+        previous_feeding = previous_matches[0] if previous_matches else None
+
+        if not previous_feeding:
+            return None
+
+        time_since = timezone.now() - previous_feeding.end
+        hours = time_since.total_seconds() / 3600
+
+        amount = previous_feeding.amount
+        if amount is not None:
+            amount_formatted = (
+                f"{int(amount)}ml" if amount == int(amount) else f"{amount}ml"
+            )
+        else:
+            amount_formatted = None
+
+        return {
+            "feeding": previous_feeding,
+            "time_since_minutes": time_since.total_seconds() / 60,
+            "time_since_hours": hours,
+            "time_since_formatted": format_time_since(hours),
+            "type": previous_feeding.type,
+            "amount": amount,
+            "amount_formatted": amount_formatted,
+        }
+
     def predict_next_feeding(self, exclude_solids: bool = False) -> Optional[Dict]:
         """
         מנבא מתי תהיה ההאכלה הבאה בהתבסס על דפוסים
