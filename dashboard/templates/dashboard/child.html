@@ -24,6 +24,13 @@
                 <span class="quick-btn-icon">🧷</span>
                 <span class="quick-btn-label">{% trans "Diaper" %}</span>
             </a>
+            {% if perms.core.add_solidfood %}
+                <a href="{% url 'core:solidfood-add' %}?child={{ object.slug }}"
+                   class="quick-btn quick-btn-solidfood">
+                    <span class="quick-btn-icon">🥄</span>
+                    <span class="quick-btn-label">{% trans "Solid Food" %}</span>
+                </a>
+            {% endif %}
             <!-- Dynamic Good Night / Good Morning button -->
             <form method="post"
                   action="{% url 'core:timer-quick-toggle' timer_type='sleep' child_slug=object.slug %}"
@@ -103,6 +110,7 @@
         <div class="col-sm-6 col-lg-4">{% card_sleep_prediction object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_prediction object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_day object %}</div>
+        <div class="col-sm-6 col-lg-4">{% card_feeding_amounts object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_sleep_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_diaperchange_types object %}</div>

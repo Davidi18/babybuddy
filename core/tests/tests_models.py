@@ -162,6 +162,26 @@ class HeadCircumferenceTestCase(TestCase):
         self.assertEqual(self.hc.head_circumference, 13.25)
 
 
+class SolidFoodTestCase(TestCase):
+    def setUp(self):
+        call_command("migrate", verbosity=0)
+        self.child = models.Child.objects.create(
+            first_name="First", last_name="Last", birth_date=timezone.localdate()
+        )
+        self.solid_food = models.SolidFood.objects.create(
+            child=self.child,
+            time=timezone.localtime(),
+            food="Avocado",
+            notes="Loved it!",
+        )
+
+    def test_solid_food_create(self):
+        self.assertEqual(self.solid_food, models.SolidFood.objects.first())
+        self.assertEqual(str(self.solid_food), "Solid Food")
+        self.assertEqual(self.solid_food.food, "Avocado")
+        self.assertEqual(self.solid_food.notes, "Loved it!")
+
+
 class HeightTestCase(TestCase):
     def setUp(self):
         call_command("migrate", verbosity=0)

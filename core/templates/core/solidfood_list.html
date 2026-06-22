@@ -1,0 +1,83 @@
+{% extends 'babybuddy/page.html' %}
+{% load datetime duration misc i18n widget_tweaks %}
+{% block title %}
+    {% trans "Solid Foods" %}
+{% endblock %}
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">{% trans "Solid Foods" %}</li>
+{% endblock %}
+{% block content %}
+    <h1>
+        {% trans "Solid Foods" %}
+        {% if perms.core.add_solidfood %}
+            <a href="{% url 'core:solidfood-add' %}" class="btn btn-sm btn-success">
+                <span aria-hidden="true">🥄</span> {% trans "Add a Solid Food" %}
+            </a>
+        {% endif %}
+    </h1>
+    {% include 'babybuddy/filter.html' %}
+    <div class="table-responsive">
+        <table class="table table-instances table-borderless table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>{% trans "Actions" %}</th>
+                    <th>{% trans "Date" %}</th>
+                    {% if not unique_child %}
+                        <th>{% trans "Child" %}</th>
+                    {% endif %}
+                    <th>{% trans "Food" %}</th>
+                    {% comment %}Abbreviation of "Amount"{% endcomment %}
+                    <th>{% trans "Amt." %}</th>
+                    <th>{% trans "Tags" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solidfood in object_list %}
+                    <tr>
+                        <td>
+                            <div class="btn-group btn-group-sm"
+                                 role="group"
+                                 aria-label="{% trans "Actions" %}">
+                                {% if perms.core.change_solidfood %}
+                                    <a href="{% url 'core:solidfood-update' solidfood.id %}"
+                                       class="btn btn-primary">
+                                        <i class="icon-update" aria-hidden="true"></i>
+                                    </a>
+                                {% endif %}
+                                {% if perms.core.delete_solidfood %}
+                                    <a href="{% url 'core:solidfood-delete' solidfood.id %}"
+                                       class="btn btn-danger">
+                                        <i class="icon-delete" aria-hidden="true"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <th scope="row">{{ solidfood.time|datetime_short }}</th>
+                        {% if not unique_child %}
+                            <td>
+                                <a href="{% url 'core:child' solidfood.child.slug %}">{{ solidfood.child }}</a>
+                            </td>
+                        {% endif %}
+                        <td>{{ solidfood.food }}</td>
+                        <td>
+                            {% if solidfood.amount %}{{ solidfood.amount }}{% endif %}
+                        </td>
+                        <td>{% include "core/render_tag_list.html" with tags=solidfood.tags.all %}</td>
+                    </tr>
+                    {% if solidfood.notes %}
+                        <tr class="{{ row_class }} row-details">
+                            <td colspan="{% if not unique_child %} 6 {% else %} 5 {% endif %}">
+                                <i class="icon-note me-2" aria-hidden="true"></i>{{ solidfood.notes }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% empty %}
+                    <tr>
+                        <th colspan="{% if not unique_child %} 6 {% else %} 5 {% endif %}">{% trans "No solid foods found." %}</th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'babybuddy/paginator.html' %}
+{% endblock %}

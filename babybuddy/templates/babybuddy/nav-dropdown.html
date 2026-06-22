@@ -49,6 +49,12 @@
             {% trans "Feeding" %}
         </a>
     {% endif %}
+    {% if perms.core.add_solidfood %}
+        <a class="dropdown-item py-2 ps-3 pe-2" href="{% url 'core:solidfood-add' %}">
+            <span class="me-1" aria-hidden="true">🥄</span>
+            {% trans "Solid Food" %}
+        </a>
+    {% endif %}
     {% if perms.core.add_pumping %}
         {% load misc %}
         {% get_children_for_pumping as show_pumping %}
@@ -222,6 +228,12 @@
         <a class="dropdown-item{% if '/feedings/' in request.path %} active{% endif %}"
            href="{% url 'core:feeding-list' %}">
             <i class="icon-feeding" aria-hidden="true"></i> {% trans "Feedings" %}
+        </a>
+    {% endif %}
+    {% if perms.core.view_solidfood %}
+        <a class="dropdown-item{% if '/solids/' in request.path %} active{% endif %}"
+           href="{% url 'core:solidfood-list' %}">
+            <span class="me-1" aria-hidden="true">🥄</span> {% trans "Solid Foods" %}
         </a>
     {% endif %}
     {% if perms.core.view_diaperchange %}

@@ -373,6 +373,46 @@ class Feeding(models.Model):
         validate_unique_period(Feeding.objects.filter(child=self.child), self)
 
 
+class SolidFood(models.Model):
+    """
+    Solid food "tasting" tracking - for introducing solid foods. Records what
+    the child tasted, when, and an optional note about the experience.
+    """
+
+    model_name = "solid_food"
+    child = models.ForeignKey(
+        "Child",
+        on_delete=models.CASCADE,
+        related_name="solid_food",
+        verbose_name=_("Child"),
+    )
+    time = models.DateTimeField(
+        blank=False, default=timezone.localtime, null=False, verbose_name=_("Time")
+    )
+    food = models.CharField(
+        max_length=255,
+        verbose_name=_("Food"),
+        help_text=_("What did the child taste? (e.g. Banana, Avocado, Rice)"),
+    )
+    amount = models.FloatField(blank=True, null=True, verbose_name=_("Amount"))
+    notes = models.TextField(blank=True, null=True, verbose_name=_("Notes"))
+    tags = TaggableManager(blank=True, through=Tagged)
+
+    objects = models.Manager()
+
+    class Meta:
+        default_permissions = ("view", "add", "change", "delete")
+        ordering = ["-time"]
+        verbose_name = _("Solid Food")
+        verbose_name_plural = _("Solid Foods")
+
+    def __str__(self):
+        return str(_("Solid Food"))
+
+    def clean(self):
+        validate_time(self.time, "time")
+
+
 class HeadCircumference(models.Model):
     model_name = "head_circumference"
     child = models.ForeignKey(

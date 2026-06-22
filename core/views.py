@@ -239,6 +239,35 @@ class FeedingDelete(CoreDeleteView):
     success_url = reverse_lazy("core:feeding-list")
 
 
+class SolidFoodList(
+    PermissionRequiredMixin, BabyBuddyPaginatedView, BabyBuddyFilterView
+):
+    model = models.SolidFood
+    template_name = "core/solidfood_list.html"
+    permission_required = ("core.view_solidfood",)
+    filterset_class = filters.SolidFoodFilter
+
+
+class SolidFoodAdd(CoreAddView):
+    model = models.SolidFood
+    permission_required = ("core.add_solidfood",)
+    form_class = forms.SolidFoodForm
+    success_url = reverse_lazy("core:solidfood-list")
+
+
+class SolidFoodUpdate(CoreUpdateView):
+    model = models.SolidFood
+    permission_required = ("core.change_solidfood",)
+    form_class = forms.SolidFoodForm
+    success_url = reverse_lazy("core:solidfood-list")
+
+
+class SolidFoodDelete(CoreDeleteView):
+    model = models.SolidFood
+    permission_required = ("core.delete_solidfood",)
+    success_url = reverse_lazy("core:solidfood-list")
+
+
 class HeadCircumferenceList(
     PermissionRequiredMixin, BabyBuddyPaginatedView, BabyBuddyFilterView
 ):

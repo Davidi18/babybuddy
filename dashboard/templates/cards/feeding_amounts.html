@@ -1,0 +1,78 @@
+{% extends 'cards/base.html' %}
+{% load i18n %}
+{% block header %}
+    <a href="{% url "core:feeding-list" %}">{% trans "Feeding Amounts" %}</a>
+{% endblock %}
+{% block title %}
+    {% if empty %}
+        {% trans "None" %}
+    {% else %}
+        &nbsp;
+    {% endif %}
+{% endblock %}
+{% block content %}
+    {% if not empty %}
+        <ul class="nav nav-pills nav-fill nav-justified mb-3"
+            id="feeding-amounts-tabs-{{ child.id }}"
+            role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active py-1"
+                        id="feeding-amounts-week-tab-{{ child.id }}"
+                        data-bs-toggle="pill"
+                        data-bs-target="#feeding-amounts-week-{{ child.id }}"
+                        type="button"
+                        role="tab">{% trans "Week" %}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link py-1"
+                        id="feeding-amounts-month-tab-{{ child.id }}"
+                        data-bs-toggle="pill"
+                        data-bs-target="#feeding-amounts-month-{{ child.id }}"
+                        type="button"
+                        role="tab">{% trans "Month" %}</button>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active"
+                 id="feeding-amounts-week-{{ child.id }}"
+                 role="tabpanel">
+                <div class="d-flex justify-content-between align-items-end"
+                     style="height: 130px; gap: 4px;">
+                    {% for day in week %}
+                        <div class="d-flex flex-column align-items-center justify-content-end"
+                             style="flex: 1 1 0; height: 100%;"
+                             title="{{ day.date|date:'D, M j' }}: {{ day.total|floatformat:'0' }}">
+                            <small class="text-light">{% if day.total %}{{ day.total|floatformat:'0' }}{% endif %}</small>
+                            <div class="w-100 rounded-top bg-info"
+                                 style="height: {{ day.pct }}%; min-height: 2px;"></div>
+                            <small class="text-body-secondary mt-1">{{ day.date|date:'D'|slice:':1' }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center small mt-3">
+                    {% trans "Total" %} {{ week_total|floatformat:'0' }} · {% trans "Daily average" %} {{ week_avg|floatformat:'0' }}
+                </div>
+            </div>
+            <div class="tab-pane fade"
+                 id="feeding-amounts-month-{{ child.id }}"
+                 role="tabpanel">
+                <div class="d-flex justify-content-between align-items-end"
+                     style="height: 130px; gap: 8px;">
+                    {% for bucket in month %}
+                        <div class="d-flex flex-column align-items-center justify-content-end"
+                             style="flex: 1 1 0; height: 100%;"
+                             title="{{ bucket.start|date:'M j' }} – {{ bucket.end|date:'M j' }}: {{ bucket.total|floatformat:'0' }}">
+                            <small class="text-light">{% if bucket.total %}{{ bucket.total|floatformat:'0' }}{% endif %}</small>
+                            <div class="w-100 rounded-top bg-success"
+                                 style="height: {{ bucket.pct }}%; min-height: 2px;"></div>
+                            <small class="text-body-secondary mt-1">{{ bucket.start|date:'M j' }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center small mt-3">
+                    {% trans "Total" %} {{ month_total|floatformat:'0' }} · {% trans "Daily average" %} {{ month_avg|floatformat:'0' }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -194,6 +194,12 @@ class HeightSerializer(CoreModelSerializer, TaggableSerializer):
         fields = ("id", "child", "height", "date", "notes", "tags")
 
 
+class SolidFoodSerializer(CoreModelSerializer, TaggableSerializer):
+    class Meta:
+        model = models.SolidFood
+        fields = ("id", "child", "time", "food", "amount", "notes", "tags")
+
+
 class NoteSerializer(CoreModelSerializer, TaggableSerializer):
     class Meta:
         model = models.Note
