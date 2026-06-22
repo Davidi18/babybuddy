@@ -1,5 +1,5 @@
 {% extends 'cards/base.html' %}
-{% load i18n %}
+{% load i18n humanize %}
 {% block header %}
     <a href="{% url "core:feeding-list" %}">{% trans "Feeding Amounts" %}</a>
 {% endblock %}
@@ -12,6 +12,18 @@
 {% endblock %}
 {% block content %}
     {% if not empty %}
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs>
+            <linearGradient id="feeding-bar-gradient" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#a9defa" />
+            <stop offset="100%" stop-color="#6fb8e8" />
+            </linearGradient>
+            <linearGradient id="feeding-area-gradient" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#7cc5ef" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#7cc5ef" stop-opacity="0" />
+            </linearGradient>
+            </defs>
+        </svg>
         <ul class="nav nav-pills nav-fill nav-justified mb-3"
             id="feeding-amounts-tabs-{{ child.id }}"
             role="tablist">
@@ -36,47 +48,47 @@
             <div class="tab-pane fade show active"
                  id="feeding-amounts-week-{{ child.id }}"
                  role="tabpanel">
-                <div class="d-flex justify-content-between align-items-end"
-                     style="height: 130px;
-                            gap: 4px">
-                    {% for day in week %}
-                        <div class="d-flex flex-column align-items-center justify-content-end"
-                             style="flex: 1 1 0;
-                                    height: 100%"
-                             title="{{ day.date|date:'D, M j' }}: {{ day.total|floatformat:'0' }}">
-                            <small class="text-light">{% if day.total %}{{ day.total|floatformat:'0' }}{% endif %}</small>
-                            <div class="w-100 rounded-top bg-info"
-                                 style="height: {{ day.pct }}%;
-                                        min-height: 2px"></div>
-                            <small class="text-body-secondary mt-1">{{ day.date|date:'D'|slice:':1' }}</small>
-                        </div>
+                <svg viewBox="0 0 {{ chart_width }} {{ chart_height }}"
+                     style="display: block;
+                            width: 100%;
+                            height: auto"
+                     role="img">
+                    <line x1="14" x2="{{ chart_width|add:'-14' }}" y1="{{ chart_baseline }}" y2="{{ chart_baseline }}" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+                    {% for bar in week_bars %}
+                        <rect x="{{ bar.x }}" y="{{ bar.y }}" width="{{ bar.width }}" height="{{ bar.height }}" rx="4" fill="url(#feeding-bar-gradient)" />
+                        {% if bar.total %}
+                            <text x="{{ bar.center }}" y="{{ bar.label_y }}" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.85)">{{ bar.total|floatformat:'0' }}</text>
+                        {% endif %}
+                        <text x="{{ bar.center }}" y="{{ chart_height|add:'-7' }}" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.5)">{{ bar.date|date:'D'|slice:':1' }}</text>
                     {% endfor %}
-                </div>
+                </svg>
                 <div class="text-center small mt-3">
-                    {% trans "Total" %} {{ week_total|floatformat:'0' }} · {% trans "Daily average" %} {{ week_avg|floatformat:'0' }}
+                    {% trans "Total" %} {{ week_total|floatformat:'0'|intcomma }} · {% trans "Daily average" %} {{ week_avg|floatformat:'0'|intcomma }}
                 </div>
             </div>
             <div class="tab-pane fade"
                  id="feeding-amounts-month-{{ child.id }}"
                  role="tabpanel">
-                <div class="d-flex justify-content-between align-items-end"
-                     style="height: 130px;
-                            gap: 8px">
-                    {% for bucket in month %}
-                        <div class="d-flex flex-column align-items-center justify-content-end"
-                             style="flex: 1 1 0;
-                                    height: 100%"
-                             title="{{ bucket.start|date:'M j' }} – {{ bucket.end|date:'M j' }}: {{ bucket.total|floatformat:'0' }}">
-                            <small class="text-light">{% if bucket.total %}{{ bucket.total|floatformat:'0' }}{% endif %}</small>
-                            <div class="w-100 rounded-top bg-success"
-                                 style="height: {{ bucket.pct }}%;
-                                        min-height: 2px"></div>
-                            <small class="text-body-secondary mt-1">{{ bucket.start|date:'M j' }}</small>
-                        </div>
+                <svg viewBox="0 0 {{ chart_width }} {{ chart_height }}"
+                     style="display: block;
+                            width: 100%;
+                            height: auto"
+                     role="img">
+                    <line x1="14" x2="{{ chart_width|add:'-14' }}" y1="{{ chart_baseline }}" y2="{{ chart_baseline }}" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+                    <path d="{{ month_area_path }}" fill="url(#feeding-area-gradient)" />
+                    <polyline points="{{ month_line_points }}" fill="none" stroke="#7cc5ef" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    {% if month_last %}
+                        <circle cx="{{ month_last.x }}" cy="{{ month_last.y }}" r="3.5" fill="#ffffff" stroke="#7cc5ef" stroke-width="2" />
+                        {% if month_last.total %}
+                            <text x="{{ month_last.x }}" y="{{ month_last.y|add:'-8' }}" text-anchor="end" font-size="11" fill="rgba(255,255,255,0.85)">{{ month_last.total|floatformat:'0' }}</text>
+                        {% endif %}
+                    {% endif %}
+                    {% for point in month_axis %}
+                        <text x="{{ point.x }}" y="{{ chart_height|add:'-7' }}" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.5)">{{ point.date|date:'j/n' }}</text>
                     {% endfor %}
-                </div>
+                </svg>
                 <div class="text-center small mt-3">
-                    {% trans "Total" %} {{ month_total|floatformat:'0' }} · {% trans "Daily average" %} {{ month_avg|floatformat:'0' }}
+                    {% trans "Daily average" %} {{ month_avg|floatformat:'0'|intcomma }} · {% trans "Total" %} {{ month_total|floatformat:'0'|intcomma }}
                 </div>
             </div>
         </div>

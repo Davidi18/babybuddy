@@ -3110,3 +3110,7 @@ msgstr "חודש"
 #: core (solid food feature)
 msgid "Daily average"
 msgstr "ממוצע יומי"
+
+#: core (solid food feature)
+msgid "A short description of how much was eaten (e.g. a spoon, a little, half a jar)"
+msgstr "תיאור קצר של כמה היא אכלה (למשל כף, מעט, חצי צנצנת)"
