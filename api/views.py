@@ -77,6 +77,14 @@ class HeightViewSet(viewsets.ModelViewSet):
     ordering = "-date"
 
 
+class SolidFoodViewSet(viewsets.ModelViewSet):
+    queryset = models.SolidFood.objects.all()
+    serializer_class = serializers.SolidFoodSerializer
+    filterset_class = filters.SolidFoodFilter
+    ordering_fields = ("child", "time", "food")
+    ordering = "-time"
+
+
 class NoteViewSet(viewsets.ModelViewSet):
     queryset = models.Note.objects.all()
     serializer_class = serializers.NoteSerializer

@@ -87,6 +87,22 @@ class ViewsTestCase(TestCase):
         page = self.c.get("/feedings/{}/delete/".format(entry.id))
         self.assertEqual(page.status_code, 200)
 
+    def test_solidfood_views(self):
+        page = self.c.get("/solids/")
+        self.assertEqual(page.status_code, 200)
+        page = self.c.get("/solids/add/")
+        self.assertEqual(page.status_code, 200)
+
+        entry = models.SolidFood.objects.create(
+            child=models.Child.objects.first(),
+            time=timezone.localtime(),
+            food="Banana",
+        )
+        page = self.c.get("/solids/{}/".format(entry.id))
+        self.assertEqual(page.status_code, 200)
+        page = self.c.get("/solids/{}/delete/".format(entry.id))
+        self.assertEqual(page.status_code, 200)
+
     def test_headcircumference_views(self):
         page = self.c.get("/head-circumference/")
         self.assertEqual(page.status_code, 200)

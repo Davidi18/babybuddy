@@ -222,6 +222,75 @@ def card_feeding_recent(context, child, end_date=None):
     }
 
 
+@register.inclusion_tag("cards/feeding_amounts.html", takes_context=True)
+def card_feeding_amounts(context, child):
+    """
+    A bar chart of total feeding amounts for the last week (per day) and the
+    last month (per week).
+    :param child: an instance of the Child model.
+    :returns: a dictionary with the daily/weekly totals and summary stats.
+    """
+    now = timezone.localtime()
+    today = now.date()
+
+    # Last 7 days, oldest first, keyed by date.
+    week_days = [today - timezone.timedelta(days=i) for i in range(6, -1, -1)]
+    week_totals = collections.OrderedDict((d, 0.0) for d in week_days)
+
+    # Last 4 weeks (28 days) split into 7-day buckets, oldest first.
+    month_start = today - timezone.timedelta(days=27)
+    month_buckets = []
+    for w in range(4):
+        bucket_start = month_start + timezone.timedelta(days=7 * w)
+        month_buckets.append(
+            {
+                "start": bucket_start,
+                "end": bucket_start + timezone.timedelta(days=6),
+                "total": 0.0,
+            }
+        )
+
+    range_start = now - timezone.timedelta(days=28)
+    instances = models.Feeding.objects.filter(
+        child=child, end__range=[range_start, now]
+    )
+
+    for instance in instances:
+        date = timezone.localtime(instance.end).date()
+        amount = instance.amount or 0
+        if date in week_totals:
+            week_totals[date] += amount
+        delta = (date - month_start).days
+        if 0 <= delta < 28:
+            month_buckets[delta // 7]["total"] += amount
+
+    week = [{"date": d, "total": round(t, 1)} for d, t in week_totals.items()]
+    week_max = max([item["total"] for item in week] + [0])
+    for item in week:
+        item["pct"] = (item["total"] / week_max * 100) if week_max else 0
+
+    month_max = max([bucket["total"] for bucket in month_buckets] + [0])
+    for bucket in month_buckets:
+        bucket["total"] = round(bucket["total"], 1)
+        bucket["pct"] = (bucket["total"] / month_max * 100) if month_max else 0
+
+    week_total = round(sum(item["total"] for item in week), 1)
+    month_total = round(sum(bucket["total"] for bucket in month_buckets), 1)
+
+    return {
+        "type": "feeding",
+        "child": child,
+        "week": week,
+        "month": month_buckets,
+        "week_total": week_total,
+        "month_total": month_total,
+        "week_avg": round(week_total / 7, 1),
+        "month_avg": round(month_total / 28, 1),
+        "empty": week_total == 0 and month_total == 0,
+        "hide_empty": _hide_empty(context),
+    }
+
+
 @register.inclusion_tag("cards/feeding_last.html", takes_context=True)
 def card_feeding_last(context, child):
     """

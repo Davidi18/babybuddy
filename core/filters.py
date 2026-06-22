@@ -39,6 +39,12 @@ class HeadCircumferenceFilter(TagFilter):
         fields = ["child"]
 
 
+class SolidFoodFilter(TagFilter):
+    class Meta:
+        model = models.SolidFood
+        fields = ["child"]
+
+
 class HeightFilter(TagFilter):
     class Meta:
         model = models.Height

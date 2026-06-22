@@ -3065,3 +3065,48 @@ msgstr "דק׳"
 msgid "Failed to load status"
 msgstr "טעינת הסטטוס נכשלה"
 
+
+
+#: core (solid food feature)
+msgid "Solid Food"
+msgstr "טעימה"
+
+#: core (solid food feature)
+msgid "Solid Foods"
+msgstr "טעימות"
+
+#: core (solid food feature)
+msgid "Add a Solid Food"
+msgstr "הוספת טעימה"
+
+#: core (solid food feature)
+msgid "Delete a Solid Food"
+msgstr "מחיקת טעימה"
+
+#: core (solid food feature)
+msgid "Food"
+msgstr "מאכל"
+
+#: core (solid food feature)
+msgid "No solid foods found."
+msgstr "לא נמצאו טעימות."
+
+#: core (solid food feature)
+msgid "What did the child taste? (e.g. Banana, Avocado, Rice)"
+msgstr "מה הילד/ה טעמ/ה? (למשל בננה, אבוקדו, אורז)"
+
+#: core (solid food feature)
+msgid "%(child)s tasted %(food)s."
+msgstr "%(child)s טעמ/ה %(food)s."
+
+#: core (solid food feature)
+msgid "Week"
+msgstr "שבוע"
+
+#: core (solid food feature)
+msgid "Month"
+msgstr "חודש"
+
+#: core (solid food feature)
+msgid "Daily average"
+msgstr "ממוצע יומי"

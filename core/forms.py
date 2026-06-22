@@ -269,6 +269,22 @@ class FeedingForm(CoreModelForm, TaggableModelForm):
         return instance
 
 
+class SolidFoodForm(CoreModelForm, TaggableModelForm):
+    fieldsets = [
+        {"fields": ["child", "time", "food"], "layout": "required"},
+        {"fields": ["amount"]},
+    ]
+
+    class Meta:
+        model = models.SolidFood
+        fields = ["child", "time", "food", "amount", "notes", "tags"]
+        widgets = {
+            "child": ChildRadioSelect,
+            "time": DateTimeInput(),
+            "notes": forms.Textarea(attrs={"rows": 5}),
+        }
+
+
 class HeadCircumferenceForm(CoreModelForm, TaggableModelForm):
     fieldsets = [
         {

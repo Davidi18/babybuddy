@@ -51,6 +51,18 @@ urlpatterns = [
         views.FeedingDelete.as_view(),
         name="feeding-delete",
     ),
+    path("solids/", views.SolidFoodList.as_view(), name="solidfood-list"),
+    path("solids/add/", views.SolidFoodAdd.as_view(), name="solidfood-add"),
+    path(
+        "solids/<int:pk>/",
+        views.SolidFoodUpdate.as_view(),
+        name="solidfood-update",
+    ),
+    path(
+        "solids/<int:pk>/delete/",
+        views.SolidFoodDelete.as_view(),
+        name="solidfood-delete",
+    ),
     path("notes/", views.NoteList.as_view(), name="note-list"),
     path("notes/add/", views.NoteAdd.as_view(), name="note-add"),
     path("notes/<int:pk>/", views.NoteUpdate.as_view(), name="note-update"),

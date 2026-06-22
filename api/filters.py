@@ -81,6 +81,12 @@ class NoteFilter(TimeFieldFilter, TagsFieldFilter):
         model = models.Note
 
 
+class SolidFoodFilter(TimeFieldFilter, TagsFieldFilter):
+    class Meta(TimeFieldFilter.Meta):
+        model = models.SolidFood
+        fields = sorted(TimeFieldFilter.Meta.fields + ["food", "amount"])
+
+
 class PumpingFilter(StartEndFieldFilter):
     class Meta(StartEndFieldFilter.Meta):
         model = models.Pumping

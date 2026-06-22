@@ -128,6 +128,28 @@ class FeedingAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
     resource_class = FeedingImportExportResource
 
 
+class SolidFoodImportExportResource(ImportExportResourceBase):
+    class Meta:
+        model = models.SolidFood
+
+
+@admin.register(models.SolidFood)
+class SolidFoodAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
+    list_display = (
+        "time",
+        "child",
+        "food",
+        "amount",
+    )
+    list_filter = ("child", "tags")
+    search_fields = (
+        "child__first_name",
+        "child__last_name",
+        "food",
+    )
+    resource_class = SolidFoodImportExportResource
+
+
 class HeadCircumferenceImportExportResource(ImportExportResourceBase):
     class Meta:
         model = models.HeadCircumference
