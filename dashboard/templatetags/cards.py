@@ -222,70 +222,127 @@ def card_feeding_recent(context, child, end_date=None):
     }
 
 
+# SVG chart geometry for the feeding amounts card. Values are in user units
+# of a 0 0 WIDTH HEIGHT viewBox; the SVG itself scales to the card width.
+_CHART_WIDTH = 340
+_CHART_HEIGHT = 150
+_CHART_PAD_X = 14
+_CHART_PAD_TOP = 26
+_CHART_PAD_BOTTOM = 24
+_CHART_PLOT_W = _CHART_WIDTH - 2 * _CHART_PAD_X
+_CHART_PLOT_H = _CHART_HEIGHT - _CHART_PAD_TOP - _CHART_PAD_BOTTOM
+_CHART_BASELINE = _CHART_PAD_TOP + _CHART_PLOT_H
+
+
 @register.inclusion_tag("cards/feeding_amounts.html", takes_context=True)
 def card_feeding_amounts(context, child):
     """
-    A bar chart of total feeding amounts for the last week (per day) and the
-    last month (per week).
+    A chart of total feeding amounts: a bar chart for the last 7 days and a
+    line chart for the last 30 days. Geometry is pre-computed here so the
+    template only needs to draw the resulting SVG.
     :param child: an instance of the Child model.
-    :returns: a dictionary with the daily/weekly totals and summary stats.
+    :returns: a dictionary with the chart geometry and summary stats.
     """
     now = timezone.localtime()
     today = now.date()
 
-    # Last 7 days, oldest first, keyed by date.
-    week_days = [today - timezone.timedelta(days=i) for i in range(6, -1, -1)]
-    week_totals = collections.OrderedDict((d, 0.0) for d in week_days)
+    # Daily totals for the last 30 days, oldest first.
+    days = [today - timezone.timedelta(days=i) for i in range(29, -1, -1)]
+    daily_totals = collections.OrderedDict((d, 0.0) for d in days)
 
-    # Last 4 weeks (28 days) split into 7-day buckets, oldest first.
-    month_start = today - timezone.timedelta(days=27)
-    month_buckets = []
-    for w in range(4):
-        bucket_start = month_start + timezone.timedelta(days=7 * w)
-        month_buckets.append(
-            {
-                "start": bucket_start,
-                "end": bucket_start + timezone.timedelta(days=6),
-                "total": 0.0,
-            }
-        )
-
-    range_start = now - timezone.timedelta(days=28)
+    range_start = now - timezone.timedelta(days=30)
     instances = models.Feeding.objects.filter(
         child=child, end__range=[range_start, now]
     )
-
     for instance in instances:
         date = timezone.localtime(instance.end).date()
-        amount = instance.amount or 0
-        if date in week_totals:
-            week_totals[date] += amount
-        delta = (date - month_start).days
-        if 0 <= delta < 28:
-            month_buckets[delta // 7]["total"] += amount
+        if date in daily_totals:
+            daily_totals[date] += instance.amount or 0
 
-    week = [{"date": d, "total": round(t, 1)} for d, t in week_totals.items()]
+    daily = [{"date": d, "total": round(t, 1)} for d, t in daily_totals.items()]
+
+    def _round(value):
+        return round(value, 2)
+
+    # --- Week: bar chart of the last 7 days. ---
+    week = daily[-7:]
     week_max = max([item["total"] for item in week] + [0])
-    for item in week:
-        item["pct"] = (item["total"] / week_max * 100) if week_max else 0
+    slot_w = _CHART_PLOT_W / 7
+    bar_w = slot_w * 0.55
+    week_bars = []
+    for index, item in enumerate(week):
+        height = (item["total"] / week_max * _CHART_PLOT_H) if week_max else 0
+        x = _CHART_PAD_X + index * slot_w + (slot_w - bar_w) / 2
+        center = x + bar_w / 2
+        week_bars.append(
+            {
+                "date": item["date"],
+                "total": item["total"],
+                "x": _round(x),
+                "y": _round(_CHART_BASELINE - height),
+                "width": _round(bar_w),
+                "height": _round(height),
+                "center": _round(center),
+                "label_y": _round(_CHART_BASELINE - height - 6),
+            }
+        )
 
-    month_max = max([bucket["total"] for bucket in month_buckets] + [0])
-    for bucket in month_buckets:
-        bucket["total"] = round(bucket["total"], 1)
-        bucket["pct"] = (bucket["total"] / month_max * 100) if month_max else 0
+    # --- Month: line chart of the last 30 days. ---
+    month_max = max([item["total"] for item in daily] + [0])
+    step = _CHART_PLOT_W / (len(daily) - 1) if len(daily) > 1 else 0
+    month_points = []
+    for index, item in enumerate(daily):
+        x = _CHART_PAD_X + index * step
+        y = _CHART_BASELINE - (
+            (item["total"] / month_max * _CHART_PLOT_H) if month_max else 0
+        )
+        month_points.append(
+            {
+                "date": item["date"],
+                "total": item["total"],
+                "x": _round(x),
+                "y": _round(y),
+            }
+        )
+
+    line_points = " ".join("{},{}".format(p["x"], p["y"]) for p in month_points)
+    area_path = ""
+    if month_points:
+        first = month_points[0]
+        last = month_points[-1]
+        segments = " ".join("L{},{}".format(p["x"], p["y"]) for p in month_points[1:])
+        area_path = "M{},{} L{},{} {} L{},{} Z".format(
+            first["x"],
+            _CHART_BASELINE,
+            first["x"],
+            first["y"],
+            segments,
+            last["x"],
+            _CHART_BASELINE,
+        )
+
+    # Sparse x-axis labels for the line (about one per week plus the last day).
+    month_axis = [month_points[i] for i in (0, 7, 14, 21, 29) if i < len(month_points)]
+    month_last = month_points[-1] if month_points else None
 
     week_total = round(sum(item["total"] for item in week), 1)
-    month_total = round(sum(bucket["total"] for bucket in month_buckets), 1)
+    month_total = round(sum(item["total"] for item in daily), 1)
 
     return {
         "type": "feeding",
         "child": child,
-        "week": week,
-        "month": month_buckets,
+        "chart_width": _CHART_WIDTH,
+        "chart_height": _CHART_HEIGHT,
+        "chart_baseline": _CHART_BASELINE,
+        "week_bars": week_bars,
+        "month_line_points": line_points,
+        "month_area_path": area_path,
+        "month_axis": month_axis,
+        "month_last": month_last,
         "week_total": week_total,
         "month_total": month_total,
         "week_avg": round(week_total / 7, 1),
-        "month_avg": round(month_total / 28, 1),
+        "month_avg": round(month_total / 30, 1),
         "empty": week_total == 0 and month_total == 0,
         "hide_empty": _hide_empty(context),
     }

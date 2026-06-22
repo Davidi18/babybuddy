@@ -394,7 +394,13 @@ class SolidFood(models.Model):
         verbose_name=_("Food"),
         help_text=_("What did the child taste? (e.g. Banana, Avocado, Rice)"),
     )
-    amount = models.FloatField(blank=True, null=True, verbose_name=_("Amount"))
+    amount = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name=_("Amount"),
+        help_text=_("A short description of how much was eaten (e.g. a spoon, a little, half a jar)"),
+    )
     notes = models.TextField(blank=True, null=True, verbose_name=_("Notes"))
     tags = TaggableManager(blank=True, through=Tagged)
 
