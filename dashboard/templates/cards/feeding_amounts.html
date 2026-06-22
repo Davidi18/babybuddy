@@ -37,14 +37,17 @@
                  id="feeding-amounts-week-{{ child.id }}"
                  role="tabpanel">
                 <div class="d-flex justify-content-between align-items-end"
-                     style="height: 130px; gap: 4px;">
+                     style="height: 130px;
+                            gap: 4px">
                     {% for day in week %}
                         <div class="d-flex flex-column align-items-center justify-content-end"
-                             style="flex: 1 1 0; height: 100%;"
+                             style="flex: 1 1 0;
+                                    height: 100%"
                              title="{{ day.date|date:'D, M j' }}: {{ day.total|floatformat:'0' }}">
                             <small class="text-light">{% if day.total %}{{ day.total|floatformat:'0' }}{% endif %}</small>
                             <div class="w-100 rounded-top bg-info"
-                                 style="height: {{ day.pct }}%; min-height: 2px;"></div>
+                                 style="height: {{ day.pct }}%;
+                                        min-height: 2px"></div>
                             <small class="text-body-secondary mt-1">{{ day.date|date:'D'|slice:':1' }}</small>
                         </div>
                     {% endfor %}
@@ -57,14 +60,17 @@
                  id="feeding-amounts-month-{{ child.id }}"
                  role="tabpanel">
                 <div class="d-flex justify-content-between align-items-end"
-                     style="height: 130px; gap: 8px;">
+                     style="height: 130px;
+                            gap: 8px">
                     {% for bucket in month %}
                         <div class="d-flex flex-column align-items-center justify-content-end"
-                             style="flex: 1 1 0; height: 100%;"
+                             style="flex: 1 1 0;
+                                    height: 100%"
                              title="{{ bucket.start|date:'M j' }} – {{ bucket.end|date:'M j' }}: {{ bucket.total|floatformat:'0' }}">
                             <small class="text-light">{% if bucket.total %}{{ bucket.total|floatformat:'0' }}{% endif %}</small>
                             <div class="w-100 rounded-top bg-success"
-                                 style="height: {{ bucket.pct }}%; min-height: 2px;"></div>
+                                 style="height: {{ bucket.pct }}%;
+                                        min-height: 2px"></div>
                             <small class="text-body-secondary mt-1">{{ bucket.start|date:'M j' }}</small>
                         </div>
                     {% endfor %}

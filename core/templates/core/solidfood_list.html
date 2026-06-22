@@ -59,9 +59,7 @@
                             </td>
                         {% endif %}
                         <td>{{ solidfood.food }}</td>
-                        <td>
-                            {% if solidfood.amount %}{{ solidfood.amount }}{% endif %}
-                        </td>
+                        <td>{% if solidfood.amount %}{{ solidfood.amount }}{% endif %}</td>
                         <td>{% include "core/render_tag_list.html" with tags=solidfood.tags.all %}</td>
                     </tr>
                     {% if solidfood.notes %}
