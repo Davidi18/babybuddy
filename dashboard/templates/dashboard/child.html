@@ -11,6 +11,20 @@
     <li class="breadcrumb-item active" aria-current="page">{% trans "Dashboard" %}</li>
 {% endblock %}
 {% block content %}
+    <style>
+        .quick-btn-solidfood {
+            background: rgba(199, 239, 207, 0.12);
+            border: 1px solid rgba(199, 239, 207, 0.22);
+            color: #c7efcf;
+        }
+
+        .quick-btn-solidfood:hover {
+            background: rgba(199, 239, 207, 0.2);
+            color: #d8f3dd;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(199, 239, 207, 0.2);
+        }
+    </style>
     <!-- Quick Actions Bar -->
     <div class="quick-bar mb-3">
         <div class="d-flex gap-2 flex-wrap justify-content-center">
@@ -35,10 +49,12 @@
             <form method="post"
                   action="{% url 'core:timer-quick-toggle' timer_type='sleep' child_slug=object.slug %}"
                   id="sleep-mode-form"
-                  style="display:none;">
+                  style="display:none">
                 {% csrf_token %}
                 <input type="hidden" name="night_sleep" value="1">
-                <button type="submit" id="sleep-mode-quick-btn" class="quick-btn quick-btn-sleep-mode">
+                <button type="submit"
+                        id="sleep-mode-quick-btn"
+                        class="quick-btn quick-btn-sleep-mode">
                     <span class="quick-btn-icon" id="sleep-mode-icon">🌙</span>
                     <span class="quick-btn-label" id="sleep-mode-label">לילה טוב</span>
                     <span class="quick-btn-summary" id="sleep-mode-summary"></span>
@@ -46,7 +62,6 @@
             </form>
         </div>
     </div>
-
     <!-- Live Status Overview -->
     <div class="status-widget mb-3" id="status-card">
         <div id="analytics-loading" class="text-center py-4">
@@ -95,14 +110,10 @@
             </div>
         </div>
     </div>
-
     <!-- Active Timers (only shown if timers exist) -->
     <div class="row mb-3">
-        <div class="col-12">
-            {% card_timer_list object %}
-        </div>
+        <div class="col-12">{% card_timer_list object %}</div>
     </div>
-
     <!-- Data Cards -->
     <div id="dashboard-child"
          class="row g-3"
@@ -128,7 +139,6 @@
     {% else %}
         <script type="application/javascript">BabyBuddy.Dashboard.watch('dashboard-child', false);</script>
     {% endif %}
-
     <script type="application/javascript">
     (function() {
         'use strict';
@@ -361,7 +371,6 @@
         setInterval(loadStatus, 5 * 60 * 1000);
     })();
     </script>
-
     <!-- Alerts Toast Notifications -->
     <script type="application/javascript">
     (function() {
