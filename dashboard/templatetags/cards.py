@@ -237,9 +237,10 @@ _CHART_BASELINE = _CHART_PAD_TOP + _CHART_PLOT_H
 @register.inclusion_tag("cards/feeding_amounts.html", takes_context=True)
 def card_feeding_amounts(context, child):
     """
-    A chart of total feeding amounts: a bar chart for the last 7 days and a
-    line chart for the last 30 days. Geometry is pre-computed here so the
-    template only needs to draw the resulting SVG.
+    Line/area charts of total feeding amounts: the last 7 days and the last 30
+    days. Both are drawn right-to-left (today on the left). The daily average
+    excludes today (an incomplete day) so it is not skewed downward. Geometry
+    is pre-computed here so the template only needs to draw the SVG.
     :param child: an instance of the Child model.
     :returns: a dictionary with the chart geometry and summary stats.
     """
@@ -264,69 +265,78 @@ def card_feeding_amounts(context, child):
     def _round(value):
         return round(value, 2)
 
-    # --- Week: bar chart of the last 7 days. ---
+    def _build_line(series):
+        """
+        Build SVG geometry for a right-to-left line/area chart. The series is
+        ordered oldest-first; the x axis is mirrored so today is on the left.
+        """
+        count = len(series)
+        max_value = max([item["total"] for item in series] + [0])
+        step = _CHART_PLOT_W / (count - 1) if count > 1 else 0
+        points = []
+        for index, item in enumerate(series):
+            # Mirror the x position: oldest (index 0) on the right, today on
+            # the left.
+            x = _CHART_PAD_X + (count - 1 - index) * step
+            height = (item["total"] / max_value * _CHART_PLOT_H) if max_value else 0
+            is_today = item["date"] == today
+            points.append(
+                {
+                    "date": item["date"],
+                    "total": item["total"],
+                    "is_today": is_today,
+                    "x": _round(x),
+                    "y": _round(_CHART_BASELINE - height),
+                    "label_y": _round(_CHART_BASELINE - height - 7),
+                    # Pre-computed style so the template needs no conditionals
+                    # inside SVG attributes (which the template linter mangles).
+                    "dot_r": 3.5 if is_today else 2.5,
+                    "dot_fill": "#ffffff" if is_today else "#7cc5ef",
+                    "dot_stroke_width": 2 if is_today else 0,
+                    "label_fill": (
+                        "rgba(124,197,239,0.95)"
+                        if is_today
+                        else "rgba(255,255,255,0.5)"
+                    ),
+                }
+            )
+
+        line = " ".join("{},{}".format(p["x"], p["y"]) for p in points)
+        area = ""
+        if points:
+            # Points are ordered today-first (left) after mirroring; sort by x
+            # so the area path runs cleanly across the axis.
+            ordered = sorted(points, key=lambda p: p["x"])
+            segments = " ".join("L{},{}".format(p["x"], p["y"]) for p in ordered[1:])
+            area = "M{},{} L{},{} {} L{},{} Z".format(
+                ordered[0]["x"],
+                _CHART_BASELINE,
+                ordered[0]["x"],
+                ordered[0]["y"],
+                segments,
+                ordered[-1]["x"],
+                _CHART_BASELINE,
+            )
+        return points, line, area
+
+    def _average_excluding_today(series):
+        completed = [item["total"] for item in series if item["date"] != today]
+        if not completed:
+            return 0
+        return round(sum(completed) / len(completed), 1)
+
+    # --- Week: last 7 days. ---
     week = daily[-7:]
-    week_max = max([item["total"] for item in week] + [0])
-    slot_w = _CHART_PLOT_W / 7
-    bar_w = slot_w * 0.55
-    week_bars = []
-    for index, item in enumerate(week):
-        height = (item["total"] / week_max * _CHART_PLOT_H) if week_max else 0
-        x = _CHART_PAD_X + index * slot_w + (slot_w - bar_w) / 2
-        center = x + bar_w / 2
-        week_bars.append(
-            {
-                "date": item["date"],
-                "total": item["total"],
-                "x": _round(x),
-                "y": _round(_CHART_BASELINE - height),
-                "width": _round(bar_w),
-                "height": _round(height),
-                "center": _round(center),
-                "label_y": _round(_CHART_BASELINE - height - 6),
-            }
-        )
+    week_points, week_line, week_area = _build_line(week)
+    week_today = next((p for p in week_points if p["is_today"]), None)
 
-    # --- Month: line chart of the last 30 days. ---
-    month_max = max([item["total"] for item in daily] + [0])
-    step = _CHART_PLOT_W / (len(daily) - 1) if len(daily) > 1 else 0
-    month_points = []
-    for index, item in enumerate(daily):
-        x = _CHART_PAD_X + index * step
-        y = _CHART_BASELINE - (
-            (item["total"] / month_max * _CHART_PLOT_H) if month_max else 0
-        )
-        month_points.append(
-            {
-                "date": item["date"],
-                "total": item["total"],
-                "x": _round(x),
-                "y": _round(y),
-            }
-        )
-
-    line_points = " ".join("{},{}".format(p["x"], p["y"]) for p in month_points)
-    area_path = ""
-    if month_points:
-        first = month_points[0]
-        last = month_points[-1]
-        segments = " ".join("L{},{}".format(p["x"], p["y"]) for p in month_points[1:])
-        area_path = "M{},{} L{},{} {} L{},{} Z".format(
-            first["x"],
-            _CHART_BASELINE,
-            first["x"],
-            first["y"],
-            segments,
-            last["x"],
-            _CHART_BASELINE,
-        )
-
-    # Sparse x-axis labels for the line (about one per week plus the last day).
-    month_axis = [month_points[i] for i in (0, 7, 14, 21, 29) if i < len(month_points)]
-    month_last = month_points[-1] if month_points else None
-
-    week_total = round(sum(item["total"] for item in week), 1)
-    month_total = round(sum(item["total"] for item in daily), 1)
+    # --- Month: last 30 days. ---
+    month_points, month_line, month_area = _build_line(daily)
+    month_today = next((p for p in month_points if p["is_today"]), None)
+    # Sparse x-axis labels (about one per week) by age in days.
+    month_axis = [
+        p for p in month_points if (today - p["date"]).days in (0, 7, 14, 21, 28)
+    ]
 
     return {
         "type": "feeding",
@@ -334,16 +344,17 @@ def card_feeding_amounts(context, child):
         "chart_width": _CHART_WIDTH,
         "chart_height": _CHART_HEIGHT,
         "chart_baseline": _CHART_BASELINE,
-        "week_bars": week_bars,
-        "month_line_points": line_points,
-        "month_area_path": area_path,
+        "week_points": week_points,
+        "week_line_points": week_line,
+        "week_area_path": week_area,
+        "week_today": week_today,
+        "month_line_points": month_line,
+        "month_area_path": month_area,
         "month_axis": month_axis,
-        "month_last": month_last,
-        "week_total": week_total,
-        "month_total": month_total,
-        "week_avg": round(week_total / 7, 1),
-        "month_avg": round(month_total / 30, 1),
-        "empty": week_total == 0 and month_total == 0,
+        "month_today": month_today,
+        "week_avg": _average_excluding_today(week),
+        "month_avg": _average_excluding_today(daily),
+        "empty": sum(item["total"] for item in daily) == 0,
         "hide_empty": _hide_empty(context),
     }
 

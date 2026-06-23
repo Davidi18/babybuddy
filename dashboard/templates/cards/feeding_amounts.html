@@ -12,38 +12,59 @@
 {% endblock %}
 {% block content %}
     {% if not empty %}
+        <style>
+            .feeding-amounts-toggle {
+                display: inline-flex;
+                background: rgba(255, 255, 255, 0.06);
+                border-radius: 2rem;
+                gap: 0.25rem;
+            }
+
+            .feeding-amounts-toggle .nav-link {
+                border: none;
+                background: transparent;
+                border-radius: 2rem;
+                padding: 0.25rem 1.5rem;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.55);
+            }
+
+            .feeding-amounts-toggle .nav-link.active {
+                background: rgba(124, 197, 239, 0.25);
+                color: #fff;
+            }
+        </style>
         <svg width="0" height="0" style="position: absolute" aria-hidden="true">
             <defs>
-            <linearGradient id="feeding-bar-gradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stop-color="#a9defa" />
-            <stop offset="100%" stop-color="#6fb8e8" />
-            </linearGradient>
             <linearGradient id="feeding-area-gradient" x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stop-color="#7cc5ef" stop-opacity="0.35" />
             <stop offset="100%" stop-color="#7cc5ef" stop-opacity="0" />
             </linearGradient>
             </defs>
         </svg>
-        <ul class="nav nav-pills nav-fill nav-justified mb-3"
-            id="feeding-amounts-tabs-{{ child.id }}"
-            role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active py-1"
-                        id="feeding-amounts-week-tab-{{ child.id }}"
-                        data-bs-toggle="pill"
-                        data-bs-target="#feeding-amounts-week-{{ child.id }}"
-                        type="button"
-                        role="tab">{% trans "Week" %}</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link py-1"
-                        id="feeding-amounts-month-tab-{{ child.id }}"
-                        data-bs-toggle="pill"
-                        data-bs-target="#feeding-amounts-month-{{ child.id }}"
-                        type="button"
-                        role="tab">{% trans "Month" %}</button>
-            </li>
-        </ul>
+        <div class="d-flex justify-content-center mb-3">
+            <ul class="nav nav-pills feeding-amounts-toggle p-1"
+                id="feeding-amounts-tabs-{{ child.id }}"
+                role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active"
+                            id="feeding-amounts-week-tab-{{ child.id }}"
+                            data-bs-toggle="pill"
+                            data-bs-target="#feeding-amounts-week-{{ child.id }}"
+                            type="button"
+                            role="tab">{% trans "Week" %}</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="feeding-amounts-month-tab-{{ child.id }}"
+                            data-bs-toggle="pill"
+                            data-bs-target="#feeding-amounts-month-{{ child.id }}"
+                            type="button"
+                            role="tab">{% trans "Month" %}</button>
+                </li>
+            </ul>
+        </div>
         <div class="tab-content">
             <div class="tab-pane fade show active"
                  id="feeding-amounts-week-{{ child.id }}"
@@ -54,17 +75,23 @@
                             height: auto"
                      role="img">
                     <line x1="14" x2="{{ chart_width|add:'-14' }}" y1="{{ chart_baseline }}" y2="{{ chart_baseline }}" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
-                    {% for bar in week_bars %}
-                        <rect x="{{ bar.x }}" y="{{ bar.y }}" width="{{ bar.width }}" height="{{ bar.height }}" rx="4" fill="url(#feeding-bar-gradient)" />
-                        {% if bar.total %}
-                            <text x="{{ bar.center }}" y="{{ bar.label_y }}" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.85)">{{ bar.total|floatformat:'0' }}</text>
+                    <path d="{{ week_area_path }}" fill="url(#feeding-area-gradient)" />
+                    <polyline points="{{ week_line_points }}" fill="none" stroke="#7cc5ef" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    {% for point in week_points %}
+                        <circle cx="{{ point.x }}" cy="{{ point.y }}" r="{{ point.dot_r }}" fill="{{ point.dot_fill }}" stroke="#7cc5ef" stroke-width="{{ point.dot_stroke_width }}" />
+                        {% if point.total %}
+                            <text x="{{ point.x }}" y="{{ point.label_y }}" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.85)">{{ point.total|floatformat:'0' }}</text>
                         {% endif %}
-                        <text x="{{ bar.center }}" y="{{ chart_height|add:'-7' }}" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.5)">{{ bar.date|date:'D'|slice:':1' }}</text>
+                        <text x="{{ point.x }}" y="{{ chart_height|add:'-7' }}" text-anchor="middle" font-size="9" fill="{{ point.label_fill }}">
+                        {% if point.is_today %}
+                            {% trans "Today" %}
+                        {% else %}
+                            {{ point.date|date:'l' }}
+                        {% endif %}
+                        </text>
                     {% endfor %}
                 </svg>
-                <div class="text-center small mt-3">
-                    {% trans "Total" %} {{ week_total|floatformat:'0'|intcomma }} · {% trans "Daily average" %} {{ week_avg|floatformat:'0'|intcomma }}
-                </div>
+                <div class="text-center small mt-3">{% trans "Daily average" %} {{ week_avg|floatformat:'0'|intcomma }}</div>
             </div>
             <div class="tab-pane fade"
                  id="feeding-amounts-month-{{ child.id }}"
@@ -77,19 +104,23 @@
                     <line x1="14" x2="{{ chart_width|add:'-14' }}" y1="{{ chart_baseline }}" y2="{{ chart_baseline }}" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
                     <path d="{{ month_area_path }}" fill="url(#feeding-area-gradient)" />
                     <polyline points="{{ month_line_points }}" fill="none" stroke="#7cc5ef" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                    {% if month_last %}
-                        <circle cx="{{ month_last.x }}" cy="{{ month_last.y }}" r="3.5" fill="#ffffff" stroke="#7cc5ef" stroke-width="2" />
-                        {% if month_last.total %}
-                            <text x="{{ month_last.x }}" y="{{ month_last.y|add:'-8' }}" text-anchor="end" font-size="11" fill="rgba(255,255,255,0.85)">{{ month_last.total|floatformat:'0' }}</text>
+                    {% if month_today %}
+                        <circle cx="{{ month_today.x }}" cy="{{ month_today.y }}" r="3.5" fill="#ffffff" stroke="#7cc5ef" stroke-width="2" />
+                        {% if month_today.total %}
+                            <text x="{{ month_today.x }}" y="{{ month_today.label_y }}" text-anchor="start" font-size="10" fill="rgba(255,255,255,0.85)">{{ month_today.total|floatformat:'0' }}</text>
                         {% endif %}
                     {% endif %}
                     {% for point in month_axis %}
-                        <text x="{{ point.x }}" y="{{ chart_height|add:'-7' }}" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.5)">{{ point.date|date:'j/n' }}</text>
+                        <text x="{{ point.x }}" y="{{ chart_height|add:'-7' }}" text-anchor="middle" font-size="9" fill="{{ point.label_fill }}">
+                        {% if point.is_today %}
+                            {% trans "Today" %}
+                        {% else %}
+                            {{ point.date|date:'j/n' }}
+                        {% endif %}
+                        </text>
                     {% endfor %}
                 </svg>
-                <div class="text-center small mt-3">
-                    {% trans "Daily average" %} {{ month_avg|floatformat:'0'|intcomma }} · {% trans "Total" %} {{ month_total|floatformat:'0'|intcomma }}
-                </div>
+                <div class="text-center small mt-3">{% trans "Daily average" %} {{ month_avg|floatformat:'0'|intcomma }}</div>
             </div>
         </div>
     {% endif %}

@@ -63,6 +63,19 @@
     }
 }
 
+.quick-btn-solidfood {
+    background: rgba(199, 239, 207, 0.12);
+    border: 1px solid rgba(199, 239, 207, 0.22);
+    color: #C7EFCF;
+
+    &:hover {
+        background: rgba(199, 239, 207, 0.2);
+        color: #D8F3DD;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(199, 239, 207, 0.2);
+    }
+}
+
 .quick-btn-sleep {
     display: inline-flex;
     align-items: center;
