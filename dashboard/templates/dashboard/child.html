@@ -97,6 +97,7 @@
                         <div class="status-label" id="sleep-label">{% trans "Sleep" %}</div>
                         <div id="sleep-status" class="status-value">---</div>
                         <div id="sleep-prediction" class="status-sub"></div>
+                        <div id="sleep-lastnight" class="status-sub"></div>
                     </div>
                 </div>
                 <div class="status-cell" id="cell-alert">
@@ -123,6 +124,7 @@
         <div class="col-sm-6 col-lg-4">{% card_feeding_day object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_amounts object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_feeding_recent object %}</div>
+        <div class="col-sm-6 col-lg-4">{% card_sleep_schedule object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_sleep_recent object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_diaperchange_types object %}</div>
         <div class="col-sm-6 col-lg-4">{% card_statistics object %}</div>
@@ -271,6 +273,21 @@
                 }
             } else {
                 sleepStatus.textContent = '---';
+            }
+
+            // Last night: bedtime (fell asleep) + morning wake time
+            var lastNight = document.getElementById('sleep-lastnight');
+            if (lastNight) {
+                if (data.last_night_sleep) {
+                    var ln = data.last_night_sleep;
+                    // 🌙 = 🌙 (bedtime), ☀️ = ☀️ (wake)
+                    lastNight.textContent =
+                        '🌙 ' + ln.bedtime + ' · ☀️ ' + ln.wake;
+                    lastNight.style.display = '';
+                } else {
+                    lastNight.textContent = '';
+                    lastNight.style.display = 'none';
+                }
             }
 
             // Good Night / Good Morning quick button

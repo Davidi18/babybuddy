@@ -1,0 +1,33 @@
+{% extends 'cards/base.html' %}
+{% load duration i18n %}
+{% block header %}
+    <a href="{% url "core:sleep-list" %}">קימה והרדמות</a>
+{% endblock %}
+{% block title %}
+    {% if schedule %}
+        <div class="text-center">
+            <span class="text-info">🌙 {{ schedule.avg_bedtime }}</span>
+            ·
+            <span class="text-warning">☀️ {{ schedule.avg_wake }}</span>
+        </div>
+        <div class="text-center small text-body-secondary">
+            ממוצע {{ schedule.count }} לילות · שינת לילה {{ schedule.avg_duration_str }}
+        </div>
+    {% else %}
+        <div class="text-center">אין עדיין נתוני שינת לילה</div>
+    {% endif %}
+{% endblock %}
+{% block content %}
+    {% if schedule %}
+        <div class="mt-1">
+            {% for night in schedule.nights %}
+                <div class="d-flex justify-content-between align-items-center small py-1{% if not forloop.first %} border-top border-secondary-subtle{% endif %}">
+                    <span class="text-body-secondary" style="min-width:3.5rem">{{ night.date|date:"j/n" }}</span>
+                    <span class="text-info">🌙 {{ night.bedtime }}</span>
+                    <span class="text-warning">☀️ {{ night.wake }}</span>
+                    <span class="text-body-secondary">💤 {{ night.duration_str }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
