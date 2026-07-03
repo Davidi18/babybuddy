@@ -893,6 +893,111 @@ class BabyAnalytics:
             "show_goodnight_btn": show_gn,
         }
 
+    @staticmethod
+    def _format_hhmm(total_minutes: int) -> str:
+        """מעצב משך זמן בדקות כ-H:MM."""
+        hours = total_minutes // 60
+        mins = total_minutes % 60
+        return "{}:{:02d}".format(hours, mins)
+
+    def get_last_night_sleep(self) -> Optional[Dict]:
+        """
+        מחזיר את שינת הלילה האחרונה: מתי נרדמה ומתי קמה.
+        Returns the most recent completed night sleep (nap=False): when the
+        baby fell asleep (start) and woke up (end).
+        """
+        from core.models import Sleep
+
+        last = (
+            Sleep.objects.filter(child=self.child, nap=False)
+            .exclude(duration=None)
+            .order_by("-end")
+            .first()
+        )
+        if not last:
+            return None
+
+        start = timezone.localtime(last.start)
+        end = timezone.localtime(last.end)
+        duration_minutes = int((last.end - last.start).total_seconds() / 60)
+
+        return {
+            "bedtime": start.strftime("%H:%M"),
+            "wake": end.strftime("%H:%M"),
+            "bedtime_date": start.date().isoformat(),
+            "wake_date": end.date().isoformat(),
+            "duration_minutes": duration_minutes,
+            "duration_str": self._format_hhmm(duration_minutes),
+        }
+
+    def get_night_sleep_schedule(
+        self, days: int = 14, limit: int = 7
+    ) -> Optional[Dict]:
+        """
+        מחזיר לוח קימה והרדמות של הלילות האחרונים (שינות לילה בלבד).
+        Returns the wake/bedtime schedule for recent nights (night sleeps only,
+        nap=False).
+
+        לכל לילה מוחזרים: שעת ההרדמה (start), שעת הקימה (end) ומשך שינת הלילה.
+        בנוסף מחושבים ממוצעים של שעת ההרדמה, שעת הקימה ומשך שינת הלילה.
+        """
+        from core.models import Sleep
+
+        cutoff = timezone.now() - datetime.timedelta(days=days)
+        instances = (
+            Sleep.objects.filter(child=self.child, nap=False, end__gte=cutoff)
+            .exclude(duration=None)
+            .order_by("-end")[:limit]
+        )
+
+        nights = []
+        bedtime_minutes = []  # דקות ביחס לצהריים, כדי לטפל בהרדמות אחרי חצות
+        wake_minutes = []
+        duration_minutes_list = []
+
+        for sleep in instances:
+            start = timezone.localtime(sleep.start)
+            end = timezone.localtime(sleep.end)
+            duration_minutes = int((sleep.end - sleep.start).total_seconds() / 60)
+
+            nights.append(
+                {
+                    "date": end.date(),
+                    "bedtime": start.strftime("%H:%M"),
+                    "wake": end.strftime("%H:%M"),
+                    "duration_minutes": duration_minutes,
+                    "duration_str": self._format_hhmm(duration_minutes),
+                }
+            )
+
+            # שעת הרדמה: מזיזים הרדמות שלפני הצהריים (אחרי חצות) קדימה ביממה
+            # כדי שהממוצע לא יתעוות בין ערב (למשל 22:00) לאחרי חצות (למשל 00:30).
+            bed = start.hour * 60 + start.minute
+            if start.hour < 12:
+                bed += 24 * 60
+            bedtime_minutes.append(bed)
+            wake_minutes.append(end.hour * 60 + end.minute)
+            duration_minutes_list.append(duration_minutes)
+
+        if not nights:
+            return None
+
+        def _avg(values):
+            return int(round(sum(values) / len(values)))
+
+        avg_bed = _avg(bedtime_minutes) % (24 * 60)
+        avg_wake = _avg(wake_minutes) % (24 * 60)
+        avg_duration = _avg(duration_minutes_list)
+
+        return {
+            "nights": nights,
+            "count": len(nights),
+            "avg_bedtime": "{:02d}:{:02d}".format(avg_bed // 60, avg_bed % 60),
+            "avg_wake": "{:02d}:{:02d}".format(avg_wake // 60, avg_wake % 60),
+            "avg_duration_minutes": avg_duration,
+            "avg_duration_str": self._format_hhmm(avg_duration),
+        }
+
     def get_current_status(self) -> Dict:
         """
         מחזיר את המצב הנוכחי - מה קרה לאחרונה ומה צפוי להיות בקרוב

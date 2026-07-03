@@ -564,6 +564,26 @@ def card_sleep_recent(context, child, end_date=None):
     }
 
 
+@register.inclusion_tag("cards/sleep_schedule.html", takes_context=True)
+def card_sleep_schedule(context, child):
+    """
+    Wake-up and bedtime schedule for recent nights (night sleeps only), with
+    average bedtime, average wake-up time and average night-sleep duration.
+    :param child: an instance of the Child model.
+    :returns: a dictionary with the recent night-sleep schedule.
+    """
+    from core.analytics import BabyAnalytics
+
+    schedule = BabyAnalytics(child).get_night_sleep_schedule()
+
+    return {
+        "type": "sleep",
+        "schedule": schedule,
+        "empty": schedule is None,
+        "hide_empty": _hide_empty(context),
+    }
+
+
 @register.inclusion_tag("cards/sleep_naps_day.html", takes_context=True)
 def card_sleep_naps_day(context, child, date=None):
     """

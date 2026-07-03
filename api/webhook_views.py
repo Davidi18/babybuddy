@@ -199,6 +199,7 @@ def status_webhook(request):
         'next_sleep_status': next_sleep['status'] if next_sleep else None,
         'next_sleep_prediction': next_sleep,
         'sleep_display': sleep_display,
+        'last_night_sleep': analytics.get_last_night_sleep(),
         'day_summary': analytics.get_daily_summary(),
         'alerts': [],
     }

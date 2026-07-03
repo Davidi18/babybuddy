@@ -323,6 +323,32 @@ class TemplateTagsTestCase(TestCase):
         self.assertEqual(data["total"], timezone.timedelta(0, 7200))
         self.assertEqual(data["count"], 1)
 
+    def test_card_sleep_schedule(self):
+        # No recent night sleeps in the fixtures (basis date is 2017), so the
+        # card is empty until we add a recent night sleep (nap=False).
+        data = cards.card_sleep_schedule(self.context, self.child)
+        self.assertEqual(data["type"], "sleep")
+        self.assertTrue(data["empty"])
+        self.assertIsNone(data["schedule"])
+
+        now = timezone.localtime()
+        bedtime = now.replace(hour=20, minute=30, second=0, microsecond=0)
+        bedtime -= timezone.timedelta(days=1)
+        wake = bedtime.replace(hour=7, minute=15) + timezone.timedelta(days=1)
+        models.Sleep.objects.create(
+            child=self.child, start=bedtime, end=wake, nap=False
+        )
+
+        data = cards.card_sleep_schedule(self.context, self.child)
+        self.assertEqual(data["type"], "sleep")
+        self.assertFalse(data["empty"])
+        self.assertEqual(data["schedule"]["count"], 1)
+        night = data["schedule"]["nights"][0]
+        self.assertEqual(night["bedtime"], "20:30")
+        self.assertEqual(night["wake"], "07:15")
+        self.assertEqual(data["schedule"]["avg_bedtime"], "20:30")
+        self.assertEqual(data["schedule"]["avg_wake"], "07:15")
+
     def test_card_statistics(self):
         data = cards.card_statistics(self.context, self.child)
         stats = [
