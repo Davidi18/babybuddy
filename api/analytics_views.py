@@ -75,6 +75,8 @@ class ChildCurrentStatusView(views.APIView):
             'last_sleep': self._format_last_sleep(status_data['last_sleep']),
             'next_sleep_prediction': status_data['next_sleep_prediction'],
             'last_diaper': self._format_last_diaper(status_data['last_diaper']),
+            'last_night_sleep': analytics.get_last_night_sleep(),
+            'night_sleep_schedule': analytics.get_night_sleep_schedule(),
             'stats_7_days': status_data['stats_7_days'],
         }
 

@@ -414,6 +414,64 @@ class BabyAnalytics:
         else:
             return (240.0, 360.0)     # 18+ חודשים: 4-6 שעות
 
+    def _get_time_of_day_wake_window(
+        self, age_min: float, age_max: float, current_hour: int
+    ) -> Tuple[float, float, str]:
+        """
+        מחלק את טווח חלון הערות לפי שעת היום.
+        Splits the age-based wake window range by time of day.
+
+        חלונות ערות מתארכים לאורך היום: החלון הראשון בבוקר הוא הקצר ביותר
+        והחלון שלפני שנת הלילה הוא הארוך ביותר.
+        לדוגמה, בגיל 6-9 חודשים (120-180 דקות):
+        בוקר 2:00-2:15, אמצע היום 2:15-2:45, לפני שנת לילה 2:45-3:00.
+        """
+        span = age_max - age_min
+        if current_hour < 11:
+            return (age_min, age_min + span * 0.25, "morning")
+        elif current_hour < 15:
+            return (age_min + span * 0.25, age_min + span * 0.75, "midday")
+        else:
+            return (age_min + span * 0.75, age_max, "before_bedtime")
+
+    # תנומה שקצרה מזה נחשבת "תנומה קצרה" ומקצרת את חלון הערות הבא
+    SHORT_NAP_MINUTES = 45
+    # בכמה דקות מקצרים את החלון אחרי תנומה קצרה או יום קשוח
+    SHORT_NAP_WINDOW_REDUCTION = 15.0
+
+    def _get_wake_window_adjustment(self, last_sleep: Optional[Dict]) -> float:
+        """
+        התאמת חלון הערות למצב היום (דקות, שלילי = קיצור).
+        Wake window adjustment in minutes (negative = shorten).
+
+        תנומה אחרונה קצרה, או יום קשוח (שתי תנומות קצרות ומעלה היום),
+        מקצרים את החלון בכ-15 דקות.
+        """
+        from core.models import Sleep
+
+        if (
+            last_sleep
+            and last_sleep.get("was_nap")
+            and last_sleep.get("duration_minutes", 0) < self.SHORT_NAP_MINUTES
+        ):
+            return -self.SHORT_NAP_WINDOW_REDUCTION
+
+        # יום קשוח: לפחות שתי תנומות קצרות מתחילת היום
+        local_now = timezone.localtime()
+        today_start = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
+        naps_today = Sleep.objects.filter(
+            child=self.child, nap=True, end__gte=today_start
+        ).exclude(duration=None)
+        short_naps = sum(
+            1
+            for nap in naps_today
+            if nap.duration.total_seconds() < self.SHORT_NAP_MINUTES * 60
+        )
+        if short_naps >= 2:
+            return -self.SHORT_NAP_WINDOW_REDUCTION
+
+        return 0.0
+
     def _calculate_wake_windows(self, days: int = 14) -> List[Dict]:
         """
         מחשב את חלונות הערות בפועל מנתוני השינה.
@@ -530,75 +588,95 @@ class BabyAnalytics:
         # שלב 1: חלונות ערות מהנתונים
         wake_windows = self._calculate_wake_windows(days=14)
 
-        # שלב 2: חלון ערות לפי גיל (כ-fallback)
+        # שלב 2: חלון ערות לפי גיל, מחולק לפי שעת היום
+        # (חלון בוקר קצר, חלון לפני שנת לילה ארוך)
         age_min, age_max = self._get_age_based_wake_window()
-        age_midpoint = (age_min + age_max) / 2
+        window_min, window_max, window_period = self._get_time_of_day_wake_window(
+            age_min, age_max, current_hour
+        )
 
-        # שלב 3: חישוב חלון ערות חזוי
+        # התאמה ליום קשוח / תנומה קצרה - מקצרים את החלון בכ-15 דקות
+        window_adjustment = self._get_wake_window_adjustment(last_sleep)
+        window_min += window_adjustment
+        window_max += window_adjustment
+        window_midpoint = (window_min + window_max) / 2
+
+        # שלב 3: חישוב נקודת הערכה בתוך החלון (לזמן שינה משוער)
         if len(wake_windows) >= 5:
             # מספיק נתונים - נשתמש בממוצע משוקלל
             data_wake_window = self._weighted_average_wake_window(
                 wake_windows, current_hour
             )
-            # משלב 70% נתונים + 30% גיל (כדי למנוע חריגות קיצוניות)
-            predicted_wake_window = (data_wake_window * 0.7) + (age_midpoint * 0.3)
-            # מגביל לטווח הגיוני (±50% מטווח הגיל)
-            predicted_wake_window = max(
-                age_min * 0.5, min(age_max * 1.5, predicted_wake_window)
-            )
+            # משלב 70% נתונים + 30% חלון לפי גיל ושעה
+            predicted_wake_window = (data_wake_window * 0.7) + (window_midpoint * 0.3)
             confidence = "high"
             data_source = "learned"
         elif len(wake_windows) >= 2:
-            # מעט נתונים - שילוב שווה
+            # מעט נתונים - שילוב עם דגש על החלון המומלץ
             data_wake_window = self._weighted_average_wake_window(
                 wake_windows, current_hour
             )
-            predicted_wake_window = (data_wake_window * 0.4) + (age_midpoint * 0.6)
-            predicted_wake_window = max(
-                age_min * 0.7, min(age_max * 1.3, predicted_wake_window)
-            )
+            predicted_wake_window = (data_wake_window * 0.4) + (window_midpoint * 0.6)
             confidence = "medium"
             data_source = "mixed"
         else:
-            # אין מספיק נתונים - נשתמש בהמלצה לפי גיל
-            predicted_wake_window = age_midpoint
+            # אין מספיק נתונים - נשתמש באמצע החלון המומלץ
+            predicted_wake_window = window_midpoint
             confidence = "low"
             data_source = "age_based"
 
+        # הנתונים הנלמדים מזיזים את נקודת ההערכה בתוך החלון,
+        # אבל לא מעבר לגבולות החלון לפי גיל ושעת היום
+        predicted_wake_window = max(window_min, min(window_max, predicted_wake_window))
+
         minutes_until_tired = predicted_wake_window - time_awake_minutes
 
-        # שלב 4: סטטוס והודעה
-        if minutes_until_tired < -15:
+        # שלב 4: סטטוס והודעה לפי מיקום בתוך החלון
+        # תחילת החלון = "להתחיל לשים לב"; "עייפה מאוד" רק אחרי שעברנו
+        # את קצה החלון ב-15 דקות ומעלה
+        minutes_to_window_start = window_min - time_awake_minutes
+        minutes_past_window_end = time_awake_minutes - window_max
+
+        name = self.child.first_name
+        if minutes_past_window_end >= 15:
             status = "overtired"
-            overdue = int(abs(minutes_until_tired))
+            alert_level = "very_tired"
             message = (
-                f"{self.child.first_name} כנראה עייפה מאוד "
-                f"(ערה {overdue} דקות יותר מהרגיל)"
+                f"{name} כנראה עייפה מאוד "
+                f"(ערה {int(time_awake_minutes)} דקות, "
+                f"{int(minutes_past_window_end)} דקות מעבר לקצה החלון)"
             )
-        elif minutes_until_tired < 0:
+        elif minutes_past_window_end >= 0:
             status = "overtired"
+            alert_level = "tired"
             message = (
-                f"{self.child.first_name} כנראה עייפה "
-                f"(עבר הזמן הרגיל שלה)"
+                f"{name} כנראה עייפה - עברנו את קצה חלון הערות שלה"
             )
-        elif minutes_until_tired < 15:
+        elif minutes_to_window_start <= 0:
             status = "getting_tired"
+            alert_level = "watch"
             message = (
-                f"{self.child.first_name} מתחילה להתעייף - "
-                f"בעוד ~{int(minutes_until_tired)} דקות"
+                f"נכנסנו לחלון ההרדמה של {name} - "
+                f"שווה לשים לב לסימני עייפות "
+                f"(עוד ~{int(-minutes_past_window_end)} דקות עד קצה החלון)"
             )
-        elif minutes_until_tired < 30:
+        elif minutes_to_window_start <= 30:
             status = "soon"
-            message = f"בקרוב תתעייף - בעוד ~{int(minutes_until_tired)} דקות"
+            alert_level = "none"
+            message = (
+                f"חלון ההרדמה מתקרב - "
+                f"בעוד ~{int(minutes_to_window_start)} דקות"
+            )
         else:
             status = "awake"
-            hours = minutes_until_tired / 60
+            alert_level = "none"
+            hours = minutes_to_window_start / 60
             if hours >= 1:
                 h = int(hours)
-                m = int(minutes_until_tired % 60)
-                message = f"עוד כ-{h}:{m:02d} שעות עד שתתעייף"
+                m = int(minutes_to_window_start % 60)
+                message = f"עוד כ-{h}:{m:02d} שעות עד חלון ההרדמה"
             else:
-                message = f"עוד ~{int(minutes_until_tired)} דקות עד שתתעייף"
+                message = f"עוד ~{int(minutes_to_window_start)} דקות עד חלון ההרדמה"
 
         estimated_sleep_time = timezone.now() + timedelta(minutes=max(0, minutes_until_tired))
 
@@ -615,6 +693,7 @@ class BabyAnalytics:
 
         return {
             "status": status,
+            "alert_level": alert_level,
             "message": message,
             "minutes_awake": round(time_awake_minutes, 1),
             "minutes_until_tired": round(minutes_until_tired, 1),
@@ -622,6 +701,12 @@ class BabyAnalytics:
             "estimated_sleep_time": estimated_sleep_time.isoformat(),
             "confidence": confidence,
             "data_source": data_source,
+            "wake_window": {
+                "min_minutes": round(window_min, 1),
+                "max_minutes": round(window_max, 1),
+                "period": window_period,
+                "adjustment_minutes": window_adjustment,
+            },
             "age_recommended_range": {
                 "min_minutes": age_min,
                 "max_minutes": age_max,

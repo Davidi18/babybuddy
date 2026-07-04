@@ -202,7 +202,11 @@ class CuteMessageGenerator:
 
         elif alert_type == 'overtired':
             minutes = details.get('minutes_awake', 0)
-            return f"""כתוב הודעת התראה חמודה בעברית ש*{child_name}* עייפה מאוד.
+            if details.get('is_very_tired', True):
+                tired_line = f"כתוב הודעת התראה חמודה בעברית ש*{child_name}* עייפה מאוד וכדאי להרדים עכשיו."
+            else:
+                tired_line = f"כתוב הודעת התראה חמודה ורגועה בעברית ש*{child_name}* עייפה והגיע זמן שינה (בלי לחץ ובלי דרמה)."
+            return f"""{tired_line}
 ערה כבר {minutes} דקות.
 
 {whatsapp_format_instructions}
@@ -293,8 +297,11 @@ class CuteMessageGenerator:
 
         elif alert_type == 'overtired':
             minutes = details.get('minutes_awake', 0)
-            return f"""💤 *{child_name} עייפה מאוד!*
+            if details.get('is_very_tired', True):
+                return f"""💤 *{child_name} עייפה מאוד!*
 ערה כבר _{minutes} דקות_ - זמן לישון 😴"""
+            return f"""💤 *{child_name} עייפה - הגיע זמן שינה*
+ערה כבר _{minutes} דקות_ 😴"""
 
         elif alert_type == 'diaper_overdue':
             hours = details.get('hours_since', 0)
