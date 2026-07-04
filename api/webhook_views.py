@@ -200,6 +200,7 @@ def status_webhook(request):
         'next_sleep_prediction': next_sleep,
         'sleep_display': sleep_display,
         'last_night_sleep': analytics.get_last_night_sleep(),
+        'night_sleep_schedule': analytics.get_night_sleep_schedule(),
         'day_summary': analytics.get_daily_summary(),
         'alerts': [],
     }
@@ -236,7 +237,10 @@ def alerts_webhook(request):
     Query Parameters:
     - child: Child slug (default: first child)
     - feeding_threshold: Minutes overdue to trigger feeding alert (default: 15)
-    - sleep_threshold: Minutes awake to trigger overtired alert (default: 90)
+    - sleep_threshold: Minutes awake to trigger overtired alert.
+      Default: dynamic, based on the age + time-of-day wake window
+      ("tired" when past the window end, "very tired" 15+ minutes past it).
+      Pass an explicit number to override with a fixed threshold.
     - diaper_threshold: Minutes since last diaper to alert (default: 180)
     - medication_threshold: Minutes before/after dose to alert (default: 0)
     - snooze_minutes: Minutes to wait before re-alerting (default: 30)
@@ -254,7 +258,9 @@ def alerts_webhook(request):
 
     # Thresholds (in minutes)
     feeding_threshold = int(request.GET.get('feeding_threshold', 15))
-    sleep_threshold = int(request.GET.get('sleep_threshold', 90))
+    # sleep_threshold: אם לא הועבר במפורש, הסף נקבע דינמית לפי חלון
+    # הערות של הגיל ושעת היום (ולא סף קבוע של שעה וחצי)
+    sleep_threshold_param = request.GET.get('sleep_threshold')
     diaper_threshold = int(request.GET.get('diaper_threshold', 180))
     medication_threshold = int(request.GET.get('medication_threshold', 0))
 
@@ -349,13 +355,28 @@ def alerts_webhook(request):
     next_sleep = status.get('next_sleep_prediction')
     if next_sleep and not is_currently_sleeping:
         minutes_awake = next_sleep.get('minutes_awake', 0)
-        if minutes_awake > sleep_threshold:
+
+        if sleep_threshold_param is not None:
+            # Override מפורש - סף קבוע כמו קודם
+            sleep_threshold = int(sleep_threshold_param)
+            should_alert = minutes_awake > sleep_threshold
+            is_very_tired = should_alert
+        else:
+            # ברירת מחדל דינמית: לפי מיקום ביחס לחלון הערות.
+            # "עייפה" כשעברנו את קצה החלון, "עייפה מאוד" רק 15+ דקות אחריו.
+            alert_level = next_sleep.get('alert_level')
+            should_alert = alert_level in ('tired', 'very_tired')
+            is_very_tired = alert_level == 'very_tired'
+            sleep_threshold = next_sleep.get('wake_window', {}).get('max_minutes')
+
+        if should_alert:
             alert_key = f'alert_sleep_{child.id}'
 
             if cache.add(alert_key, True, timeout=snooze_minutes * 60):
                 alert_details = {
                     'minutes_awake': minutes_awake,
                     'threshold_used': sleep_threshold,
+                    'is_very_tired': is_very_tired,
                 }
 
                 cute_message = msg_gen.generate_alert_message(
@@ -367,8 +388,12 @@ def alerts_webhook(request):
 
                 alerts.append({
                     'type': 'overtired',
-                    'severity': 'high',
-                    'title': f'{child.first_name} עייפה מאוד!',
+                    'severity': 'high' if is_very_tired else 'medium',
+                    'title': (
+                        f'{child.first_name} עייפה מאוד!'
+                        if is_very_tired
+                        else f'{child.first_name} עייפה - הגיע זמן שינה'
+                    ),
                     'message': cute_message,
                     'minutes_awake': minutes_awake,
                     'threshold_used': sleep_threshold,

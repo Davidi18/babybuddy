@@ -22,6 +22,11 @@
                     <small class="text-muted">
                         {% trans "Awake for" %}: {{ prediction.minutes_awake|floatformat:0 }} {% trans "min" %}
                         <br>
+                        {% trans "Wake window" %}: {{ prediction.wake_window.min_minutes|floatformat:0 }}-{{ prediction.wake_window.max_minutes|floatformat:0 }} {% trans "min" %}
+                        {% if prediction.wake_window.adjustment_minutes %}
+                            <span class="badge bg-info ms-1">{% trans "Shortened after a short nap" %}</span>
+                        {% endif %}
+                        <br>
                         {% trans "Predicted wake window" %}: {{ prediction.predicted_wake_window_minutes|floatformat:0 }} {% trans "min" %}
                         {% if prediction.wake_window_stats.sample_size %}
                             <br>
