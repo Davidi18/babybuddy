@@ -261,6 +261,10 @@ def alerts_webhook(request):
     # sleep_threshold: אם לא הועבר במפורש, הסף נקבע דינמית לפי חלון
     # הערות של הגיל ושעת היום (ולא סף קבוע של שעה וחצי)
     sleep_threshold_param = request.GET.get('sleep_threshold')
+    # ברירת מחדל: אם התינוק/ת ישן/ה או אין תחזית שינה, בלוק חישוב השינה
+    # מדולג ו-sleep_threshold נשאר None (מוחזר כ-null בסיכום ה-thresholds).
+    # בלי זה — UnboundLocalError בכל קריאה בזמן שהתינוק/ת ישן/ה.
+    sleep_threshold = None
     diaper_threshold = int(request.GET.get('diaper_threshold', 180))
     medication_threshold = int(request.GET.get('medication_threshold', 0))
 
