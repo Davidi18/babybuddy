@@ -25,20 +25,22 @@ BabyBuddy.Dashboard = (function ($) {
         hidden = "webkitHidden";
       }
 
-      if (
-        typeof window.addEventListener === "undefined" ||
-        typeof document.hidden === "undefined"
-      ) {
-        if (refresh_rate) {
+      // Refresh only on the configured interval, and (where supported) only
+      // while the page is actually visible.
+      //
+      // We intentionally do NOT reload on the window "focus" event. In the
+      // installed / home-screen web app that event fires every single time the
+      // app is reopened, which triggered a jarring full-page reload (white
+      // flash + scroll reset) on every visit. The interval below still keeps
+      // the data fresh at the user's chosen "Refresh rate" (or not at all when
+      // it is disabled).
+      if (refresh_rate) {
+        if (
+          typeof window.addEventListener === "undefined" ||
+          typeof document.hidden === "undefined"
+        ) {
           runIntervalId = setInterval(this.update, refresh_rate);
-        }
-      } else {
-        window.addEventListener(
-          "focus",
-          Dashboard.handleVisibilityChange,
-          false,
-        );
-        if (refresh_rate) {
+        } else {
           runIntervalId = setInterval(
             Dashboard.handleVisibilityChange,
             refresh_rate,
