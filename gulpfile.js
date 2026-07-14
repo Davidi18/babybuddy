@@ -151,6 +151,9 @@ function extras() {
       .src(config.extrasConfig.fonts.files, { encoding: false })
       .pipe(gulp.dest(config.extrasConfig.fonts.dest)),
     gulp
+      .src(config.extrasConfig.webfonts.files, { encoding: false })
+      .pipe(gulp.dest(config.extrasConfig.webfonts.dest)),
+    gulp
       .src(config.extrasConfig.images.files, { encoding: false })
       .pipe(flatten({ subPath: 3 }))
       .pipe(gulp.dest(config.extrasConfig.images.dest)),

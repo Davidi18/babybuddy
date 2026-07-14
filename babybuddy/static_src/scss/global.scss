@@ -359,7 +359,7 @@ body {
         }
 
         .fw-bold {
-            font-family: 'Assistant', sans-serif;
+            font-family: 'Heebo', sans-serif;
             font-weight: 700;
         }
     }
@@ -441,6 +441,22 @@ h1 {
     }
 }
 
+// CSS-only safety net: if app.js fails to load (e.g. a stale hashed asset
+// 404s), the JavaScript that dismisses the toast never runs and the overlay
+// would otherwise cover the screen forever. This animation fades the overlay
+// out on its own after a delay and — via forwards fill — makes it invisible
+// and click-through, so the page stays usable even with no JavaScript. The
+// delay is comfortably longer than the JS auto-dismiss (2.5s), so in the
+// normal case the JavaScript path removes the element first and this never
+// becomes visible.
+@keyframes bb-toast-autohide {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
 .bb-toast-overlay {
     position: fixed;
     inset: 0;
@@ -450,7 +466,9 @@ h1 {
     justify-content: center;
     background: rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(6px);
-    animation: bb-toast-in 0.3s ease forwards;
+    animation:
+        bb-toast-in 0.3s ease forwards,
+        bb-toast-autohide 0.5s ease 6s forwards;
 
     &.bb-toast-hiding {
         animation: bb-toast-out 0.35s ease forwards;
