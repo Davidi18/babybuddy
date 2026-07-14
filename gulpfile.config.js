@@ -7,6 +7,10 @@ const config = {
       dest: basePath + "font/",
       files: "babybuddy/static_src/fontello/font/*",
     },
+    webfonts: {
+      dest: basePath + "font/heebo/",
+      files: "babybuddy/static_src/fonts/heebo/*",
+    },
     images: {
       dest: basePath + "img/",
       files: "**/static_src/img/**/*",
