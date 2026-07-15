@@ -29,18 +29,16 @@ python manage.py migrate --noinput
 
 # 4. Collect static files
 #
-# Static files are normally baked into the image at build time (see Dockerfile),
-# which guarantees the hashed filenames served with "Cache-Control: immutable"
-# are identical across every container and restart. Only (re)collect here if the
-# manifest is missing - e.g. when the image was built without the build step or
-# static is mounted on an empty volume. Re-running unconditionally on every boot
-# can regenerate hashes and leave clients referencing assets that 404 (the app
-# then loads unstyled), so we skip it when a manifest already exists.
+# Static files are baked into the image at build time (see Dockerfile). Filenames
+# are stable (non-hashed), so collecting is idempotent and never changes the URLs
+# clients reference. Only (re)collect here if the collected output is missing -
+# e.g. when the image was built without the build step or static is mounted on an
+# empty volume - so we skip the redundant work when it is already present.
 echo "🎨 Checking static files..."
-if [ -f "/app/static/staticfiles.json" ]; then
+if [ -f "/app/static/babybuddy/css/app.css" ]; then
     echo "✅ Static files already collected (baked into image)"
 else
-    echo "📥 No manifest found - collecting static files..."
+    echo "📥 No collected static found - collecting static files..."
     python manage.py collectstatic --noinput --clear
 fi
 
