@@ -231,7 +231,29 @@ FORMAT_MODULE_PATH = ["babybuddy.formats"]
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # Stable (non-hashed) static filenames served by WhiteNoise.
+        #
+        # We deliberately do NOT use the hashed *Manifest* storage. Hashed
+        # filenames + "Cache-Control: immutable" only stay correct when every
+        # request is served by a container whose collected files exactly match
+        # the hashes embedded in the HTML it rendered. In practice that
+        # invariant breaks: during a rolling redeploy (or with more than one
+        # replica) an HTML page rendered by the new build can reference
+        # app.<newhash>.css while the request for that file is answered by an
+        # old container that only has app.<oldhash>.css, and the iOS
+        # home-screen web app can relaunch from a snapshot that points at a
+        # hash from a previous deploy. Either way the browser gets a 404 for
+        # the stylesheet/script and the app renders completely unstyled, and
+        # the immutable cache makes the bad state stick.
+        #
+        # With stable names the stylesheet is always "/static/babybuddy/css/
+        # app.css" - a URL that exists on every container and every build - so
+        # a stale or cross-container reference can never 404. WhiteNoise serves
+        # these non-versioned files with a short max-age plus revalidation
+        # (Last-Modified/ETag), so a changed asset is picked up within seconds
+        # of a deploy instead of being cached forever. Compression (gzip/brotli)
+        # is retained.
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 

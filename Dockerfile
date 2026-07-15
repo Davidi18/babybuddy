@@ -36,13 +36,11 @@ RUN mkdir -p /data /data/media /app/static /app/media && \
 
 # Collect static files at BUILD time (not at container startup).
 #
-# Static assets are hashed (CompressedManifestStaticFilesStorage) and served
-# with "Cache-Control: immutable". That is only safe if the hashed filename for
-# a given asset is identical across every running container and every restart.
-# Collecting here bakes one consistent, fully-hashed set into the image, so the
-# CSS/JS URLs referenced by the HTML always exist and never change unless the
-# asset itself changes. --clear removes any stale pre-built output first so the
-# manifest contains exactly one hash per file.
+# Static assets use stable (non-hashed) filenames (CompressedStaticFilesStorage),
+# so the CSS/JS URLs referenced by the HTML - e.g. /static/babybuddy/css/app.css
+# - are identical across every container and every build and can never 404 on a
+# stale or cross-container reference. Baking them here means the collected output
+# ships in the image. --clear removes any stale pre-built output first.
 ENV DJANGO_SETTINGS_MODULE=babybuddy.settings.base
 RUN SECRET_KEY=build-time-collectstatic \
     python manage.py collectstatic --noinput --clear
