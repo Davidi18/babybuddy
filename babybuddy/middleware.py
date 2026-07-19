@@ -154,7 +154,8 @@ class HomeAssistant:
             apply_x_ingress_path = False
 
         if apply_x_ingress_path:
-            set_script_prefix("/" + x_ingress_path.lstrip("/"))
+            x_ingress_path = "/" + x_ingress_path.strip("/")
+            set_script_prefix(x_ingress_path)
         else:
             set_script_prefix(self.original_script_prefix)
 
@@ -166,13 +167,13 @@ class HomeAssistant:
             ) or response.status_code in [301, 307, 308]
             if is_redirect_response:
                 split_url = urlsplit(response["Location"])
-                path_prefix = "/" + x_ingress_path.lstrip("/")
+                path_prefix = x_ingress_path
                 if not split_url.path.startswith(path_prefix):
                     new_url = urlunsplit(
                         (
                             split_url.scheme,
                             split_url.netloc,
-                            "/" + x_ingress_path.lstrip("/") + split_url.path,
+                            x_ingress_path + split_url.path,
                             split_url.query,
                             split_url.fragment,
                         )
