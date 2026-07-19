@@ -67,3 +67,19 @@ class HomeAssistantMiddlewareTestCase(TestCase):
         self.assertEqual(
             json_response["profile"], "http://testserver/magic/sub/url/api/profile"
         )
+
+    def test_ingress_html_static_urls_are_absolute_with_relative_header(self):
+        response = self.c.get(
+            "/login/",
+            headers={
+                "X-Hass-Source": "core.ingress",
+                "X-Ingress-Path": "magic/sub/url",
+            },
+        )
+
+        content = response.content.decode()
+
+        self.assertContains(
+            response, 'href="/magic/sub/url/static/babybuddy/css/app.css"'
+        )
+        self.assertNotIn('href="magic/sub/url/static/', content)
