@@ -248,11 +248,15 @@ STORAGES = {
         #
         # With stable names the stylesheet is always "/static/babybuddy/css/
         # app.css" - a URL that exists on every container and every build - so
-        # a stale or cross-container reference can never 404. WhiteNoise serves
-        # these non-versioned files with a short max-age plus revalidation
-        # (Last-Modified/ETag), so a changed asset is picked up within seconds
-        # of a deploy instead of being cached forever. Compression (gzip/brotli)
-        # is retained.
+        # a stale or cross-container reference can never 404. Freshness after a
+        # deploy is instead handled at the HTML level: the ``versioned_static``
+        # template tag appends a content-hash "?v=" query, so the URL changes
+        # whenever the asset's bytes change. That content-hash query is what
+        # makes the aggressive "immutable" caching configured below safe (see
+        # WHITENOISE_IMMUTABLE_FILE_TEST): because the filename is stable, a
+        # stale "?v=" can never 404 - it just serves the current bytes - so
+        # immutable can never make a *bad* state stick the way hashed
+        # *filenames* could. Compression (gzip/brotli) is retained.
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
@@ -272,6 +276,28 @@ STATIC_URL = os.path.join(os.environ.get("SUB_PATH") or "", "static/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 WHITENOISE_ROOT = os.path.join(BASE_DIR, "static", "babybuddy", "root")
+
+# Cache static assets aggressively and mark them "immutable".
+#
+# The HTML references CSS/JS through the ``versioned_static`` template tag,
+# which appends a content-hash ``?v=`` query, so a given URL's bytes never
+# change: when an asset changes, its URL changes with it. That makes it safe
+# to tell the browser never to re-validate a cached static file.
+#
+# This is the fix for the "first load after a deploy is styled, every
+# subsequent load is unstyled" bug. The dashboard auto-refreshes with a full
+# ``location.reload()`` (see dashboard.js), and a plain reload re-validates
+# every subresource. In this deployment that revalidation round-trip for
+# app.css sometimes comes back in a form the browser will not apply, so the
+# page renders with no styles from the second load onward even though the
+# first, freshly-fetched load was fine. ``immutable`` (designed for exactly
+# this) tells the browser to skip revalidation on reload and keep using the
+# known-good copy it already has; the ``?v=`` hash still guarantees a fresh
+# fetch after a deploy. Stable filenames mean a stale ``?v=`` can never 404 -
+# it just serves the current bytes - so immutable can never make a bad state
+# stick the way hashed *filenames* could.
+WHITENOISE_MAX_AGE = 31536000  # 1 year
+WHITENOISE_IMMUTABLE_FILE_TEST = ".*"
 
 
 # Media files (User uploaded content)
