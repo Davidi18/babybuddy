@@ -24,7 +24,7 @@
               color="#A8D8EA" />
         <link rel="shortcut icon"
               href="{% static "babybuddy/root/favicon.ico" %}?v=20211218" />
-        <link rel="stylesheet" href="{% static "babybuddy/css/app.css" %}" />
+        <link rel="stylesheet" href="{% versioned_static "babybuddy/css/app.css" %}" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Pitskoo" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -50,8 +50,8 @@
             </nav>
         {% endblock %}
         {% block page %}{% endblock %}
-        <script src="{% static "babybuddy/js/vendor.js" %}"></script>
-        <script src="{% static "babybuddy/js/app.js" %}"></script>
+        <script src="{% versioned_static "babybuddy/js/vendor.js" %}"></script>
+        <script src="{% versioned_static "babybuddy/js/app.js" %}"></script>
         {% if user.is_authenticated %}<script>BabyBuddy.PullToRefresh.init()</script>{% endif %}
         {% block javascript %}{% endblock %}
     </body>
