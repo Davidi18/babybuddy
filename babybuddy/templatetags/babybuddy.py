@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import hashlib
+
 from django import template
 from django.apps import apps
 from django.conf import settings
+from django.contrib.staticfiles import finders
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils import timezone
 from django.utils.functional import lazy
 from django.utils.html import format_html
@@ -16,6 +20,58 @@ from core.models import Child
 
 register = template.Library()
 mark_safe_lazy = lazy(mark_safe, str)
+
+# Cache of static path -> short content hash so the file is only read once per
+# process (the collected assets do not change while the app is running).
+_STATIC_VERSION_CACHE = {}
+
+
+def _static_version(path):
+    """
+    Return a short content hash for a collected static file, or None if the
+    file cannot be located. The hash is derived from the file's bytes so it
+    only changes when the asset itself changes.
+    """
+    if path in _STATIC_VERSION_CACHE:
+        return _STATIC_VERSION_CACHE[path]
+
+    version = None
+    try:
+        # Prefer the collected file (STATIC_ROOT); fall back to the source
+        # location via the finders during development.
+        absolute_path = None
+        if staticfiles_storage.exists(path):
+            absolute_path = staticfiles_storage.path(path)
+        else:
+            absolute_path = finders.find(path)
+
+        if absolute_path:
+            digest = hashlib.md5()
+            with open(absolute_path, "rb") as handle:
+                for chunk in iter(lambda: handle.read(65536), b""):
+                    digest.update(chunk)
+            version = digest.hexdigest()[:12]
+    except (OSError, ValueError, NotImplementedError):
+        version = None
+
+    _STATIC_VERSION_CACHE[path] = version
+    return version
+
+
+@register.simple_tag
+def versioned_static(path):
+    """
+    Like ``{% static %}`` but appends a content-based ``?v=`` query so browsers
+    (and the installed home-screen web app) refetch the asset whenever it
+    changes, instead of serving a stale or partially-cached copy. The stable
+    filename is preserved, so the URL always exists even across deploys.
+    """
+    url = staticfiles_storage.url(path)
+    version = _static_version(path)
+    if version:
+        separator = "&" if "?" in url else "?"
+        url = "{}{}v={}".format(url, separator, version)
+    return url
 
 
 @register.simple_tag

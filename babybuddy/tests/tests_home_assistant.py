@@ -79,7 +79,9 @@ class HomeAssistantMiddlewareTestCase(TestCase):
 
         content = response.content.decode()
 
+        # The stylesheet URL may carry a cache-busting ``?v=`` suffix, so match
+        # the absolute, ingress-prefixed path without requiring a closing quote.
         self.assertContains(
-            response, 'href="/magic/sub/url/static/babybuddy/css/app.css"'
+            response, 'href="/magic/sub/url/static/babybuddy/css/app.css'
         )
         self.assertNotIn('href="magic/sub/url/static/', content)
