@@ -406,13 +406,43 @@ class BabyAnalytics:
         elif age_months < 6:
             return (90.0, 150.0)      # 4-6 חודשים: 1.5-2.5 שעות
         elif age_months < 9:
-            return (120.0, 180.0)     # 6-9 חודשים: 2-3 שעות
+            # 6-9 חודשים: מכויל לנעמי (7.5 חודשים) - 2.5-3.5 שעות ערות.
+            # הטווח מכסה את כל תקופות היום: בוקר 2:15 עד לפני-לילה 3:30.
+            return (135.0, 210.0)     # 6-9 חודשים: 2.25-3.5 שעות
         elif age_months < 12:
             return (150.0, 240.0)     # 9-12 חודשים: 2.5-4 שעות
         elif age_months < 18:
             return (180.0, 300.0)     # 12-18 חודשים: 3-5 שעות
         else:
             return (240.0, 360.0)     # 18+ חודשים: 4-6 שעות
+
+    def _get_age_based_wake_windows_by_period(
+        self,
+    ) -> Optional[Dict[str, Tuple[float, float]]]:
+        """
+        חלונות ערות ספציפיים לכל תקופת יום לפי גיל התינוק (דקות).
+        Returns explicit per-period wake windows (min, max) in minutes for the
+        child's age, or None to fall back to an even split of the age range.
+
+        כאשר קיים כיול ספציפי לגיל הוא מדויק יותר מחלוקה מתמטית של טווח הגיל:
+        חלון הבוקר הקצר ביותר, אמצע היום בינוני, ולפני שנת הלילה הארוך ביותר.
+        """
+        if not self.child.birth_date:
+            return None
+
+        age_days = (timezone.localdate() - self.child.birth_date).days
+        age_months = age_days / 30.44
+
+        if 6 <= age_months < 9:
+            # כיול לנעמי (~7.5 חודשים), כלל אצבע 2.5 / 3 / 3.5:
+            # בוקר 2:15-2:45, בין תנומות 2:30-3:00, לפני הלילה 3:00-3:30.
+            return {
+                "morning": (135.0, 165.0),        # 2.25-2.75 שעות
+                "midday": (150.0, 180.0),         # 2.5-3 שעות
+                "before_bedtime": (180.0, 210.0), # 3-3.5 שעות
+            }
+
+        return None
 
     def _get_time_of_day_wake_window(
         self, age_min: float, age_max: float, current_hour: int
@@ -423,16 +453,31 @@ class BabyAnalytics:
 
         חלונות ערות מתארכים לאורך היום: החלון הראשון בבוקר הוא הקצר ביותר
         והחלון שלפני שנת הלילה הוא הארוך ביותר.
-        לדוגמה, בגיל 6-9 חודשים (120-180 דקות):
-        בוקר 2:00-2:15, אמצע היום 2:15-2:45, לפני שנת לילה 2:45-3:00.
+        לדוגמה, בגיל 6-9 חודשים (מכויל לנעמי):
+        בוקר 2:15-2:45, אמצע היום 2:30-3:00, לפני שנת לילה 3:00-3:30.
+
+        אם קיים כיול מפורש לגיל (ראו ``_get_age_based_wake_windows_by_period``)
+        משתמשים בו; אחרת מחלקים את טווח הגיל לפי יחסים קבועים.
         """
-        span = age_max - age_min
         if current_hour < 11:
-            return (age_min, age_min + span * 0.25, "morning")
+            period = "morning"
         elif current_hour < 15:
-            return (age_min + span * 0.25, age_min + span * 0.75, "midday")
+            period = "midday"
         else:
-            return (age_min + span * 0.75, age_max, "before_bedtime")
+            period = "before_bedtime"
+
+        explicit = self._get_age_based_wake_windows_by_period()
+        if explicit and period in explicit:
+            window_min, window_max = explicit[period]
+            return (window_min, window_max, period)
+
+        span = age_max - age_min
+        if period == "morning":
+            return (age_min, age_min + span * 0.25, period)
+        elif period == "midday":
+            return (age_min + span * 0.25, age_min + span * 0.75, period)
+        else:
+            return (age_min + span * 0.75, age_max, period)
 
     # תנומה שקצרה מזה נחשבת "תנומה קצרה" ומקצרת את חלון הערות הבא
     SHORT_NAP_MINUTES = 45
