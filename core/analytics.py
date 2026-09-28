@@ -410,6 +410,8 @@ class BabyAnalytics:
             # הטווח מכסה את כל תקופות היום: בוקר 2:15 עד לפני-לילה 3:30.
             return (135.0, 210.0)     # 6-9 חודשים: 2.25-3.5 שעות
         elif age_months < 12:
+            # 9-12 חודשים: מכויל לנעמי (9.5 חודשים) - 2 תנומות, 2.5-4 שעות ערות.
+            # הטווח מכסה את כל תקופות היום: בוקר 2:30 עד לפני-לילה 4:00.
             return (150.0, 240.0)     # 9-12 חודשים: 2.5-4 שעות
         elif age_months < 18:
             return (180.0, 300.0)     # 12-18 חודשים: 3-5 שעות
@@ -442,10 +444,80 @@ class BabyAnalytics:
                 "before_bedtime": (180.0, 210.0), # 3-3.5 שעות
             }
 
+        if 9 <= age_months < 12:
+            # כיול לנעמי (~9.5 חודשים), 2 תנומות ביום:
+            # בוקר 2:30-3:00, בין התנומות 3:00-3:30, לפני הלילה 3:30-4:00.
+            return {
+                "morning": (150.0, 180.0),        # 2.5-3 שעות
+                "midday": (180.0, 210.0),         # 3-3.5 שעות
+                "before_bedtime": (210.0, 240.0), # 3.5-4 שעות
+            }
+
         return None
 
+    def _get_target_naps_per_day(self) -> Optional[int]:
+        """
+        מספר התנומות היומי שהלו"ז מכויל אליו, או None אם אין לו"ז קבוע.
+        Target number of daytime naps for the child's age, or None when the
+        schedule is not fixed (e.g. transitioning between 3 and 2 naps).
+
+        כשמספר התנומות קבוע, תקופת היום (בוקר / בין תנומות / לפני הלילה)
+        נקבעת לפי מספר התנומות שכבר היו היום ולא לפי השעה.
+        """
+        if not self.child.birth_date:
+            return None
+
+        age_days = (timezone.localdate() - self.child.birth_date).days
+        age_months = age_days / 30.44
+
+        if 9 <= age_months < 12:
+            return 2
+
+        return None
+
+    def _get_day_period(
+        self, current_hour: int, last_sleep: Optional[Dict] = None
+    ) -> str:
+        """
+        קובע באיזה חלון ערות של היום אנחנו נמצאים.
+        Determines which wake window of the day we are in.
+
+        בלו"ז של 2 תנומות: אחרי שנת לילה = בוקר, אחרי התנומה הראשונה =
+        בין התנומות, אחרי התנומה השנייה = לפני הלילה. כך תנומת בוקר שנגמרת
+        ב-10:30 לא נספרת בטעות כ"בוקר" רק כי השעה עדיין לפני 11:00.
+        אחרת (או בלי מידע על השינה האחרונה) - לפי שעת היום.
+        """
+        from core.models import Sleep
+
+        naps_per_day = self._get_target_naps_per_day()
+        if naps_per_day and last_sleep:
+            if not last_sleep.get("was_nap"):
+                return "morning"
+
+            local_now = timezone.localtime()
+            today_start = local_now.replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            naps_today = Sleep.objects.filter(
+                child=self.child, nap=True, end__gte=today_start
+            ).count()
+            if naps_today >= naps_per_day:
+                return "before_bedtime"
+            if naps_today >= 1:
+                return "midday"
+
+        if current_hour < 11:
+            return "morning"
+        elif current_hour < 15:
+            return "midday"
+        return "before_bedtime"
+
     def _get_time_of_day_wake_window(
-        self, age_min: float, age_max: float, current_hour: int
+        self,
+        age_min: float,
+        age_max: float,
+        current_hour: int,
+        last_sleep: Optional[Dict] = None,
     ) -> Tuple[float, float, str]:
         """
         מחלק את טווח חלון הערות לפי שעת היום.
@@ -453,18 +525,14 @@ class BabyAnalytics:
 
         חלונות ערות מתארכים לאורך היום: החלון הראשון בבוקר הוא הקצר ביותר
         והחלון שלפני שנת הלילה הוא הארוך ביותר.
-        לדוגמה, בגיל 6-9 חודשים (מכויל לנעמי):
-        בוקר 2:15-2:45, אמצע היום 2:30-3:00, לפני שנת לילה 3:00-3:30.
+        לדוגמה, בגיל 9-12 חודשים (מכויל לנעמי, 2 תנומות):
+        בוקר 2:30-3:00, בין התנומות 3:00-3:30, לפני שנת לילה 3:30-4:00.
 
         אם קיים כיול מפורש לגיל (ראו ``_get_age_based_wake_windows_by_period``)
         משתמשים בו; אחרת מחלקים את טווח הגיל לפי יחסים קבועים.
+        התקופה נקבעת ב-``_get_day_period``.
         """
-        if current_hour < 11:
-            period = "morning"
-        elif current_hour < 15:
-            period = "midday"
-        else:
-            period = "before_bedtime"
+        period = self._get_day_period(current_hour, last_sleep)
 
         explicit = self._get_age_based_wake_windows_by_period()
         if explicit and period in explicit:
@@ -637,7 +705,7 @@ class BabyAnalytics:
         # (חלון בוקר קצר, חלון לפני שנת לילה ארוך)
         age_min, age_max = self._get_age_based_wake_window()
         window_min, window_max, window_period = self._get_time_of_day_wake_window(
-            age_min, age_max, current_hour
+            age_min, age_max, current_hour, last_sleep
         )
 
         # התאמה ליום קשוח / תנומה קצרה - מקצרים את החלון בכ-15 דקות
