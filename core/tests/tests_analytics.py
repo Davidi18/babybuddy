@@ -40,11 +40,14 @@ class TwoNapWakeWindowTestCase(TestCase):
             nap=nap,
         )
 
-    def _predict(self, hour, minute):
+    def _prediction(self, hour, minute):
         with mock.patch(
             "django.utils.timezone.now", return_value=self._at(hour, minute)
         ):
-            return BabyAnalytics(self.child).predict_next_sleep()["wake_window"]
+            return BabyAnalytics(self.child).predict_next_sleep()
+
+    def _predict(self, hour, minute):
+        return self._prediction(hour, minute)["wake_window"]
 
     def assertWindow(self, window, period, min_minutes, max_minutes):
         self.assertEqual(window["period"], period)
@@ -65,6 +68,20 @@ class TwoNapWakeWindowTestCase(TestCase):
         self._sleep(0, 9, 15, 0, 10, 30, nap=True)
         self._sleep(0, 13, 30, 0, 14, 45, nap=True)
         self.assertWindow(self._predict(14, 50), "before_bedtime", 210.0, 240.0)
+
+    def test_bedtime_window_is_predicted_in_the_evening(self):
+        # Second nap ends at 15:00, so the bedtime window is 18:30-19:00.
+        self._sleep(0, 9, 15, 0, 10, 30, nap=True)
+        self._sleep(0, 13, 45, 0, 15, 0, nap=True)
+        prediction = self._prediction(18, 45)
+        self.assertWindow(prediction["wake_window"], "before_bedtime", 210.0, 240.0)
+        self.assertEqual(prediction["status"], "getting_tired")
+
+    def test_no_prediction_at_night(self):
+        self._sleep(0, 9, 15, 0, 10, 30, nap=True)
+        self._sleep(0, 13, 45, 0, 15, 0, nap=True)
+        self.assertIsNone(self._prediction(20, 0))
+        self.assertIsNone(self._prediction(5, 30))
 
     def test_age_recommended_range(self):
         with mock.patch("django.utils.timezone.now", return_value=self._at(8, 0)):

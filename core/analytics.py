@@ -686,8 +686,10 @@ class BabyAnalytics:
         local_now = timezone.localtime(now)
         current_hour = local_now.hour
 
-        # בלילה (18:00-06:00) - אין חיזוי תנומות, זה זמן שינת לילה
-        if current_hour >= 18 or current_hour < 6:
+        # בלילה (20:00-06:00) - אין חיזוי, זה זמן שינת לילה.
+        # עד 20:00 ממשיכים לחזות כדי לכסות את חלון הערות שלפני שנת הלילה
+        # (למשל 3.5-4 שעות אחרי תנומה שנגמרה ב-15:00 = 18:30-19:00).
+        if current_hour >= 20 or current_hour < 6:
             return None
 
         last_sleep = self.get_last_sleep_info()
